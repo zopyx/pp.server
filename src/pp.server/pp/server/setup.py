@@ -42,7 +42,7 @@ setup(name='pp.server',
       [paste.app_factory]
       main = ppserver:main
       [console_scripts]
-      service-client = ppserver.scripts.service_client:main
-      worker = ppserver.scripts.worker:main
+      service-client = pp.server.scripts.service_client:main
+      worker = pp.server.scripts.worker:main
       """,
       )
