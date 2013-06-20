@@ -1,7 +1,6 @@
 import os
 import uuid
 import requests
-import pymongo
 import subprocess
 import tempfile
 import commands
