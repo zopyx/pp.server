@@ -13,10 +13,6 @@ queue_dir = os.path.join(os.getcwd(), 'var', 'queue')
 if not os.path.exists(queue_dir):
     os.makedirs(queue_dir)
 
-conn = pymongo.MongoClient()
-db = conn['pp']
-jobs = db.jobs
-jobs.create_index([('status', pymongo.ASCENDING)])
 
 STATUS = [
     'CREATED', 

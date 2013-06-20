@@ -37,10 +37,10 @@ setup(name='pp.server',
       zip_safe=False,
       install_requires=requires,
       tests_require=requires,
-      test_suite="ppserver",
+      test_suite="pp.server",
       entry_points="""\
       [paste.app_factory]
-      main = ppserver:main
+      main = pp.server:main
       [console_scripts]
       service-client = pp.server.scripts.service_client:main
       worker = pp.server.scripts.worker:main

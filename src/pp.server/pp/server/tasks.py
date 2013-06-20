@@ -5,7 +5,6 @@ import pymongo
 import subprocess
 import tempfile
 import commands
-import pdfreactor.html_prepare
 from celery import Celery
 
 import logging
