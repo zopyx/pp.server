@@ -11,11 +11,7 @@ from celery import Celery
 import logging
 
 # Connector to local MongoDB database/queue
-celery = Celery('tasks', broker='mongodb://localhost:27017/pp')
-
-conn = pymongo.MongoClient('mongodb://localhost:27017')     # connection
-db = conn['pp']                  # database
-jobs = db.jobs                   # collection
+celery = Celery('tasks', broker='sqla+sqlite:///celerydb.sqlite')
 
 # Timeouts and retries
 MAX_TRIES_HTML_PREPARE = 3
