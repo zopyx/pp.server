@@ -1,0 +1,10 @@
+pyramid
+pyramid_debugtoolbar
+waitress
+pymongo
+requests
+cssselect
+celery
+celery-with-mongodb
+flower
+plac
