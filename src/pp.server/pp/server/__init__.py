@@ -7,7 +7,8 @@ def main(global_config, **settings):
     config = Configurator(settings=settings)
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
+
+    from views import XMLRPC
+    config.add_view(XMLRPC, name='api')
     config.scan()
-    config.add_route('job_status', '/status/{job_id}', request_method='GET')
-    config.add_route('job_status_html', '/status-html/{job_id}', request_method='GET')
     return config.make_wsgi_app()
