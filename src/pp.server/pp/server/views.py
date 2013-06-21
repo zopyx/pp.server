@@ -1,11 +1,13 @@
 
 import os
+import time
 import uuid
 import xmlrpclib
 from pyramid_xmlrpc import XMLRPCView
 from webob import Response
 from datetime import datetime
 from pyramid.view import view_config
+from logger import LOG
 import converters
 
 queue_dir = os.path.join(os.getcwd(), 'var', 'queue')
@@ -41,7 +43,13 @@ class XMLRPC(XMLRPCView):
         if async:
             return dict(id=new_id, message=u'Conversion request queued')
         else:
+            ts = time.time()
+            LOG.info('START: unoconv({}, {}, {}, {})'.format(new_id, work_file, output_format, async))
             result = converters.unoconv(work_file, output_format)
+            duration = time.time() - ts
+            LOG.info('END : unoconv({} {} sec): {}'.format(new_id, duration, result['status']))
+            if result['output']:
+                LOG.info('OUTPUT: unoconv({}):\n{}'.format(new_id, result['output']))
             if result['status'] == 0: #OK
                 return dict(status='OK',
                             data=xmlrpclib.Binary(open(result['filename'], 'rb').read()),
