@@ -18,12 +18,12 @@ class View(object):
     def __init__(self, request):
         self.request = request
 
-
     @view_config(route_name='home', renderer='index.pt', request_method='GET')
     def index(self):
         return {}
 
-    @view_config(name='unoconv')
-    @xmlrpc_view
-    def unoconv(self, bin_input, output_format, async=False):
-        import pdb; pdb.set_trace() 
+@view_config(name='unoconv')
+@xmlrpc_view
+def unoconv(context, bin_input, output_format='pdf', async=False):
+    print bin_input.__class__, output_format, async
+    return 42

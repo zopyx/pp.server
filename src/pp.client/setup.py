@@ -31,5 +31,6 @@ setup(name='pp.client',
       test_suite="pp.server",
       entry_points="""\
       [console_scripts]
+      pp-client=pp.client.cmd:main
       """,
       )
