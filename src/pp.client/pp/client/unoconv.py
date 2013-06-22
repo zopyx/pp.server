@@ -3,7 +3,12 @@
 import os
 import plac
 import xmlrpclib
-
+@plac.annotations(
+    input_filename=('Source file to be converted', 'positional'),
+    output_format=('Output format (default=pdf)', 'option'),
+    output_filename=('Write converted file to custom filename)', 'option'),
+    server_url=('URL of Produce & Publish XMLRPC API)', 'option'),
+)
 def main_(input_filename, 
           output_format='pdf', 
           output_filename=None,
