@@ -11,6 +11,7 @@ requires = [
     'pyramid_debugtoolbar',
     'pyramid_xmlrpc',
     'waitress',
+    'sqlalchemy',
     'celery',
     'flower',
     'plac',

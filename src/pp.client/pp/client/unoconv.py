@@ -21,18 +21,20 @@ def main_(input_filename,
                             xmlrpclib.Binary(open(input_filename, 'rb').read()),
                             format,
                             async)
-
-    if result['status'] == 'OK':
-        if not output:
-            base, ext = os.path.splitext(input_filename)
-            output= base + '.' + format
-        with open(output, 'wb') as fp:
-            fp.write(result['data'].data)
-        print 'Output filename: {}'.format(filename)
+    if async:
+        print result
     else:
-        print 'An error occured'
-        print 'Output:'
-        print result['output']
+        if result['status'] == 'OK':
+            if not output:
+                base, ext = os.path.splitext(input_filename)
+                output= base + '.' + format
+            with open(output, 'wb') as fp:
+                fp.write(result['data'].data)
+            print 'Output filename: {}'.format(output)
+        else:
+            print 'An error occured'
+            print 'Output:'
+            print result['output']
     
 def main():
     plac.call(main_)

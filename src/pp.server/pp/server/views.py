@@ -8,7 +8,9 @@ from webob import Response
 from datetime import datetime
 from pyramid.view import view_config
 from logger import LOG
+
 import converters
+import tasks
 
 queue_dir = os.path.join(os.getcwd(), 'var', 'queue')
 if not os.path.exists(queue_dir):
@@ -41,6 +43,10 @@ class XMLRPC(XMLRPCView):
             fp.write(input_data.data)
 
         if async:
+            tasks.unoconv.delay(job_id=new_id,
+                                work_dir=work_dir,
+                                input_filename=work_file,
+                                output_format=output_format)
             return dict(id=new_id, message=u'Conversion request queued')
         else:
             ts = time.time()
