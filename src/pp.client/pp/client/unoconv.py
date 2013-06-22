@@ -5,13 +5,14 @@ import plac
 import xmlrpclib
 @plac.annotations(
     input_filename=('Source file to be converted', 'positional'),
-    format=('Output format (default=pdf)', 'option'),
-    filename=('Write converted file to custom filename)', 'option'),
-    server_url=('URL of Produce & Publish XMLRPC API)', 'option'),
+    format=('Output format (default=pdf)', 'option', 'f'),
+    output=('Write converted file to custom filename', 'option', 'o'),
+    server_url=('URL of Produce & Publish XMLRPC API)', 'option', 's'),
+    async=('Perform conversion asynchronously)', 'flag', 'a'),
 )
 def main_(input_filename, 
           format='pdf', 
-          filename=None,
+          output='',
           async=False, 
           server_url='http://localhost:6543/api'):
 
@@ -22,10 +23,10 @@ def main_(input_filename,
                             async)
 
     if result['status'] == 'OK':
-        if not filename:
+        if not output:
             base, ext = os.path.splitext(input_filename)
-            filename = base + '.' + format
-        with open(filename, 'wb') as fp:
+            output= base + '.' + format
+        with open(output, 'wb') as fp:
             fp.write(result['data'].data)
         print 'Output filename: {}'.format(filename)
     else:
