@@ -78,11 +78,10 @@ class XMLRPC(XMLRPCView):
             fp.write(zip_data.data)
 
         if async:
-            raise NotImplementedError
-            tasks.unoconv.delay(job_id=new_id,
-                                work_dir=work_dir,
-                                input_filename=work_file,
-                                output_format=output_format)
+            tasks.pdf.delay(job_id=new_id,
+                            work_dir=work_dir,
+                            work_file=work_file,
+                            converter=converter)
             return dict(id=new_id, message=u'Conversion request queued')
         else:
             ts = time.time()

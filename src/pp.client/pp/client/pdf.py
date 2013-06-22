@@ -62,7 +62,7 @@ def main_(source_directory,
                     fp.write(zlib.decompress(result['data'].data))
                 else:
                     fp.write(result['data'].data)
-            log('Output filename: {}'.format(output)
+            log('Output filename: {}'.format(output))
         else:
             log('An error occured')
             log('Output:')
