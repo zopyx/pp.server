@@ -6,10 +6,9 @@
 import os
 import sys
 import tempfile
-
 import commands
 from subprocess import Popen, PIPE
-from logger import LOG
+from pp.server.logger import LOG
 
 win32 = (sys.platform=='win32')
 execute_mode = os.environ.get('ZOPYX_CONVERT_EXECUTE_MODE', 'process')
@@ -23,23 +22,19 @@ def newTempfile(suffix=''):
 def runcmd(cmd):                
     """ Execute a command using the subprocess module """
 
+    LOG.info(cmd)
     if win32:
         cmd = cmd.replace('\\', '/')
         s = Popen(cmd, shell=False)
         s.wait()
         return 0, ''
-
     else:
-
         if execute_mode == 'system':
             status = os.system(cmd)
             return status, ''
-
         elif execute_mode == 'commands':
             return commands.getstatusoutput(cmd)
-
         elif execute_mode == 'process':
-
             stdin = open('/dev/null')
             stdout = stderr = PIPE
             p = Popen(cmd, 
@@ -58,7 +53,6 @@ def runcmd(cmd):
             if stderr_:
                 LOG.info(stderr_)
             return status, stdout_ + stderr_
-
         else:
             raise ValueError('Unknown value for $ZOPYX_CONVERT_EXECUTE_MODE')
 
