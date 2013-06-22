@@ -32,5 +32,6 @@ setup(name='pp.client',
       entry_points="""\
       [console_scripts]
       pp-unoconv=pp.client.unoconv:main
+      pp-pdf=pp.client.pdf:main
       """,
       )
