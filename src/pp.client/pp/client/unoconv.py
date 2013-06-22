@@ -5,29 +5,29 @@ import plac
 import xmlrpclib
 @plac.annotations(
     input_filename=('Source file to be converted', 'positional'),
-    output_format=('Output format (default=pdf)', 'option'),
-    output_filename=('Write converted file to custom filename)', 'option'),
+    format=('Output format (default=pdf)', 'option'),
+    filename=('Write converted file to custom filename)', 'option'),
     server_url=('URL of Produce & Publish XMLRPC API)', 'option'),
 )
 def main_(input_filename, 
-          output_format='pdf', 
-          output_filename=None,
+          format='pdf', 
+          filename=None,
           async=False, 
           server_url='http://localhost:6543/api'):
 
     server = xmlrpclib.ServerProxy(server_url)
     result = server.unoconv(os.path.basename(input_filename),
                             xmlrpclib.Binary(open(input_filename, 'rb').read()),
-                            output_format,
+                            format,
                             async)
 
     if result['status'] == 'OK':
-        if not output_filename:
+        if not filename:
             base, ext = os.path.splitext(input_filename)
-            output_filename = base + '.' + output_format
-        with open(output_filename, 'wb') as fp:
+            filename = base + '.' + format
+        with open(filename, 'wb') as fp:
             fp.write(result['data'].data)
-        print 'Output filename: {}'.format(output_filename)
+        print 'Output filename: {}'.format(filename)
     else:
         print 'An error occured'
         print 'Output:'
