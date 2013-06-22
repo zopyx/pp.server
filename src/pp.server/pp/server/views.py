@@ -9,8 +9,6 @@ import uuid
 import xmlrpclib
 import zlib
 from pyramid_xmlrpc import XMLRPCView
-from webob import Response
-from datetime import datetime
 from pyramid.view import view_config
 from logger import LOG
 
@@ -22,7 +20,7 @@ if not os.path.exists(queue_dir):
     os.makedirs(queue_dir)
 
 
-class StandardView(object):
+class WebViews(object):
 
     def __init__(self, request):
         self.request = request
@@ -32,7 +30,7 @@ class StandardView(object):
         return {}
 
 
-class XMLRPC(XMLRPCView):
+class XMLRPC_API(XMLRPCView):
 
     def unoconv(self,
                 input_filename,
