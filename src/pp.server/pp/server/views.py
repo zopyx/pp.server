@@ -1,3 +1,7 @@
+################################################################
+# pp.server - Produce & Publish Server
+# (C) 2013, ZOPYX Ltd, Tuebingen, Germany
+################################################################
 
 import os
 import time
@@ -48,6 +52,7 @@ class XMLRPC(XMLRPCView):
                                 work_dir=work_dir,
                                 input_filename=work_file,
                                 output_format=output_format)
+            LOG.info('Queued unoconv request({})'.format(new_id))
             return dict(id=new_id, message=u'Conversion request queued')
         else:
             ts = time.time()
@@ -82,6 +87,7 @@ class XMLRPC(XMLRPCView):
                             work_dir=work_dir,
                             work_file=work_file,
                             converter=converter)
+            LOG.info('Queued pdf request({})'.format(new_id))
             return dict(id=new_id, message=u'Conversion request queued')
         else:
             ts = time.time()

@@ -1,5 +1,9 @@
-from pyramid.config import Configurator
+################################################################
+# pp.server - Produce & Publish Server
+# (C) 2013, ZOPYX Ltd, Tuebingen, Germany
+################################################################
 
+from pyramid.config import Configurator
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.

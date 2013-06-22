@@ -1,3 +1,8 @@
+################################################################
+# pp.server - Produce & Publish Server
+# (C) 2013, ZOPYX Ltd, Tuebingen, Germany
+################################################################
+
 import os
 import zlib
 import zipfile

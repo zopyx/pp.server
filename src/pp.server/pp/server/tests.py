@@ -1,7 +1,10 @@
+################################################################
+# pp.server - Produce & Publish Server
+# (C) 2013, ZOPYX Ltd, Tuebingen, Germany
+################################################################
+
 import unittest
-
 from pyramid import testing
-
 
 class ViewTests(unittest.TestCase):
     def setUp(self):
