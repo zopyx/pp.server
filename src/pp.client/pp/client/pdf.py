@@ -61,6 +61,17 @@ def main_(source_directory,
             result = server.poll(job_id)
             if result['done']:
                 running = False
+                if result['status'] == 0:
+                    output_filename = 'out.pdf'
+                    with open(output_filename, 'wb') as fp:
+                        if result['compression'] == 'zlib':
+                            fp.write(zlib.decompress(result['data'].data))
+                        else:
+                            fp.write(result['data'].data)
+                    print 'Done', output_filename
+                elif result['status'] == -1:
+                    print 'Error'
+                    
 
     else:
         if result['status'] == 'OK':

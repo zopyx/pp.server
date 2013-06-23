@@ -37,7 +37,20 @@ class XMLRPC_API(XMLRPCView):
         out_directory = os.path.join(queue_dir, job_id, 'out')
         done_file = os.path.join(out_directory, 'done')
         if os.path.exists(done_file):
-            return dict(done=True)
+            files = [fname for fname in os.listdir(out_directory) if fname.startswith('out.')]
+            if files:
+                bin_data = zlib.compress(open(os.path.join(out_directory, files[0]), 'rb').read())
+                output_data = open(os.path.join(out_directory, 'output.txt'), 'rb').read()
+                return dict(done=True,
+                            status=0,
+                            data=xmlrpclib.Binary(bin_data),
+                            compression='zlib',
+                            output=output_data)
+            else:
+                output_data = open(os.path.join(out_directory, output.txt), 'rb').read()
+                return dict(done=True,
+                            status=-1,
+                            output=output_data)
         return dict(done=False)
 
     def unoconv(self,
@@ -91,7 +104,7 @@ class XMLRPC_API(XMLRPCView):
             fp.write(zip_data.data)
 
         if async:
-            tasks.pdf.delay(job_id=new_id,
+            result = tasks.pdf.delay(job_id=new_id,
                             work_dir=work_dir,
                             work_file=work_file,
                             converter=converter)
