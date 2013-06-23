@@ -43,7 +43,8 @@ def pdf(work_dir, work_file, converter):
     elif converter == 'pdfreactor':
         cmd = 'pdfreactor -v debug "{}" "{}"'.format(source_html, target_pdf) 
     else:
-        raise NotImplementedError('No support for converter "{}"'.format(converter))
+        return dict(status=9999,
+                    output=u'Unknown converter "{}"'.format(converter))
 
     status, output = util. runcmd(cmd)
     return dict(status=status,
