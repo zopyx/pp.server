@@ -32,6 +32,14 @@ class WebViews(object):
 
 class XMLRPC_API(XMLRPCView):
 
+    def poll(self, job_id):
+
+        out_directory = os.path.join(queue_dir, job_id, 'out')
+        done_file = os.path.join(out_directory, 'done')
+        if os.path.exists(done_file):
+            return dict(done=True)
+        return dict(done=False)
+
     def unoconv(self,
                 input_filename,
                 input_data, 

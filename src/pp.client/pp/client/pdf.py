@@ -2,6 +2,7 @@
 
 import os
 import plac
+import time
 import xmlrpclib
 import zipfile
 import zlib
@@ -52,6 +53,15 @@ def main_(source_directory,
 
     if async:
         log(result)
+        job_id = result['id']
+        running = True
+        while running:
+            time.sleep(1)
+            print 'polling'
+            result = server.poll(job_id)
+            if result['done']:
+                running = False
+
     else:
         if result['status'] == 'OK':
             if not output:

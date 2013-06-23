@@ -17,6 +17,13 @@ def unoconv(workdir, input_filename, output_format):
     dest_filename = os.path.join(workdir, 'out', 'out.{}'.format(output_format))
     cmd = 'unoconv -f "{}" "{}"'.format(output_format, input_filename)
     status, output = util.runcmd(cmd)
+
+    with open(os.path.join(work_dir, 'out', 'output.txt'), 'wb') as fp:
+        fp.write(cmd + '\n')
+        fp.write(output + '\n')
+    with open(os.path.join(work_dir, 'out', 'done'), 'wb') as fp:
+        fp.write('done')
+
     return dict(status=status,
                 output=output,
                 filename=dest_filename)
@@ -47,9 +54,13 @@ def pdf(work_dir, work_file, converter):
                     output=u'Unknown converter "{}"'.format(converter))
 
     status, output = util. runcmd(cmd)
+
     with open(os.path.join(work_dir, 'out', 'output.txt'), 'wb') as fp:
         fp.write(cmd + '\n')
         fp.write(output + '\n')
+    with open(os.path.join(work_dir, 'out', 'done'), 'wb') as fp:
+        fp.write('done')
+
     return dict(status=status,
                 output=output,
                 filename=target_pdf)
