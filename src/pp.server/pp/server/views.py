@@ -41,6 +41,7 @@ class XMLRPC_API(XMLRPCView):
         new_id = str(uuid.uuid4())
         work_dir = os.path.join(queue_dir, new_id)
         os.mkdir(work_dir)
+        os.mkdir(os.path.join(work_dir, 'out'))
         work_file = os.path.join(work_dir, os.path.basename(input_filename))
         with open(work_file, 'wb') as fp:
             fp.write(input_data.data)
@@ -76,6 +77,7 @@ class XMLRPC_API(XMLRPCView):
         new_id = str(uuid.uuid4())
         work_dir = os.path.join(queue_dir, new_id)
         os.mkdir(work_dir)
+        os.mkdir(os.path.join(work_dir, 'out'))
         work_file = os.path.join(work_dir, 'in.zip')
         with open(work_file, 'wb') as fp:
             fp.write(zip_data.data)

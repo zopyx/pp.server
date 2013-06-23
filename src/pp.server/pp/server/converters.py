@@ -8,13 +8,13 @@ import zlib
 import zipfile
 from pp.server import util
 
-def unoconv(input_filename, output_format):
+def unoconv(workdir, input_filename, output_format):
     """ Convert ``input_filename`` using ``unoconv`` to
         the new target format.
     """
 
     base, ext = os.path.splitext(input_filename)
-    dest_filename = base + '.' + output_format
+    dest_filename = os.path.join(workdir, 'out', 'out.{}'.format(output_format))
     cmd = 'unoconv -f "{}" "{}"'.format(output_format, input_filename)
     status, output = util.runcmd(cmd)
     return dict(status=status,
@@ -36,7 +36,7 @@ def pdf(work_dir, work_file, converter):
             fp.write(zf.read(name))
 
     source_html = os.path.join(work_dir, 'index.html')
-    target_pdf = os.path.join(work_dir, 'out.pdf')
+    target_pdf = os.path.join(work_dir, 'out', 'out.pdf')
 
     if converter == 'princexml':
         cmd = 'prince -v "{}" "{}"'.format(source_html, target_pdf) 
@@ -47,6 +47,9 @@ def pdf(work_dir, work_file, converter):
                     output=u'Unknown converter "{}"'.format(converter))
 
     status, output = util. runcmd(cmd)
+    with open(os.path.join(work_dir, 'out', 'output.txt'), 'wb') as fp:
+        fp.write(cmd + '\n')
+        fp.write(output + '\n')
     return dict(status=status,
                 output=output,
                 filename=target_pdf)
