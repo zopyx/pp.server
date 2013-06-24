@@ -44,13 +44,13 @@ Installation
     debug = true
 
     [app:main]
-    use = egg:pp..server#app
+    use = egg:pp.server
     reload_templates = true
     debug_authorization = false
     debug_notfound = false
 
     [server:main]
-    use = egg:Paste#http
+    use = egg:waitress#main
     host = 127.0.0.1
     port = 6543
 
