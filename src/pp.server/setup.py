@@ -14,6 +14,7 @@ requires = [
     'sqlalchemy',
     'celery',
     'flower',
+    'pastescript',
     'plac',
     ]
 
