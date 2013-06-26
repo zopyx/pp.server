@@ -27,6 +27,12 @@ class ViewIntegrationTests(unittest.TestCase):
         assert 'Produce &amp; Publish Webservice' in result
 
     def test_princexml(self):
+        self._convert_pdf('princexml')
+
+    def test_pdfreactor(self):
+        self._convert_pdf('pdfreactor')
+
+    def _convert_pdf(self, converter):
 
         index_html = os.path.join(os.path.dirname(__file__), 'index.html')
         zip_name = tempfile.mktemp(suffix='.zip')
@@ -37,7 +43,7 @@ class ViewIntegrationTests(unittest.TestCase):
             zip_data = fp.read()
         os.unlink(zip_name)
 
-        params = (xmlrpclib.Binary(zip_data),)
+        params = (xmlrpclib.Binary(zip_data), converter)
         xml = xmlrpclib.dumps(params, 'pdf')
 
         result = self.testapp.post('/api', xml, status=200)
