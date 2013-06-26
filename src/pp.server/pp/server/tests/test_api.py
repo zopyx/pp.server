@@ -34,6 +34,7 @@ class ViewIntegrationTests(unittest.TestCase):
 
     def _convert_pdf(self, converter):
 
+        # Generate ZIP file with sample data first
         index_html = os.path.join(os.path.dirname(__file__), 'index.html')
         zip_name = tempfile.mktemp(suffix='.zip')
         zf = zipfile.ZipFile(zip_name, 'w')
@@ -43,12 +44,17 @@ class ViewIntegrationTests(unittest.TestCase):
             zip_data = fp.read()
         os.unlink(zip_name)
 
+        # Generate XMLRPC xml data
         params = (xmlrpclib.Binary(zip_data), converter)
         xml = xmlrpclib.dumps(params, 'pdf')
 
+        # Perform XMLRPC request
         result = self.testapp.post('/api', xml, status=200)
+
+        # Unpack XMLRPC result
         params, methodname = xmlrpclib.loads(result.body)
         params = params[0]
+
         assert params['status'] == 'OK'
         assert 'output' in params
         assert params['compression'] == 'zlib'
