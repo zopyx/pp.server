@@ -19,6 +19,9 @@ requires = [
     'plac',
     ]
 
+tests_require = [
+]
+
 setup(name='pp.server',
       version='0.1.3',
       description='pp.server - Produce & Publish Server',
@@ -37,8 +40,11 @@ setup(name='pp.server',
       include_package_data=True,
       zip_safe=False,
       install_requires=requires,
-      tests_require=requires,
+      tests_require=tests_require,
       test_suite="pp.server",
+      extras_require={
+          'testing': tests_require,
+      },
       entry_points="""\
       [paste.app_factory]
       main = pp.server:main
