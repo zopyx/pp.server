@@ -32,7 +32,10 @@ class ViewIntegrationTests(unittest.TestCase):
     def test_pdfreactor(self):
         self._convert_pdf('pdfreactor')
 
-    def _convert_pdf(self, converter):
+    def test_unknown_converter(self):
+        self._convert_pdf('does.not.exist', expected='ERROR')
+
+    def _convert_pdf(self, converter, expected='OK'):
 
         # Generate ZIP file with sample data first
         index_html = os.path.join(os.path.dirname(__file__), 'index.html')
@@ -55,8 +58,12 @@ class ViewIntegrationTests(unittest.TestCase):
         params, methodname = xmlrpclib.loads(result.body)
         params = params[0]
 
-        assert params['status'] == 'OK'
-        assert 'output' in params
-        assert params['compression'] == 'zlib'
-        pdf_data = zlib.decompress(params['data'].data)
-        assert pdf_data.startswith('%PDF-1.4')
+        if expected == 'OK':
+            assert params['status'] == 'OK'
+            assert 'output' in params
+            assert params['compression'] == 'zlib'
+            pdf_data = zlib.decompress(params['data'].data)
+            assert pdf_data.startswith('%PDF-1.4')
+        else:
+            assert params['status'] == 'ERROR'
+            assert 'Unknown converter' in params['output']
