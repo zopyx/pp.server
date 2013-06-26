@@ -20,6 +20,7 @@ requires = [
     ]
 
 tests_require = [
+    'webtest',
 ]
 
 setup(name='pp.server',
