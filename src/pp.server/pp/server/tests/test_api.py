@@ -26,7 +26,7 @@ class PDFTests(Base):
 
     def test_index(self):
         result = self.testapp.get('/', status=200)
-        assert 'Produce &amp; Publish Webservice' in result
+        assert '<title>Produce &amp; Publish Server</title> ' in result
 
     def test_princexml(self):
         self._convert_pdf('princexml')
@@ -108,3 +108,8 @@ class Unoconvtests(Base):
 
     def test_docx2unknown(self):
         self._unoconv('test.docx', 'unknown', expected='ERROR')
+
+#    def test_docx2pdf_async(self):
+#        from pp.server.tasks import pdf
+#        result = pdf.delay()
+#        import pytest; pytest.set_trace()
