@@ -12,12 +12,6 @@ from pp.server.logger import LOG
 
 win32 = (sys.platform=='win32')
 execute_mode = os.environ.get('ZOPYX_CONVERT_EXECUTE_MODE', 'process')
-execution_shell = os.environ.get('ZOPYX_CONVERT_SHELL', 'sh')
-
-
-def newTempfile(suffix=''):
-    return tempfile.mktemp(suffix=suffix)
-
 
 def runcmd(cmd):                
     """ Execute a command using the subprocess module """
