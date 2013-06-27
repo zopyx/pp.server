@@ -1,0 +1,26 @@
+body {
+    font-family: "Arial";
+}
+
+.label {
+    font-weight: bold;
+}
+
+#footer {
+    clear: both;
+    margin-top: 1em;
+    border-top: 1px solid black;
+    font-size: 10px;
+}
+
+#version {
+    font-size: 110%;
+    font-weight: bold;
+}
+
+a,
+a:active, 
+a:visited {
+    color: black;
+    text-decoration: none;
+}
