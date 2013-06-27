@@ -96,6 +96,7 @@ class Unoconvtests(Base):
             return zlib.decompress(params['data'].data)
         else:
             assert params['status'] == 'ERROR'
+            assert 'is not known to unoconv' in params['output']
     
     def test_docx2pdf(self):
         pdf_data = self._unoconv('test.docx', 'pdf')
