@@ -13,7 +13,7 @@ import zlib
 from pyramid import testing
 
 
-class ViewIntegrationTests(unittest.TestCase):
+class Base(unittest.TestCase):
 
     def setUp(self):
         from pp.server import main
@@ -21,6 +21,8 @@ class ViewIntegrationTests(unittest.TestCase):
         app = main({})
         self.config = testing.setUp()
         self.testapp = TestApp(app)
+
+class PDFTests(Base):
 
     def test_index(self):
         result = self.testapp.get('/', status=200)
@@ -68,14 +70,16 @@ class ViewIntegrationTests(unittest.TestCase):
             assert params['status'] == 'ERROR'
             assert 'Unknown converter' in params['output']
 
-    def test_unoconv(self):
+class Unoconvtests(Base):
 
-        docx_fname = os.path.join(os.path.dirname(__file__), 'test.docx')
+    def _unoconv(self, input_file, format, expected='OK'):
+
+        docx_fname = os.path.join(os.path.dirname(__file__), input_file)
         with open(docx_fname, 'rb') as fp:
             docx_data = fp.read()
 
         # Generate XMLRPC xml data
-        params = ('index.docx', xmlrpclib.Binary(docx_data), 'pdf')
+        params = (input_file, xmlrpclib.Binary(docx_data), format)
         xml = xmlrpclib.dumps(params, 'unoconv')
 
         # Perform XMLRPC request
@@ -85,8 +89,21 @@ class ViewIntegrationTests(unittest.TestCase):
         params, methodname = xmlrpclib.loads(result.body)
         params = params[0]
 
-        assert params['status'] == 'OK'
-        assert 'output' in params
-        assert params['compression'] == 'zlib'
-        pdf_data = zlib.decompress(params['data'].data)
+        if expected == 'OK':
+            assert params['status'] == 'OK'
+            assert 'output' in params
+            assert params['compression'] == 'zlib'
+            return zlib.decompress(params['data'].data)
+        else:
+            assert params['status'] == 'ERROR'
+    
+    def test_docx2pdf(self):
+        pdf_data = self._unoconv('test.docx', 'pdf')
         assert pdf_data.startswith('%PDF-1.4')
+
+    def test_docx2html(self):
+        html_data = self._unoconv('test.docx', 'html')
+        assert html_data.startswith('<!DOCTYPE')
+
+    def test_docx2unknown(self):
+        self._unoconv('test.docx', 'unknown', expected='ERROR')
