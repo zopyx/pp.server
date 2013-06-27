@@ -1,9 +1,23 @@
-<html>
-    <head>
-        <link rel="stylesheet" href="/static/webservice.css" />
-    </head>
-    <body>
-        <h1>Produce &amp; Publish Webservice</h1>
-        <hr/>
-    </body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Produce &amp; Publish Server</title>
+    <meta name="keywords" content="python web application" />
+    <meta name="description" content="Pyramid web application" />
+    <link href="${request.application_url}/static/default.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+  <div id="header">
+      <img src="${request.application_url}/static/zopyx_logo.png" /> 
+      <h2>Produce &amp; Publish Server V ${version} </h2>
+  </div>
+  <br/>
+
+  <div id="footer">
+      (C) 2009-2013, ZOPYX Limited, <a href="http://www.zopyx.com">www.zopyx.com</a>, <a href="mailto:info@zopyx.com">info@zopyx.com</a> &bull; Published under the GNU Public License Version 2 (GPL 2)
+  </div>
+
+</body>
 </html>

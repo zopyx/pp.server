@@ -8,6 +8,7 @@ import time
 import uuid
 import xmlrpclib
 import zlib
+import pkg_resources
 from pyramid_xmlrpc import XMLRPCView
 from pyramid.view import view_config
 from logger import LOG
@@ -27,7 +28,8 @@ class WebViews(object):
 
     @view_config(route_name='home', renderer='index.pt', request_method='GET')
     def index(self):
-        return {}
+        version = pkg_resources.require('pp.server')[0].version
+        return dict(version=version)
 
 
 class XMLRPC_API(XMLRPCView):
