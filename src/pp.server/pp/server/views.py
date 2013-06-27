@@ -77,14 +77,16 @@ class XMLRPC_API(XMLRPCView):
         else:
             ts = time.time()
             LOG.info('START: unoconv({}, {}, {}, {})'.format(new_id, work_file, output_format, async))
-            result = converters.unoconv(work_file, output_format)
+            result = converters.unoconv(work_dir, work_file, output_format)
             duration = time.time() - ts
             LOG.info('END : unoconv({} {} sec): {}'.format(new_id, duration, result['status']))
             if result['output']:
                 LOG.info('OUTPUT: unoconv({}):\n{}'.format(new_id, result['output']))
             if result['status'] == 0: #OK
+                bin_data = zlib.compress(open(result['filename'], 'rb').read())
                 return dict(status='OK',
-                            data=xmlrpclib.Binary(open(result['filename'], 'rb').read()),
+                            compression='zlib',
+                            data=xmlrpclib.Binary(bin_data),
                             output=result['output'])
             else: # error
                 return dict(status='ERROR',

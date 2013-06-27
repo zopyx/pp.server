@@ -4,18 +4,17 @@
 ################################################################
 
 import os
-import zlib
 import zipfile
 from pp.server import util
 
-def unoconv(workdir, input_filename, output_format):
+def unoconv(work_dir, input_filename, output_format):
     """ Convert ``input_filename`` using ``unoconv`` to
         the new target format.
     """
 
     base, ext = os.path.splitext(input_filename)
-    dest_filename = os.path.join(workdir, 'out', 'out.{}'.format(output_format))
-    cmd = 'unoconv -f "{}" "{}"'.format(output_format, input_filename)
+    dest_filename = os.path.join(work_dir, 'out', 'out.{}'.format(output_format))
+    cmd = 'unoconv -f "{}" -o "{}" "{}"'.format(output_format, dest_filename, input_filename)
     status, output = util.runcmd(cmd)
 
     with open(os.path.join(work_dir, 'out', 'output.txt'), 'wb') as fp:

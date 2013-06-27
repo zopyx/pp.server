@@ -67,3 +67,26 @@ class ViewIntegrationTests(unittest.TestCase):
         else:
             assert params['status'] == 'ERROR'
             assert 'Unknown converter' in params['output']
+
+    def test_unoconv(self):
+
+        docx_fname = os.path.join(os.path.dirname(__file__), 'test.docx')
+        with open(docx_fname, 'rb') as fp:
+            docx_data = fp.read()
+
+        # Generate XMLRPC xml data
+        params = ('index.docx', xmlrpclib.Binary(docx_data), 'pdf')
+        xml = xmlrpclib.dumps(params, 'unoconv')
+
+        # Perform XMLRPC request
+        result = self.testapp.post('/api', xml, status=200)
+
+        # Unpack XMLRPC result
+        params, methodname = xmlrpclib.loads(result.body)
+        params = params[0]
+
+        assert params['status'] == 'OK'
+        assert 'output' in params
+        assert params['compression'] == 'zlib'
+        pdf_data = zlib.decompress(params['data'].data)
+        assert pdf_data.startswith('%PDF-1.4')
