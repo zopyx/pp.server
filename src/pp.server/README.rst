@@ -20,12 +20,12 @@ The web service provides both syncronous and asyncronous operations.
 Requirements
 ------------
 
-* Python 2.6, 2.7 (no Python 3 support)
+* 2.7 (no Python 3 support, no support for older Python versions)
 
 Installation
 ------------
 
-- create an ``virtualenv`` environment (Python 2.6 or 2.7) - either within your
+- create an ``virtualenv`` environment (Python 2.7) - either within your
   current (empty) directory or by letting virtualenv create one for you.
   (``easy_install virtualenv`` if ``virtualenv`` is not available on your
   system)::
