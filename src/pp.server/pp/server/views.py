@@ -35,6 +35,7 @@ class WebViews(object):
 class XMLRPC_API(XMLRPCView):
 
     def poll(self, job_id):
+        """ Poll the queue for the result of a conversion """
 
         out_directory = os.path.join(queue_dir, job_id, 'out')
         done_file = os.path.join(out_directory, 'done')
@@ -49,7 +50,7 @@ class XMLRPC_API(XMLRPCView):
                             compression='zlib',
                             output=output_data)
             else:
-                output_data = open(os.path.join(out_directory, output.txt), 'rb').read()
+                output_data = open(os.path.join(out_directory, 'output.txt'), 'rb').read()
                 return dict(done=True,
                             status=-1,
                             output=output_data)
@@ -60,6 +61,7 @@ class XMLRPC_API(XMLRPCView):
                 input_data, 
                 output_format='pdf', 
                 async=False):
+        """ Convert office formats using ``unoconv`` """
 
         new_id = str(uuid.uuid4())
         work_dir = os.path.join(queue_dir, new_id)
@@ -98,6 +100,7 @@ class XMLRPC_API(XMLRPCView):
             zip_data, 
             converter='princexml',
             async=False):
+        """ Convert HTML/XML delivered as ZIP file to PDF """
 
         new_id = str(uuid.uuid4())
         work_dir = os.path.join(queue_dir, new_id)
