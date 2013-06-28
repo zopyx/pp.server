@@ -119,7 +119,6 @@ class XMLRPC_API(XMLRPCView):
             return dict(id=new_id, message=u'Conversion request queued')
         else:
             ts = time.time()                                               
-            import pdb; pdb.set_trace() 
             LOG.info('START: pdf({}, {}, {}, {})'.format(new_id, work_file, converter, async))
             result = converters.pdf(work_dir, work_file, converter)
             duration = time.time() - ts
