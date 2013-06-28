@@ -1,12 +1,15 @@
-""" XMLRPC client to access the unoconv API of the Produce & Publish server """
+################################################################
+# pp.client - Produce & Publish Python Client
+# (C) 2013, ZOPYX Ltd, Tuebingen, Germany
+################################################################
 
 import os
 import plac
-import time
-import xmlrpclib
-import zipfile
 import zlib
 import tempfile
+import zipfile
+import xmlrpclib
+from pp.client.logger import LOG
 
 def makeZipFromDirectory(directory):
     """ Generate a ZIP file from a directory containing all its
@@ -32,16 +35,12 @@ def makeZipFromDirectory(directory):
     async=('Perform conversion asynchronously)', 'flag', 'a'),
     verbose=('Verbose mode', 'flag', 'v'),
 )
-def main_(source_directory,
-          converter='princexml', 
-          output='',
-          async=False, 
-          server_url='http://localhost:6543/api',
-          verbose=False):
-
-    def log(s):
-        if verbose:
-            print s
+def pdf(source_directory,
+        converter='princexml', 
+        output='',
+        async=False, 
+        server_url='http://localhost:6543/api',
+        verbose=False):
 
     zip_filename = makeZipFromDirectory(source_directory)
     server = xmlrpclib.ServerProxy(server_url)
@@ -52,7 +51,7 @@ def main_(source_directory,
     os.unlink(zip_filename)
 
     if async:
-        log(result)
+        LOG.info(result)
         job_id = result['id']
         running = True
         while running:
@@ -83,16 +82,16 @@ def main_(source_directory,
                     fp.write(zlib.decompress(result['data'].data))
                 else:
                     fp.write(result['data'].data)
-            log('Output filename: {}'.format(output))
+            LOG.info('Output filename: {}'.format(output))
         else:
-            log('An error occured')
-            log('Output:')
-            log(result['output'])
+            LOG.info('An error occured')
+            LOG.info('Output:')
+            LOG.info(result['output'])
 
     return result
     
 def main():
-    plac.call(main_)
+    plac.call(pdf)
 
 if __name__ == '__main__':
     main()

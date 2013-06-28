@@ -1,8 +1,14 @@
+################################################################
+# pp.client - Produce & Publish Python Client
+# (C) 2013, ZOPYX Ltd, Tuebingen, Germany
+################################################################
+
 """ XMLRPC client to access the unoconv API of the Produce & Publish server """
 
 import os
 import plac
 import xmlrpclib
+from pp.client.logger import LOG
 
 @plac.annotations(
     input_filename=('Source file to be converted', 'positional'),
@@ -19,17 +25,13 @@ def unoconv(input_filename,
            server_url='http://localhost:6543/api',
            verbose=False):
 
-    def log(s):
-        if verbose:
-            print s
-
     server = xmlrpclib.ServerProxy(server_url)
     result = server.unoconv(os.path.basename(input_filename),
                             xmlrpclib.Binary(open(input_filename, 'rb').read()),
                             format,
                             async)
     if async:
-        log(result)
+        LOG.info(result)
     else:
         if result['status'] == 'OK':
             if not output:
@@ -37,11 +39,11 @@ def unoconv(input_filename,
                 output= base + '.' + format
             with open(output, 'wb') as fp:
                 fp.write(result['data'].data)
-            log('Output filename: {}'.format(output))
+            LOG.info('Output filename: {}'.format(output))
         else:
-            log('An error occured')
-            log('Output:')
-            log(result['output'])
+            LOG.info('An error occured')
+            LOG.info('Output:')
+            LOG.info(result['output'])
 
     return result
 
