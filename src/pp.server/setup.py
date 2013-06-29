@@ -36,7 +36,7 @@ setup(name='pp.server',
       author='Andreas Jung',
       author_email='info@zopyx.com',
       url='http://pypi.python.org/pypi/pp.server',
-      keywords='web pyramid pylons',
+      keywords='web pyramid pdf unoconv conversion princexml pdfreactor',
       packages=find_packages(),
       include_package_data=True,
       zip_safe=False,
@@ -49,8 +49,5 @@ setup(name='pp.server',
       entry_points="""\
       [paste.app_factory]
       main = pp.server:main
-      [console_scripts]
-      service-client = pp.server.scripts.service_client:main
-      worker = pp.server.scripts.worker:main
       """,
       )
