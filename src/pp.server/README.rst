@@ -15,7 +15,7 @@ In addition the Produce & Publish server provides a simple conversion
 API for converting format A to B (as supported through LibreOffice
 or OpenOffice). The conversion is build on top of ``unoconv```.
 
-The web service provides both syncronous and asyncronous operations.
+The web service provides both synchronous and asynchronous operations.
 
 Requirements
 ------------
