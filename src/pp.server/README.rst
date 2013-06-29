@@ -64,6 +64,55 @@ Installation
 
     bin/pserve server.ini  --daemon
 
+API documentation
+-----------------
+
+All API methods are available through XMLRPC through the 
+following API URL endpoint::
+
+    http://host:port/api
+
+With the default server configuration this translates to::
+
+    http://localhost:6543/api
+
+PDF conversion API
+##################
+
+Remember that all converters use HTML or XML as input
+for the conversion. All input data (HTML/XML, images, stylesheets,
+fonts etc.) must be stored in ZIP archive. The filename of
+the content **must** be named ``index.html``.
+
+The web service API for the PDF generation is defined as follows::
+
+    pdf(zip_data, converter, async)
+
+Parameters:
+
+- ``zip_data`` - the zip archive with the contents encoded
+  as ``BINARY`` XML-RPC type 
+
+- ``converter`` - a string that determines the the PDF
+  converter to be used (either ``princexml`` or ``pdfreactor``)
+
+- ``async`` - asynchronous or synchronous convertsion (default: False) 
+
+
+Returns:
+
+The API returns an array with the following key-value pairs:
+
+- ``status`` - either ``OK`` or ``ERROR``
+
+- ``data``- the generated PDF file encoded as XML-RPC ``BINARY`` type
+
+- ``compression`` - the compression method used for compressing the 
+  ``data`` byte stream (default: ``zlib``)
+
+- ``output`` - the conversion transcript (output of the converter run)
+
+
 Source code
 -----------
 
