@@ -1,3 +1,8 @@
+0.1.9 (01.07.2013)
+------------------
+- monkeypatch pyramid_xmlrpc.parse_xmlrpc_request in order
+  to by-pass its stupid DOS request body check
+
 0.1.7 (29.06.2013)
 ------------------
 - more tests
