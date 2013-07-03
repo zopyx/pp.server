@@ -115,6 +115,29 @@ pairs:
 - ``output`` - the conversion transcript (output of the converter run)
 
 
+Advanced installation issues
+----------------------------
+
+Installation of PDFreactor using zc.buildout
+++++++++++++++++++++++++++++++++++++++++++++
+
+- https://bitbucket.org/ajung/pp.server/raw/master/pdfreactor.ini
+
+Installation of PrinceXML using zc.buildout
++++++++++++++++++++++++++++++++++++++++++++
+
+- https://bitbucket.org/ajung/pp.server/raw/master/princexml.ini
+
+Production setup
+++++++++++++++++
+
+``pserve`` and ``celeryd`` can be started automatically and
+controlled using ``Circus``. Look into the following buildout
+configuration
+
+- https://bitbucket.org/ajung/pp.server/raw/master/circus.ini
+
+
 Source code
 -----------
 
