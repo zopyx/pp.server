@@ -1,3 +1,7 @@
+0.2.0 (03.07.2013)
+------------------
+- converted XML-RPC api to REST api
+
 0.1.9 (01.07.2013)
 ------------------
 - monkeypatch pyramid_xmlrpc.parse_xmlrpc_request in order
