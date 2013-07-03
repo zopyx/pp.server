@@ -67,14 +67,19 @@ Installation
 API documentation
 -----------------
 
-All API methods are available through XMLRPC through the 
+All API methods are available through a REST api
 following API URL endpoint::
 
-    http://host:port/api
+    http://host:port/api/1/<command>
 
 With the default server configuration this translates to::
 
-    http://localhost:6543/api
+    http://localhost:6543/api/1/pdf
+
+    or
+
+    http://localhost:6543/api/1/unoconv
+
 
 PDF conversion API
 ##################
