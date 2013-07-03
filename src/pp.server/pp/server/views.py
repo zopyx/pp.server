@@ -4,10 +4,10 @@
 ################################################################
 
 import os
+import base64
 import time
 import uuid
 import xmlrpclib
-import zlib
 import pkg_resources
 from pyramid_xmlrpc import XMLRPCView
 from pyramid.view import view_config
@@ -20,7 +20,6 @@ queue_dir = os.path.join(os.getcwd(), 'var', 'queue')
 if not os.path.exists(queue_dir):
     os.makedirs(queue_dir)
 
-
 class WebViews(object):
 
     def __init__(self, request):
@@ -31,37 +30,15 @@ class WebViews(object):
         version = pkg_resources.require('pp.server')[0].version
         return dict(version=version)
 
-
-class XMLRPC_API(XMLRPCView):
-
-    def poll(self, job_id):
-        """ Poll the queue for the result of a conversion """
-
-        out_directory = os.path.join(queue_dir, job_id, 'out')
-        done_file = os.path.join(out_directory, 'done')
-        if os.path.exists(done_file):
-            files = [fname for fname in os.listdir(out_directory) if fname.startswith('out.')]
-            if files:
-                bin_data = zlib.compress(open(os.path.join(out_directory, files[0]), 'rb').read())
-                output_data = open(os.path.join(out_directory, 'output.txt'), 'rb').read()
-                return dict(done=True,
-                            status=0,
-                            data=xmlrpclib.Binary(bin_data),
-                            compression='zlib',
-                            output=output_data)
-            else:
-                output_data = open(os.path.join(out_directory, 'output.txt'), 'rb').read()
-                return dict(done=True,
-                            status=-1,
-                            output=output_data)
-        return dict(done=False)
-
-    def unoconv(self,
-                input_filename,
-                input_data, 
-                output_format='pdf', 
-                async=False):
+    @view_config(route_name='unoconv_api_1', request_method='POST', renderer='json')
+    def unoconv(self):
         """ Convert office formats using ``unoconv`` """
+
+        params = self.request.params
+        input_filename = params['filename']
+        input_data = params['file'].file.read()
+        output_format = params.get('output_format', 'pdf')
+        async = int(params.get('async', '0'))
 
         new_id = str(uuid.uuid4())
         work_dir = os.path.join(queue_dir, new_id)
@@ -69,7 +46,7 @@ class XMLRPC_API(XMLRPCView):
         os.mkdir(os.path.join(work_dir, 'out'))
         work_file = os.path.join(work_dir, os.path.basename(input_filename))
         with open(work_file, 'wb') as fp:
-            fp.write(input_data.data)
+            fp.write(input_data)
 
         if async:
             tasks.unoconv.delay(job_id=new_id,
@@ -87,20 +64,21 @@ class XMLRPC_API(XMLRPCView):
             if result['output']:
                 LOG.info('OUTPUT: unoconv({}):\n{}'.format(new_id, result['output']))
             if result['status'] == 0: #OK
-                bin_data = zlib.compress(open(result['filename'], 'rb').read())
+                bin_data = base64.encodestring(open(result['filename'], 'rb').read())
                 return dict(status='OK',
-                            compression='zlib',
-                            data=xmlrpclib.Binary(bin_data),
+                            data=bin_data,
                             output=result['output'])
             else: # error
                 return dict(status='ERROR',
                             output=result['output'])
 
-    def pdf(self,
-            zip_data, 
-            converter='princexml',
-            async=False):
-        """ Convert HTML/XML delivered as ZIP file to PDF """
+    @view_config(route_name='pdf_api_1', request_method='POST', renderer='json')
+    def pdf(self):
+
+        params = self.request.params
+        zip_data = params['file'].file.read()
+        async = int(params.get('async', '0'))
+        converter = params.get('converter', 'princexml')
 
         new_id = str(uuid.uuid4())
         work_dir = os.path.join(queue_dir, new_id)
@@ -108,7 +86,7 @@ class XMLRPC_API(XMLRPCView):
         os.mkdir(os.path.join(work_dir, 'out'))
         work_file = os.path.join(work_dir, 'in.zip')
         with open(work_file, 'wb') as fp:
-            fp.write(zip_data.data)
+            fp.write(zip_data)
 
         if async:
             result = tasks.pdf.delay(job_id=new_id,
@@ -125,14 +103,15 @@ class XMLRPC_API(XMLRPCView):
             LOG.info('END : pdf({} {} sec): {}'.format(new_id, duration, result['status']))
             if result['output']:
                 LOG.info('OUTPUT: pdf({}):\n{}'.format(new_id, result['output']))
+            output = result['output']
             if result['status'] == 0: #OK
                 pdf_data = open(result['filename'], 'rb').read()
-                pdf_data = zlib.compress(pdf_data)
+                pdf_data = base64.encodestring(pdf_data)
                 return dict(status='OK',
-                            data=xmlrpclib.Binary(pdf_data),
-                            compression='zlib',
-                            output=result['output'])
+                            data=pdf_data,
+                            output=output)
             else: # error
                 return dict(status='ERROR',
-                            output=result['output'])
+                            output=output)
+
 

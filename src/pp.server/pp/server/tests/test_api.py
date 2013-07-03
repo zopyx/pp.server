@@ -4,12 +4,12 @@
 ################################################################
 
 import os
-import xmlrpclib
+import base64
+import json
 import unittest
 import zipfile
 import tempfile
 import zipfile
-import zlib
 from pyramid import testing
 
 
@@ -49,22 +49,15 @@ class PDFTests(Base):
             zip_data = fp.read()
         os.unlink(zip_name)
 
-        # Generate XMLRPC xml data
-        params = (xmlrpclib.Binary(zip_data), converter)
-        xml = xmlrpclib.dumps(params, 'pdf')
-
-        # Perform XMLRPC request
-        result = self.testapp.post('/api', xml, status=200)
-
-        # Unpack XMLRPC result
-        params, methodname = xmlrpclib.loads(result.body)
-        params = params[0]
+        params = dict(converter=converter)
+        upload_files = [('file', 'in.zip', zip_data)]
+        result = self.testapp.post('/api/1/pdf', params, upload_files=upload_files, status=200)
+        params = json.loads(result.body)
 
         if expected == 'OK':
             assert params['status'] == 'OK'
             assert 'output' in params
-            assert params['compression'] == 'zlib'
-            pdf_data = zlib.decompress(params['data'].data)
+            pdf_data = base64.decodestring(params['data'])
             assert pdf_data.startswith('%PDF-1.4')
         else:
             assert params['status'] == 'ERROR'
@@ -78,22 +71,15 @@ class Unoconvtests(Base):
         with open(docx_fname, 'rb') as fp:
             docx_data = fp.read()
 
-        # Generate XMLRPC xml data
-        params = (input_file, xmlrpclib.Binary(docx_data), format)
-        xml = xmlrpclib.dumps(params, 'unoconv')
-
-        # Perform XMLRPC request
-        result = self.testapp.post('/api', xml, status=200)
-
-        # Unpack XMLRPC result
-        params, methodname = xmlrpclib.loads(result.body)
-        params = params[0]
+        params = dict(filename=input_file, output_format=format)
+        upload_files = [('file', input_file, docx_data)]
+        result = self.testapp.post('/api/1/unoconv', params, upload_files=upload_files, status=200)
+        params = json.loads(result.body)
 
         if expected == 'OK':
             assert params['status'] == 'OK'
             assert 'output' in params
-            assert params['compression'] == 'zlib'
-            return zlib.decompress(params['data'].data)
+            return base64.decodestring(params['data'])
         else:
             assert params['status'] == 'ERROR'
             assert 'is not known to unoconv' in params['output']
