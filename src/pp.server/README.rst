@@ -84,36 +84,33 @@ With the default server configuration this translates to::
 PDF conversion API
 ##################
 
-Remember that all converters use HTML or XML as input
-for the conversion. All input data (HTML/XML, images, stylesheets,
-fonts etc.) must be stored in ZIP archive. The filename of
-the content **must** be named ``index.html``.
+Remember that all converters use HTML or XML as input for the conversion. All
+input data (HTML/XML, images, stylesheets, fonts etc.) must be stored in ZIP
+archive. The filename of the content **must** be named ``index.html``.
 
-The web service API for the PDF generation is defined as follows::
+You have to ``POST`` the data to the 
 
-    pdf(zip_data, converter, async)
+    http://host:port/api/1/pdf
 
-Parameters:
+with the following parameters:
 
-- ``zip_data`` - the zip archive with the contents encoded
-  as ``BINARY`` XML-RPC type 
+
+- ``file`` - the zip archive base64 encoded
 
 - ``converter`` - a string that determines the the PDF
   converter to be used (either ``princexml`` or ``pdfreactor``)
 
-- ``async`` - asynchronous or synchronous convertsion (default: False) 
+- ``async`` - asynchronous ("1") or synchronous conversion ("0", default)
 
 
 Returns:
 
-The API returns an array with the following key-value pairs:
+The API returns its result as JSON structure with the following key-value
+pairs:
 
 - ``status`` - either ``OK`` or ``ERROR``
 
-- ``data``- the generated PDF file encoded as XML-RPC ``BINARY`` type
-
-- ``compression`` - the compression method used for compressing the 
-  ``data`` byte stream (default: ``zlib``)
+- ``data``- the generated PDF file encoded as base64 encoded byte string
 
 - ``output`` - the conversion transcript (output of the converter run)
 
