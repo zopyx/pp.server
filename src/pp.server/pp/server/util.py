@@ -11,7 +11,6 @@ from subprocess import Popen, PIPE
 from pp.server.logger import LOG
 
 win32 = (sys.platform=='win32')
-execute_mode = os.environ.get('ZOPYX_CONVERT_EXECUTE_MODE', 'process')
 
 def runcmd(cmd):                
     """ Execute a command using the subprocess module """
@@ -23,32 +22,24 @@ def runcmd(cmd):
         s.wait()
         return 0, ''
     else:
-        if execute_mode == 'system':
-            status = os.system(cmd)
-            return status, ''
-        elif execute_mode == 'commands':
-            return commands.getstatusoutput(cmd)
-        elif execute_mode == 'process':
-            stdin = open('/dev/null')
-            stdout = stderr = PIPE
-            p = Popen(cmd, 
-                      shell=True,
-                      stdin=stdin,
-                      stdout=stdout,
-                      stderr=stderr,
-                      )
+        stdin = open('/dev/null')
+        stdout = stderr = PIPE
+        p = Popen(cmd, 
+                  shell=True,
+                  stdin=stdin,
+                  stdout=stdout,
+                  stderr=stderr,
+                  )
 
-            status = p.wait()
-            stdout_ = p.stdout.read().strip()
-            stderr_ = p.stderr.read().strip()
+        status = p.wait()
+        stdout_ = p.stdout.read().strip()
+        stderr_ = p.stderr.read().strip()
 
-            if stdout_:
-                LOG.info(stdout_)
-            if stderr_:
-                LOG.info(stderr_)
-            return status, stdout_ + stderr_
-        else:
-            raise ValueError('Unknown value for $ZOPYX_CONVERT_EXECUTE_MODE')
+        if stdout_:
+            LOG.info(stdout_)
+        if stderr_:
+            LOG.info(stderr_)
+        return status, stdout_ + stderr_
 
 
 def checkEnvironment(envname):
@@ -81,7 +72,3 @@ def which(command):
         if os.path.exists(fullname):
             return True
     return False
-
-if __name__ == '__main__':
-    print 'ls:', which('ls')
-    print 'foo:', which('foo')
