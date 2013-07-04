@@ -30,6 +30,30 @@ class WebViews(object):
         version = pkg_resources.require('pp.server')[0].version
         return dict(version=version)
 
+    @view_config(route_name='poll_api_1', renderer='json', request_method='GET')
+    def poll(self):
+
+        job_id = self.request.matchdict['jobid']
+        out_directory = os.path.join(queue_dir, job_id, 'out')
+        done_file = os.path.join(out_directory, 'done')
+        if os.path.exists(done_file):
+            files = [fname for fname in os.listdir(out_directory) if fname.startswith('out.')]
+            if files:
+                bin_data = base64.encodestring(open(os.path.join(out_directory, files[0]), 'rb').read())
+                output_data = open(os.path.join(out_directory, 'output.txt'), 'rb').read()
+                return dict(done=True,
+                            status=0,
+                            data=bin_data,
+                            compression='zlib',
+                            output=output_data)
+            else:
+                output_data = open(os.path.join(out_directory, 'output.txt'), 'rb').read()
+                return dict(done=True,
+                            status=-1,
+                            output=output_data)
+        return dict(done=False)
+
+
     @view_config(route_name='unoconv_api_1', request_method='POST', renderer='json')
     def unoconv(self):
         """ Convert office formats using ``unoconv`` """

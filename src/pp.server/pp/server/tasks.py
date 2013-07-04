@@ -7,7 +7,7 @@
 Celery tasks 
 """
 
-from celery import Celery
+from celery import Celery, current_task
 import converters
 
 # Connector to Celery broker
