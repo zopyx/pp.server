@@ -8,8 +8,6 @@ CHANGES = open(os.path.join(here, 'CHANGES.rst')).read()
 
 requires = [
     'pyramid',
-    'pyramid_debugtoolbar',
-    'pyramid_xmlrpc',
     'waitress',
     'sqlalchemy',
     'celery',
