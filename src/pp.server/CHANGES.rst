@@ -1,3 +1,7 @@
+0.2.1 (04.07.2013)
+------------------
+- re-added poll API
+
 0.2.0 (03.07.2013)
 ------------------
 - converted XML-RPC api to REST api
