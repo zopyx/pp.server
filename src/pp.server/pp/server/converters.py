@@ -16,9 +16,9 @@ elif os.path.exists('bin/pdfreactor'):
     
 princexml = None
 if util.which('prince'):
-    pdfreactor = 'prince'
+    princexml = 'prince'
 elif os.path.exists('bin/prince'):
-    pdfreactor = 'bin/prince'
+    princexml = 'bin/prince'
 
 
 def unoconv(work_dir, input_filename, output_format):
