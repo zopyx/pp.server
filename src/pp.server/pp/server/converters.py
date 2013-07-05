@@ -7,6 +7,20 @@ import os
 import zipfile
 from pp.server import util
 
+
+pdfreactor = None
+if util.which('pdfreactor'):
+    pdfreactor = 'pdfreactor'
+elif os.path.exists('bin/pdfreactor'):
+    pdfreactor = 'bin/pdfreactor'
+    
+princexml = None
+if util.which('prince'):
+    pdfreactor = 'prince'
+elif os.path.exists('bin/prince'):
+    pdfreactor = 'bin/prince'
+
+
 def unoconv(work_dir, input_filename, output_format):
     """ Convert ``input_filename`` using ``unoconv`` to
         the new target format.
@@ -45,9 +59,13 @@ def pdf(work_dir, work_file, converter):
     target_pdf = os.path.join(work_dir, 'out', 'out.pdf')
 
     if converter == 'princexml':
-        cmd = 'prince -v "{}" "{}"'.format(source_html, target_pdf) 
+        if not princexml:
+            raise RuntimeError('prince not found')
+        cmd = '{} -v "{}" "{}"'.format(princexml, source_html, target_pdf) 
     elif converter == 'pdfreactor':
-        cmd = 'pdfreactor -v debug "{}" "{}"'.format(source_html, target_pdf) 
+        if not pdfreactor:
+            raise RuntimeError('pdfreactor not found')
+        cmd = '{} -v debug "{}" "{}"'.format(pdfreactor, source_html, target_pdf) 
     else:
         return dict(status=9999,
                     output=u'Unknown converter "{}"'.format(converter))
