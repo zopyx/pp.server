@@ -55,7 +55,7 @@ Installation
     debug_notfound = false
 
     [server:main]
-    use = egg:waitress#main
+    use = egg:waitress+main
     host = 127.0.0.1
     port = 6543
 
@@ -85,7 +85,7 @@ With the default server configuration this translates to::
 
 
 PDF conversion API
-##################
+++++++++++++++++++
 
 Remember that all converters use HTML or XML as input for the conversion. All
 input data (HTML/XML, images, stylesheets, fonts etc.) must be stored in ZIP
@@ -119,7 +119,7 @@ pairs:
 
   
 Unoconv conversion API
-######################
+++++++++++++++++++++++
 
 The unoconv web service wraps the OpenOffice/LibreOffice server mode
 in order to perform document conversion (mainly used in the Produce & Publish
@@ -154,7 +154,7 @@ pairs:
 
 
 Asynchronous operations
-#######################
++++++++++++++++++++++++
 
 If you set ``async`` to '1' in the API calls above then both calls
 will return a JSON datastructure like
@@ -169,7 +169,15 @@ The poll API is provided through the URL
 
     http://host:port/api/1/poll/<job_id>
 
+If the conversion is still pending the API will return a JSON
+document
 
+    {'done': False}
+
+If the conversion has finished then a PDF/Unoconv specific
+return JSON document will be return (same format as for the synchronous
+API calls). In addition the key-value pair {'done': True} will be included
+with the JSOn reply.
 
 
 Advanced installation issues

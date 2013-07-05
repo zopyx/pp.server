@@ -1,3 +1,8 @@
+0.2.2 (05.07.2013)
+------------------
+- updated the documentation
+- minor cleanup 
+
 0.2.1 (04.07.2013)
 ------------------
 - re-added poll API
