@@ -7,9 +7,7 @@ import os
 import base64
 import time
 import uuid
-import xmlrpclib
 import pkg_resources
-from pyramid_xmlrpc import XMLRPCView
 from pyramid.view import view_config
 from logger import LOG
 
@@ -44,7 +42,6 @@ class WebViews(object):
                 return dict(done=True,
                             status=0,
                             data=bin_data,
-                            compression='zlib',
                             output=output_data)
             else:
                 output_data = open(os.path.join(out_directory, 'output.txt'), 'rb').read()
