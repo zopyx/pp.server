@@ -1,3 +1,7 @@
+0.2.5 (05.07.2013)
+------------------
+- better detecting of prince and pdfreactor binaries
+
 0.2.2 (05.07.2013)
 ------------------
 - updated the documentation
