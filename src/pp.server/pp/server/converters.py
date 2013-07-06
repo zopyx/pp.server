@@ -20,6 +20,12 @@ if util.which('prince'):
 elif os.path.exists('bin/prince'):
     princexml = 'bin/prince'
 
+phantomjs = None
+if util.which('phantomjs'):
+    princexml = 'phantomjs'
+elif os.path.exists('bin/phantomjs'):
+    princexml = 'bin/phantomjs'
+
 
 def unoconv(work_dir, input_filename, output_format):
     """ Convert ``input_filename`` using ``unoconv`` to
