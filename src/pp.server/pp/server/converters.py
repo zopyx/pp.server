@@ -5,6 +5,7 @@
 
 import os
 import zipfile
+import pkg_resources
 from pp.server import util
 
 
@@ -77,7 +78,8 @@ def pdf(work_dir, work_file, converter):
     elif converter == 'phantomjs':
         if not phantomjs:
             raise RuntimeError('phantomjs not found')
-        cmd = '{} --debug true scripts/rasterize.js "{}" "{}"'.format(phantomjs, source_html, target_pdf) 
+        rasterize = pkg_resources.resource_filename('pp.server', 'scripts/rasterize.js')
+        cmd = '{} --debug false "{}" "{}" "{}" A4'.format(phantomjs, rasterize, source_html, target_pdf) 
 
     else:
         return dict(status=9999,
