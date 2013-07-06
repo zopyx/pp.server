@@ -8,8 +8,9 @@ the ``Produce & Publish Server``.
 The Produce & Publish Server provided web service APIs for converting
 HTML/XML + assets to PDF using one of the following external PDF converters:
 
-- PrinceXML (www.princexml.com)
-- PDFreactor (www.realobjects.com)
+- PrinceXML (www.princexml.com, commercial)
+- PDFreactor (www.realobjects.com, commercial)
+- PhantomJS (free, unsupported)  
 
 In addition the Produce & Publish server provides a simple conversion
 API for converting format A to B (as supported through LibreOffice
@@ -101,7 +102,7 @@ with the following parameters:
 - ``file`` - the ZIP archive (multi/part encoding)
 
 - ``converter`` - a string that determines the the PDF
-  converter to be used (either ``princexml`` or ``pdfreactor``)
+  converter to be used (either ``princexml`` or ``pdfreactor`` or ``phantomjs``)
 
 - ``async`` - asynchronous ("1") or synchronous conversion ("0", default)
 

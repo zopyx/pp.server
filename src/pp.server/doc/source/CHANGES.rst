@@ -1,3 +1,7 @@
+0.2.7 (06.07.2013)
+------------------
+- added support for Phantom.js converter
+
 0.2.5 (05.07.2013)
 ------------------
 - better detecting of prince and pdfreactor binaries

@@ -22,9 +22,9 @@ elif os.path.exists('bin/prince'):
 
 phantomjs = None
 if util.which('phantomjs'):
-    princexml = 'phantomjs'
+    phantomjs = 'phantomjs'
 elif os.path.exists('bin/phantomjs'):
-    princexml = 'bin/phantomjs'
+    phantomjs = 'bin/phantomjs'
 
 
 def unoconv(work_dir, input_filename, output_format):
@@ -68,10 +68,17 @@ def pdf(work_dir, work_file, converter):
         if not princexml:
             raise RuntimeError('prince not found')
         cmd = '{} -v "{}" "{}"'.format(princexml, source_html, target_pdf) 
+
     elif converter == 'pdfreactor':
         if not pdfreactor:
             raise RuntimeError('pdfreactor not found')
         cmd = '{} -v debug "{}" "{}"'.format(pdfreactor, source_html, target_pdf) 
+
+    elif converter == 'phantomjs':
+        if not phantomjs:
+            raise RuntimeError('phantomjs not found')
+        cmd = '{} --debug true scripts/rasterize.js "{}" "{}"'.format(phantomjs, source_html, target_pdf) 
+
     else:
         return dict(status=9999,
                     output=u'Unknown converter "{}"'.format(converter))
