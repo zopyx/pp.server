@@ -30,6 +30,7 @@ class WebViews(object):
 
     @view_config(route_name='poll_api_1', renderer='json', request_method='GET')
     def poll(self):
+        """ Poll status of a job by a given ``job_id``"""
 
         job_id = self.request.matchdict['jobid']
         out_directory = os.path.join(queue_dir, job_id, 'out')
@@ -134,5 +135,3 @@ class WebViews(object):
             else: # error
                 return dict(status='ERROR',
                             output=output)
-
-

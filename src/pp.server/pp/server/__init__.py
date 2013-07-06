@@ -17,5 +17,3 @@ def main(global_config, **settings):
     config.add_route('pdf_api_1', '/api/1/pdf')
     config.add_route('poll_api_1', '/api/1/poll/{jobid}')
     return config.make_wsgi_app()
-
-
