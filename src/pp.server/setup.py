@@ -3,8 +3,8 @@ import os
 from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
-README = open(os.path.join(here, 'doc', 'source', 'README.rst')).read()
-CHANGES = open(os.path.join(here, 'doc', 'source', 'CHANGES.rst')).read()
+README = open(os.path.join(here, 'docs', 'source', 'README.rst')).read()
+CHANGES = open(os.path.join(here, 'docs', 'source', 'CHANGES.rst')).read()
 
 requires = [
     'pyramid',
@@ -22,7 +22,7 @@ tests_require = [
 ]
 
 setup(name='pp.server',
-      version='0.2.7',
+      version='0.2.8',
       description='pp.server - Produce & Publish Server',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
