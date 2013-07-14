@@ -1,3 +1,8 @@
+0.3.0 (14.07.2013)
+------------------
+- unoconv conversion now returns a ZIP archive
+  (e.g. a HTML file + extracted images)
+
 0.2.7 (06.07.2013)
 ------------------
 - added support for Phantom.js converter

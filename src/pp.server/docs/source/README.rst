@@ -149,10 +149,11 @@ pairs:
 
 - ``status`` - either ``OK`` or ``ERROR``
 
-- ``data`` - the converted output file encoded as base64 encoded byte string
+- ``data`` - the converted output files as ZIP archive (e.g.
+  a DOCX file containing images will be converted to a HTML file
+  plus the list of extract image files)
 
 - ``output`` - the conversion transcript (output of the converter run)
-
 
 Asynchronous operations
 +++++++++++++++++++++++

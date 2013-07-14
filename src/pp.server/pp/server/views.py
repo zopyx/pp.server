@@ -8,6 +8,8 @@ import base64
 import time
 import uuid
 import pkg_resources
+import tempfile
+import zipfile
 from pyramid.view import view_config
 from logger import LOG
 
@@ -86,7 +88,16 @@ class WebViews(object):
             if result['output']:
                 LOG.info('OUTPUT: unoconv({}):\n{}'.format(new_id, result['output']))
             if result['status'] == 0: #OK
-                bin_data = base64.encodestring(open(result['filename'], 'rb').read())
+                out_directory = result['out_directory']
+                zip_name = tempfile.mktemp()
+                zip_out = zipfile.ZipFile(zip_name, 'w')
+                for fn in os.listdir(out_directory):
+                    if fn in ('done', 'output.txt'):
+                        continue
+                    zip_out.write(os.path.join(out_directory, fn), fn)
+                zip_out.close()
+                bin_data = base64.encodestring(open(zip_name, 'rb').read())
+                os.unlink(zip_name)
                 return dict(status='OK',
                             data=bin_data,
                             output=result['output'])

@@ -34,8 +34,8 @@ def unoconv(work_dir, input_filename, output_format):
     """
 
     base, ext = os.path.splitext(input_filename)
-    dest_filename = os.path.join(work_dir, 'out', 'out.{}'.format(output_format))
-    cmd = 'unoconv -f "{}" -o "{}" "{}"'.format(output_format, dest_filename, input_filename)
+    out_directory = os.path.join(work_dir, 'out')
+    cmd = 'unoconv -f "{}" -o "{}" "{}"'.format(output_format, out_directory, input_filename)
     status, output = util.runcmd(cmd)
 
     with open(os.path.join(work_dir, 'out', 'output.txt'), 'wb') as fp:
@@ -46,7 +46,7 @@ def unoconv(work_dir, input_filename, output_format):
 
     return dict(status=status,
                 output=output,
-                filename=dest_filename)
+                out_directory=out_directory)
 
 
 def pdf(work_dir, work_file, converter):
