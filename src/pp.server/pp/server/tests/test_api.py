@@ -79,7 +79,18 @@ class Unoconvtests(Base):
         if expected == 'OK':
             assert params['status'] == 'OK'
             assert 'output' in params
-            return base64.decodestring(params['data'])
+            zip_name = tempfile.mktemp(suffix='.zip')
+            with open(zip_name, 'wb') as fp:
+                zip_data = base64.decodestring(params['data'])
+                fp.write(zip_data)
+
+            with zipfile.ZipFile(zip_name, 'r') as zf:
+                for name in zf.namelist():
+                    base, ext = os.path.splitext(name)
+                    if ext in ('.pdf', '.html'):
+                        data = zf.read(name)
+                        os.unlink(zip_name)
+                        return data
         else:
             assert params['status'] == 'ERROR'
             assert 'is not known to unoconv' in params['output']
@@ -94,8 +105,3 @@ class Unoconvtests(Base):
 
     def test_docx2unknown(self):
         self._unoconv('test.docx', 'unknown', expected='ERROR')
-
-#    def test_docx2pdf_async(self):
-#        from pp.server.tasks import pdf
-#        result = pdf.delay()
-#        import pytest; pytest.set_trace()
