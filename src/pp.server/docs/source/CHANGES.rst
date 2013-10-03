@@ -1,3 +1,7 @@
+0.3.1 (03.10.2013)
+------------------
+- updated documentation 
+
 0.3.0 (14.07.2013)
 ------------------
 - unoconv conversion now returns a ZIP archive
