@@ -42,7 +42,7 @@ Installation
 
 - install the Produce & Publish server::
 
-    bin/easy_install pp.server
+    bin/pip install pp.server
 
 - create a ``server.ini`` configuration file (and change it according to your needs)::
 
@@ -188,12 +188,12 @@ Advanced installation issues
 Installation of PDFreactor using zc.buildout
 ++++++++++++++++++++++++++++++++++++++++++++
 
-- https://bitbucket.org/ajung/pp.server/raw/master/pdfreactor.ini
+- https://bitbucket.org/ajung/pp.server/raw/master/pdfreactor.cfg
 
 Installation of PrinceXML using zc.buildout
 +++++++++++++++++++++++++++++++++++++++++++
 
-- https://bitbucket.org/ajung/pp.server/raw/master/princexml.ini
+- https://bitbucket.org/ajung/pp.server/raw/master/princexml.cfg
 
 Production setup
 ++++++++++++++++
@@ -202,8 +202,7 @@ Production setup
 controlled using ``Circus``. Look into the following buildout
 configuration
 
-- https://bitbucket.org/ajung/pp.server/raw/master/circus.ini
-
+- https://bitbucket.org/ajung/pp.server/raw/master/circus-app.ini
 
 Source code
 -----------
@@ -213,7 +212,7 @@ https://bitbucket.org/ajung/pp.server
 Bug tracker
 -----------
 
-https://bitbucket.org/ajung/pp.server/issues?
+https://bitbucket.org/ajung/pp.server/issues
 
 Support
 -------
@@ -233,4 +232,4 @@ Contact
 | D-72074 Tuebingen, Germany
 | info@zopyx.com
 | www.zopyx.com
-
+| www.produce-and-publish.info
