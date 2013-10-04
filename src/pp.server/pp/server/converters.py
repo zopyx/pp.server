@@ -27,6 +27,10 @@ if util.which('phantomjs'):
 elif os.path.exists('bin/phantomjs'):
     phantomjs = 'bin/phantomjs'
 
+calibre = None
+if util.which('ebook-convert'):
+    calibre = 'ebook-convert'
+
 
 def unoconv(work_dir, input_filename, output_format):
     """ Convert ``input_filename`` using ``unoconv`` to
@@ -63,23 +67,32 @@ def pdf(work_dir, work_file, converter):
             fp.write(zf.read(name))
 
     source_html = os.path.join(work_dir, 'index.html')
-    target_pdf = os.path.join(work_dir, 'out', 'out.pdf')
+
+    if converter == 'calibre':
+        target_filename = os.path.join(work_dir, 'out', 'out.epub')
+    else:
+        target_filename = os.path.join(work_dir, 'out', 'out.pdf')
 
     if converter == 'princexml':
         if not princexml:
-            raise RuntimeError('prince not found')
-        cmd = '{} -v "{}" "{}"'.format(princexml, source_html, target_pdf) 
+            raise RuntimeError('"prince" not found')
+        cmd = '{} -v "{}" "{}"'.format(princexml, source_html, target_filename) 
 
     elif converter == 'pdfreactor':
         if not pdfreactor:
-            raise RuntimeError('pdfreactor not found')
-        cmd = '{} -v debug "{}" "{}"'.format(pdfreactor, source_html, target_pdf) 
+            raise RuntimeError('"pdfreactor" not found')
+        cmd = '{} -v debug "{}" "{}"'.format(pdfreactor, source_html, target_filename) 
 
     elif converter == 'phantomjs':
         if not phantomjs:
-            raise RuntimeError('phantomjs not found')
+            raise RuntimeError('"phantomjs" not found')
         rasterize = pkg_resources.resource_filename('pp.server', 'scripts/rasterize.js')
-        cmd = '{} --debug false "{}" "{}" "{}" A4'.format(phantomjs, rasterize, source_html, target_pdf) 
+        cmd = '{} --debug false "{}" "{}" "{}" A4'.format(phantomjs, rasterize, source_html, target_filename) 
+
+    elif converter == 'calibre':
+        if not calibre:
+            raise RuntimeError('"calibre" not found')
+        cmd = '{} "{}" "{}"'.format(calibre, source_html, target_filename)
 
     else:
         return dict(status=9999,
@@ -95,4 +108,4 @@ def pdf(work_dir, work_file, converter):
 
     return dict(status=status,
                 output=output,
-                filename=target_pdf)
+                filename=target_filename)

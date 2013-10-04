@@ -12,6 +12,9 @@ HTML/XML + assets to PDF using one of the following external PDF converters:
 - PDFreactor (www.realobjects.com, commercial)
 - PhantomJS (free, unsupported)  
 
+In addition there is experimental support for generating EPUB document
+using ``Calibre`` (www.calibre.org, open-source).
+
 In addition the Produce & Publish server provides a simple conversion
 API for converting format A to B (as supported through LibreOffice
 or OpenOffice). The conversion is build on top of ``unoconv``.
@@ -68,6 +71,20 @@ Installation
 
     bin/pserve server.ini  --daemon
 
+Converter requirements
+----------------------
+
+For the PDF conversion the related converter binaries or scripts
+must be included in the ``$PATH`` of your server.
+
+- ``prince`` for PrinceXML
+
+- ``pdfreactor`` for PDFreactor
+
+- ``phantomjs`` for PhantomJS
+
+- ``ebook-convert`` for Calibre
+
 API documentation
 -----------------
 
@@ -102,7 +119,8 @@ with the following parameters:
 - ``file`` - the ZIP archive (multi/part encoding)
 
 - ``converter`` - a string that determines the the PDF
-  converter to be used (either ``princexml`` or ``pdfreactor`` or ``phantomjs``)
+  converter to be used (either ``princexml``, ``pdfreactor``, ``phantomjs`` 
+  or ``calibre`` for generating EPUB content)
 
 - ``async`` - asynchronous ("1") or synchronous conversion ("0", default)
 
