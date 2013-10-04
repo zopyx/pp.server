@@ -12,7 +12,7 @@ HTML/XML + assets to PDF using one of the following external PDF converters:
 - PDFreactor (www.realobjects.com, commercial)
 - PhantomJS (free, unsupported)  
 
-In addition there is experimental support for generating EPUB document
+In addition there is experimental support for generating EPUB documents
 using ``Calibre`` (www.calibre.org, open-source).
 
 In addition the Produce & Publish server provides a simple conversion
