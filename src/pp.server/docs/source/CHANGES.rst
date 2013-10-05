@@ -1,3 +1,7 @@
+0.3.3 (05.10.2013)
+------------------
+- added 'version' and 'converter' API methods
+
 0.3.2 (04.10.2013)
 ------------------
 - added support EPUB conversion using ``Calibre``

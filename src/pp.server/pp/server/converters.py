@@ -31,6 +31,10 @@ calibre = None
 if util.which('ebook-convert'):
     calibre = 'ebook-convert'
 
+unoconv = None
+if util.which('unoconv'):
+    unoconv = 'unoconv'
+
 
 def unoconv(work_dir, input_filename, output_format):
     """ Convert ``input_filename`` using ``unoconv`` to
@@ -39,7 +43,7 @@ def unoconv(work_dir, input_filename, output_format):
 
     base, ext = os.path.splitext(input_filename)
     out_directory = os.path.join(work_dir, 'out')
-    cmd = 'unoconv -f "{}" -o "{}" "{}"'.format(output_format, out_directory, input_filename)
+    cmd = '{} -f "{}" -o "{}" "{}"'.format(unoconv, output_format, out_directory, input_filename)
     status, output = util.runcmd(cmd)
 
     with open(os.path.join(work_dir, 'out', 'output.txt'), 'wb') as fp:

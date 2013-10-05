@@ -199,6 +199,24 @@ return JSON document will be return (same format as for the synchronous
 API calls). In addition the key-value pair {'done': True} will be included
 with the JSOn reply.
 
+Introspection API methods
++++++++++++++++++++++++++
+
+Produce & Publish server version::
+
+    http://host:port/api/version
+
+returns::
+
+    {"version": "0.3.2", "module": "pp.server"}
+   
+Installed/available converters::
+
+    http://host:port/api/converters
+
+returns::
+
+    {"unoconv": true, "pdfreactor": true, "phantomjs": false, "calibre": true, "princexml": true}
 
 Advanced installation issues
 ----------------------------

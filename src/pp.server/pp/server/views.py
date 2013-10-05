@@ -30,6 +30,24 @@ class WebViews(object):
         version = pkg_resources.require('pp.server')[0].version
         return dict(version=version)
 
+    @view_config(route_name='version', renderer='json', request_method='GET')
+    def version(self):
+        version = pkg_resources.require('pp.server')[0].version
+        return dict(version=version, module='pp.server')
+
+    @view_config(route_name='available_converters', renderer='json', request_method='GET')
+    def available_converters(self):
+        from pp.server.converters import princexml
+        from pp.server.converters import pdfreactor
+        from pp.server.converters import phantomjs
+        from pp.server.converters import calibre
+        from pp.server.converters import unoconv
+        return dict(princexml=princexml is not None,
+                    pdfreactor=pdfreactor is not None,
+                    phantomjs=phantomjs is not None,
+                    calibre=calibre is not None,
+                    unoconv=unoconv is not None)
+
     @view_config(route_name='poll_api_1', renderer='json', request_method='GET')
     def poll(self):
         """ Poll status of a job by a given ``job_id``"""
