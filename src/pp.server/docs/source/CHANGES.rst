@@ -1,3 +1,9 @@
+0.3.5 (05.10.2013)
+------------------
+- added 'cmd_options' to pdf and unoconv API 
+  methods for specifying arbitary command line parameters
+  for the external converters
+
 0.3.4 (05.10.2013)
 ------------------
 - added 'cleanup' API 

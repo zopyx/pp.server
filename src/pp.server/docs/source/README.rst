@@ -124,6 +124,9 @@ with the following parameters:
 
 - ``async`` - asynchronous ("1") or synchronous conversion ("0", default)
 
+- ``cmd_options`` - an optional string of command line parameters added 
+  as given to the calls of the externals converters
+
 
 Returns:
 
@@ -159,6 +162,8 @@ with the following parameters:
 
 - ``async`` - asynchronous ("1") or synchronous conversion ("0", default)
 
+- ``cmd_options`` - an optional string of command line parameters added 
+  as given to the ``unoconv`` calls
 
 Returns:
 

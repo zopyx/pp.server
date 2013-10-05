@@ -96,6 +96,7 @@ class WebViews(object):
         input_filename = params['filename']
         input_data = params['file'].file.read()
         output_format = params.get('output_format', 'pdf')
+        cmd_options = params.get('cmd_options', '')
         async = int(params.get('async', '0'))
 
         new_id = str(uuid.uuid4())
@@ -116,7 +117,7 @@ class WebViews(object):
         else:
             ts = time.time()
             LOG.info('START: unoconv({}, {}, {}, {})'.format(new_id, work_file, output_format, async))
-            result = converters.unoconv(work_dir, work_file, output_format)
+            result = converters.unoconv(work_dir, work_file, output_format, cmd_options)
             duration = time.time() - ts
             LOG.info('END : unoconv({} {} sec): {}'.format(new_id, duration, result['status']))
             if result['output']:
@@ -146,6 +147,7 @@ class WebViews(object):
         zip_data = params['file'].file.read()
         async = int(params.get('async', '0'))
         converter = params.get('converter', 'princexml')
+        cmd_options = params.get('cmd_options', '')
 
         new_id = str(uuid.uuid4())
         work_dir = os.path.join(queue_dir, new_id)
@@ -165,7 +167,7 @@ class WebViews(object):
         else:
             ts = time.time()                                               
             LOG.info('START: pdf({}, {}, {}, {})'.format(new_id, work_file, converter, async))
-            result = converters.pdf(work_dir, work_file, converter)
+            result = converters.pdf(work_dir, work_file, converter, cmd_options)
             duration = time.time() - ts
             LOG.info('END : pdf({} {} sec): {}'.format(new_id, duration, result['status']))
             if result['output']:

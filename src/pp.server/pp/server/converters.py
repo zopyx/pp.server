@@ -36,14 +36,14 @@ if util.which('unoconv'):
     unoconv = 'unoconv'
 
 
-def unoconv(work_dir, input_filename, output_format):
+def unoconv(work_dir, input_filename, output_format, cmd_options):
     """ Convert ``input_filename`` using ``unoconv`` to
         the new target format.
     """
 
     base, ext = os.path.splitext(input_filename)
     out_directory = os.path.join(work_dir, 'out')
-    cmd = '{} -f "{}" -o "{}" "{}"'.format(unoconv, output_format, out_directory, input_filename)
+    cmd = '{} {} -f "{}" -o "{}" "{}"'.format(unoconv, cmd_options, output_format, out_directory, input_filename)
     status, output = util.runcmd(cmd)
 
     with open(os.path.join(work_dir, 'out', 'output.txt'), 'wb') as fp:
@@ -57,7 +57,7 @@ def unoconv(work_dir, input_filename, output_format):
                 out_directory=out_directory)
 
 
-def pdf(work_dir, work_file, converter):
+def pdf(work_dir, work_file, converter, cmd_options):
     """ Converter a given ZIP file
         containing input files (HTML + XML) and asset files
         to PDF.
@@ -80,23 +80,23 @@ def pdf(work_dir, work_file, converter):
     if converter == 'princexml':
         if not princexml:
             raise RuntimeError('"prince" not found')
-        cmd = '{} -v "{}" "{}"'.format(princexml, source_html, target_filename) 
+        cmd = '{} {} -v "{}" "{}"'.format(princexml, cmd_options, source_html, target_filename) 
 
     elif converter == 'pdfreactor':
         if not pdfreactor:
             raise RuntimeError('"pdfreactor" not found')
-        cmd = '{} -v debug "{}" "{}"'.format(pdfreactor, source_html, target_filename) 
+        cmd = '{} {} -v debug "{}" "{}"'.format(pdfreactor, cmd_options, source_html, target_filename) 
 
     elif converter == 'phantomjs':
         if not phantomjs:
             raise RuntimeError('"phantomjs" not found')
         rasterize = pkg_resources.resource_filename('pp.server', 'scripts/rasterize.js')
-        cmd = '{} --debug false "{}" "{}" "{}" A4'.format(phantomjs, rasterize, source_html, target_filename) 
+        cmd = '{} {} --debug false "{}" "{}" "{}" A4'.format(phantomjs, cmd_options, rasterize, source_html, target_filename) 
 
     elif converter == 'calibre':
         if not calibre:
             raise RuntimeError('"calibre" not found')
-        cmd = '{} "{}" "{}"'.format(calibre, source_html, target_filename)
+        cmd = '{} "{}" "{}" {}'.format(calibre, source_html, target_filename, cmd_options)
 
     else:
         return dict(status=9999,
