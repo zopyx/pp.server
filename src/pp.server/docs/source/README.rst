@@ -202,19 +202,19 @@ with the JSOn reply.
 Introspection API methods
 +++++++++++++++++++++++++
 
-Produce & Publish server version::
+Produce & Publish server version:
 
     http://host:port/api/version
 
-returns::
+returns:
 
     {"version": "0.3.2", "module": "pp.server"}
    
-Installed/available converters::
+Installed/available converters:
 
     http://host:port/api/converters
 
-returns::
+returns:
 
     {"unoconv": true, "pdfreactor": true, "phantomjs": false, "calibre": true, "princexml": true}
 
