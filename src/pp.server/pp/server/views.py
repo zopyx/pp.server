@@ -8,6 +8,7 @@ import base64
 import time
 import uuid
 import pkg_resources
+import shutil
 import tempfile
 import zipfile
 from pyramid.view import view_config
@@ -19,6 +20,8 @@ import tasks
 queue_dir = os.path.join(os.getcwd(), 'var', 'queue')
 if not os.path.exists(queue_dir):
     os.makedirs(queue_dir)
+
+QUEUE_CLEANUP_TIME = 24 * 60 * 60 # 1 day
 
 class WebViews(object):
 
@@ -47,6 +50,19 @@ class WebViews(object):
                     phantomjs=phantomjs is not None,
                     calibre=calibre is not None,
                     unoconv=unoconv is not None)
+
+    @view_config(route_name='cleanup', renderer='json', request_method='GET')
+    def cleanup_queue(self):
+        now = time.time()
+        removed = 0
+        for dirname in os.listdir(queue_dir):
+            fullname = os.path.join(queue_dir, dirname)
+            mtime = os.path.getmtime(fullname)
+            if now - mtime > QUEUE_CLEANUP_TIME:
+                LOG.debug('Cleanup: {}'.format(fullname))
+                shutil.rmtree(fullname)
+                removed += 1
+        return dict(directories_removed=removed)
 
     @view_config(route_name='poll_api_1', renderer='json', request_method='GET')
     def poll(self):

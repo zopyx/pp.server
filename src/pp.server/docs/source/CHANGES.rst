@@ -1,3 +1,7 @@
+0.3.4 (05.10.2013)
+------------------
+- added 'cleanup' API 
+
 0.3.3 (05.10.2013)
 ------------------
 - added 'version' and 'converter' API methods

@@ -218,6 +218,17 @@ returns:
 
     {"unoconv": true, "pdfreactor": true, "phantomjs": false, "calibre": true, "princexml": true}
 
+Other API methods
++++++++++++++++++
+
+Cleanup of the queue directory (removes conversion data older than one day)
+
+    http://host:port/api/cleanup
+
+returns:
+
+    {"directories_removed": 22}
+
 Advanced installation issues
 ----------------------------
 
