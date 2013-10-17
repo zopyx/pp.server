@@ -33,7 +33,7 @@ if util.which('ebook-convert'):
 
 unoconv = None
 if util.which('unoconv'):
-    unoconv = 'unoconv'
+    unoconv_bin = 'unoconv'
 
 
 def unoconv(work_dir, input_filename, output_format, cmd_options):
@@ -43,7 +43,7 @@ def unoconv(work_dir, input_filename, output_format, cmd_options):
 
     base, ext = os.path.splitext(input_filename)
     out_directory = os.path.join(work_dir, 'out')
-    cmd = '{} {} -f "{}" -o "{}" "{}"'.format(unoconv, cmd_options, output_format, out_directory, input_filename)
+    cmd = '{} {} -f "{}" -o "{}" "{}"'.format(unoconv_bin, cmd_options, output_format, out_directory, input_filename)
     status, output = util.runcmd(cmd)
 
     with open(os.path.join(work_dir, 'out', 'output.txt'), 'wb') as fp:

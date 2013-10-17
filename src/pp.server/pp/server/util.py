@@ -38,7 +38,7 @@ def runcmd(cmd):
             LOG.info(stdout_)
         if stderr_:
             LOG.info(stderr_)
-        return status, str(stdout_ + stderr_, encoding='utf-8')
+        return status, (stdout_ + stderr_).decode('utf-8')
 
 
 def checkEnvironment(envname):
