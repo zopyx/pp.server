@@ -12,10 +12,10 @@ import shutil
 import tempfile
 import zipfile
 from pyramid.view import view_config
-from logger import LOG
 
-import converters
-import tasks
+from pp.server.logger import LOG
+from pp.server import converters
+from pp.server import tasks
 
 queue_dir = os.path.join(os.getcwd(), 'var', 'queue')
 if not os.path.exists(queue_dir):
@@ -75,13 +75,13 @@ class WebViews(object):
             files = [fname for fname in os.listdir(out_directory) if fname.startswith('out.')]
             if files:
                 bin_data = base64.encodestring(open(os.path.join(out_directory, files[0]), 'rb').read())
-                output_data = open(os.path.join(out_directory, 'output.txt'), 'rb').read()
+                output_data = open(os.path.join(out_directory, 'output.txt'), 'r').read()
                 return dict(done=True,
                             status=0,
                             data=bin_data,
                             output=output_data)
             else:
-                output_data = open(os.path.join(out_directory, 'output.txt'), 'rb').read()
+                output_data = open(os.path.join(out_directory, 'output.txt'), 'r').read()
                 return dict(done=True,
                             status=-1,
                             output=output_data)
@@ -175,7 +175,7 @@ class WebViews(object):
             output = result['output']
             if result['status'] == 0: #OK
                 pdf_data = open(result['filename'], 'rb').read()
-                pdf_data = base64.encodestring(pdf_data)
+                pdf_data = str(base64.encodestring(pdf_data), encoding='ascii')
                 return dict(status='OK',
                             data=pdf_data,
                             output=output)

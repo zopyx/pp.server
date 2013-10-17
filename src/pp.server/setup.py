@@ -8,11 +8,11 @@ CHANGES = open(os.path.join(here, 'docs', 'source', 'CHANGES.rst')).read()
 
 requires = [
     'pyramid',
+    'pyramid_chameleon',
     'waitress',
     'sqlalchemy',
     'celery',
     'flower',
-    'pastescript',
     'waitress',
     'plac',
     ]
@@ -22,7 +22,7 @@ tests_require = [
 ]
 
 setup(name='pp.server',
-      version='0.3.5',
+      version='0.4.0',
       description='pp.server - Produce & Publish Server',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[

@@ -102,12 +102,12 @@ def pdf(work_dir, work_file, converter, cmd_options):
         return dict(status=9999,
                     output=u'Unknown converter "{}"'.format(converter))
 
-    status, output = util. runcmd(cmd)
+    status, output = util.runcmd(cmd)
 
-    with open(os.path.join(work_dir, 'out', 'output.txt'), 'wb') as fp:
+    with open(os.path.join(work_dir, 'out', 'output.txt'), 'w') as fp:
         fp.write(cmd + '\n')
         fp.write(output + '\n')
-    with open(os.path.join(work_dir, 'out', 'done'), 'wb') as fp:
+    with open(os.path.join(work_dir, 'out', 'done'), 'w') as fp:
         fp.write('done')
 
     return dict(status=status,
