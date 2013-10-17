@@ -75,6 +75,7 @@ class WebViews(object):
             files = [fname for fname in os.listdir(out_directory) if fname.startswith('out.')]
             if files:
                 bin_data = base64.encodestring(open(os.path.join(out_directory, files[0]), 'rb').read())
+                bin_data = bin_data.decode('ascii')
                 output_data = open(os.path.join(out_directory, 'output.txt'), 'r').read()
                 return dict(done=True,
                             status=0,
@@ -175,7 +176,7 @@ class WebViews(object):
             output = result['output']
             if result['status'] == 0: #OK
                 pdf_data = open(result['filename'], 'rb').read()
-                pdf_data = str(base64.encodestring(pdf_data), encoding='ascii')
+                pdf_data = base64.encodestring(pdf_data).decode('ascii')
                 return dict(status='OK',
                             data=pdf_data,
                             output=output)
