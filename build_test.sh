@@ -14,6 +14,12 @@ then
     python_version=2.7
 fi
 
+if [[ "$1" = "python-3.3" ]]
+then
+    python_version=3.3
+fi
+
+
 virtualenv-$python_version .
 bin/python bootstrap.py
 bin/buildout
