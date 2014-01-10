@@ -1,4 +1,8 @@
 import os
+import sys
+
+if sys.version_info[:2] not in ((2,7), (3,3), (3,4)):
+    raise RuntimeError('pp.server requires Python 2.7, 3.3 or 3.4')
 
 from setuptools import setup, find_packages
 
@@ -49,3 +53,4 @@ setup(name='pp.server',
       main = pp.server:main
       """,
       )
+
