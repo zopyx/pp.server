@@ -2,6 +2,8 @@
 
 export PATH=\
 /opt/buildout.python/bin:\
+/opt/PDFreactor/bin:\
+/usr/local/bin:\
 $PATH:
 
 if [[ "$1" = "python-2.6" ]]
