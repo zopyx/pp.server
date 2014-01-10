@@ -8,7 +8,7 @@ Celery tasks
 """
 
 from celery import Celery, current_task
-import converters
+from pp.server import converters
 
 # Connector to Celery broker
 celery = Celery('tasks', broker='sqla+sqlite:///celerydb.sqlite')

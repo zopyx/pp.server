@@ -1,3 +1,8 @@
+0.4.0 (17.10.2013)
+------------------
+- Python 3.3 support
+- Pyramid 1.5 support
+
 0.3.5 (05.10.2013)
 ------------------
 - added 'cmd_options' to pdf and unoconv API 

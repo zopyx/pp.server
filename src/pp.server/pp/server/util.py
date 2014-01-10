@@ -6,7 +6,6 @@
 import os
 import sys
 import tempfile
-import commands
 from subprocess import Popen, PIPE
 from pp.server.logger import LOG
 
@@ -39,7 +38,7 @@ def runcmd(cmd):
             LOG.info(stdout_)
         if stderr_:
             LOG.info(stderr_)
-        return status, stdout_ + stderr_
+        return status, (stdout_ + stderr_).decode('utf-8')
 
 
 def checkEnvironment(envname):
