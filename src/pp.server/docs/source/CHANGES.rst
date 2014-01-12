@@ -1,3 +1,7 @@
+0.4.1 (dev)
+-----------
+- show Python version and converters on index.pt
+
 0.4.0 (17.10.2013)
 ------------------
 - Python 3.3 support

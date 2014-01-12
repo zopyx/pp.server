@@ -11,8 +11,15 @@
 <body>
   <div id="header">
       <img src="${request.application_url}/static/pp-logo.png" /> 
-      <h1>Produce &amp; Publish</h1>
-      <h2>Server version ${version} </h2>
+      <h1>Produce &amp; Publish Server</h1>
+      <h3>Server version ${version} </h3>
+      <h3>Python version ${python_version} </h3>
+      <h3>Available converters:</h3>
+      <ul>
+          <li tal:repeat="converter available_converters">
+              <span tal:content="converter" />
+          </li>
+      </ul>
   </div>
   <br/>
 

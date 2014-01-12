@@ -4,6 +4,7 @@
 ################################################################
 
 import os
+import sys
 import base64
 import time
 import uuid
@@ -31,7 +32,11 @@ class WebViews(object):
     @view_config(route_name='home', renderer='index.pt', request_method='GET')
     def index(self):
         version = pkg_resources.require('pp.server')[0].version
-        return dict(version=version)
+        available_converters = sorted([k for k, v in self.available_converters().items() if v])
+        return dict(version=version,
+                    python_version=sys.version,
+                    available_converters=available_converters
+                    )
 
     @view_config(route_name='version', renderer='json', request_method='GET')
     def version(self):
