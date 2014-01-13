@@ -29,6 +29,21 @@ class WebViews(object):
     def __init__(self, request):
         self.request = request
 
+    def check_authentication(self):
+
+        from pp.server import authorization
+        from pyramid.httpexceptions import HTTPForbidden
+        from pyramid.httpexceptions import HTTPInternalServerError
+
+        authenticator = self.request.registry.settings.get('pp.authenticator')
+        if not authenticator:
+            return 
+
+        method = getattr(authorization, authenticator, None)
+        if method is None:
+            raise HTTPInternalServerError
+        method(self.request)
+
     @view_config(route_name='home', renderer='index.pt', request_method='GET')
     def index(self):
         version = pkg_resources.require('pp.server')[0].version
@@ -98,6 +113,8 @@ class WebViews(object):
     def unoconv(self):
         """ Convert office formats using ``unoconv`` """
 
+        self.check_authentication()
+
         params = self.request.params
         input_filename = params['filename']
         input_data = params['file'].file.read()
@@ -148,6 +165,8 @@ class WebViews(object):
 
     @view_config(route_name='pdf_api_1', request_method='POST', renderer='json')
     def pdf(self):
+
+        self.check_authentication()
 
         params = self.request.params
         zip_data = params['file'].file.read()
