@@ -1,5 +1,5 @@
-0.4.1 (dev)
------------
+0.4.1 (13.01.2014)
+------------------
 - show Python version and converters on index.pt
 - authorization support added
 
