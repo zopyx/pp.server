@@ -235,6 +235,32 @@ returns:
 
     {"directories_removed": 22}
 
+Authorization support
+=====================
+
+The ``pp.server`` implementation provides a simple and optional authorization
+mechanism by accepting a ``pp-token`` header from the client. In order to
+enable the authorization support on the server side you need to configure the
+authenticator method and the authorization token in your .ini file::
+
+    [app:main]
+    use = egg:pp.server
+    ...
+    pp.authenticator = token_auth
+    pp.authentication_token = 12345
+
+The ``token_auth`` string refers to a method in ``pp.server.authorization``
+which is a simple authorization method (for the beta phase) supporting only one
+token for now. The token is configured through the ``pp.authentication_token``
+value.
+
+Any client sending a HTTP request to the ``pp.server`` server instance is required
+to send a HTTP header for authorization (if enabled on the server)::
+
+    pp-token: <value of token>
+    pp-token: 12345
+
+
 Advanced installation issues
 ----------------------------
 
