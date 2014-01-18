@@ -6,11 +6,11 @@
     <title>Produce &amp; Publish Server</title>
     <meta name="keywords" content="python web application" />
     <meta name="description" content="Pyramid web application" />
-    <link href="${request.application_url}/static/default.css" rel="stylesheet" type="text/css" />
+    <link href="/static/default.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
   <div id="header">
-      <img src="${request.application_url}/static/pp-logo.png" /> 
+      <img src="/static/pp-logo.png" /> 
       <h1>Produce &amp; Publish Server</h1>
       <h3>Server version ${version} </h3>
       <h3>Python version ${python_version} </h3>
