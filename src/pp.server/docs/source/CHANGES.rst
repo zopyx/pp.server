@@ -1,3 +1,7 @@
+0.4.2 (18.01.2014)
+------------------
+- URL fix in index.pt related to virtual hosting
+
 0.4.1 (13.01.2014)
 ------------------
 - show Python version and converters on index.pt
