@@ -49,6 +49,8 @@ setup(name='pp.server',
           'testing': tests_require,
       },
       entry_points="""\
+      [console_scripts]
+      unoconv = pp.server.unoconv:main
       [paste.app_factory]
       main = pp.server:main
       """,
