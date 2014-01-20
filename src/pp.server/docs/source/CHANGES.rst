@@ -1,3 +1,7 @@
+0.4.3 (20.01.2014)
+------------------
+- implemented automatic queue cleanup after one day
+
 0.4.2 (18.01.2014)
 ------------------
 - URL fix in index.pt related to virtual hosting

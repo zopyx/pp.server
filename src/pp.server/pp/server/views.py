@@ -73,7 +73,16 @@ class WebViews(object):
 
     @view_config(route_name='cleanup', renderer='json', request_method='GET')
     def cleanup_queue(self):
+
+        try:
+            lc = self.request.registry.settings.last_cleanup
+        except AttributeError:
+            lc = time.time()
+            pass
+
         now = time.time()
+        if now - lc < QUEUE_CLEANUP_TIME:
+            return
         removed = 0
         for dirname in os.listdir(queue_dir):
             fullname = os.path.join(queue_dir, dirname)
@@ -82,6 +91,7 @@ class WebViews(object):
                 LOG.debug('Cleanup: {}'.format(fullname))
                 shutil.rmtree(fullname)
                 removed += 1
+        self.request.registry.settings.last_cleanup = time.time()
         return dict(directories_removed=removed)
 
     @view_config(route_name='poll_api_1', renderer='json', request_method='GET')
@@ -114,6 +124,7 @@ class WebViews(object):
         """ Convert office formats using ``unoconv`` """
 
         self.check_authentication()
+        self.cleanup_queue()
 
         params = self.request.params
         input_filename = params['filename']
@@ -167,6 +178,7 @@ class WebViews(object):
     def pdf(self):
 
         self.check_authentication()
+        self.cleanup_queue()
 
         params = self.request.params
         zip_data = params['file'].file.read()
