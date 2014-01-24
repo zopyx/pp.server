@@ -1,3 +1,7 @@
+0.4.4 (24.01.2014)
+------------------
+- minor typos fixed
+
 0.4.3 (20.01.2014)
 ------------------
 - implemented automatic queue cleanup after one day
