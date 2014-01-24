@@ -18,11 +18,14 @@ from pp.server.logger import LOG
 from pp.server import converters
 from pp.server import tasks
 
+
 queue_dir = os.path.join(os.getcwd(), 'var', 'queue')
 if not os.path.exists(queue_dir):
     os.makedirs(queue_dir)
 
+
 QUEUE_CLEANUP_TIME = 24 * 60 * 60 # 1 day
+
 
 class WebViews(object):
 
