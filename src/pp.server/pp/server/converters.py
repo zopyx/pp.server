@@ -85,7 +85,7 @@ def pdf(work_dir, work_file, converter, cmd_options):
     elif converter == 'pdfreactor':
         if not pdfreactor:
             raise RuntimeError('"pdfreactor" not found')
-        cmd = '{} {} -v debug "{}" "{}"'.format(pdfreactor, cmd_options, source_html, target_filename) 
+        cmd = '{} {} -a links -a bookmarks --addlog -v debug "{}" "{}"'.format(pdfreactor, cmd_options, source_html, target_filename) 
 
     elif converter == 'phantomjs':
         if not phantomjs:

@@ -1,3 +1,7 @@
+0.4.5 (22.08.2014)
+------------------
+- added supplementary commandline options to pdfreactor commandline call
+
 0.4.4 (24.01.2014)
 ------------------
 - minor typos fixed
