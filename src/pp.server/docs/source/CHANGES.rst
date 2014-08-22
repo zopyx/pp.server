@@ -1,3 +1,7 @@
+0.4.6 (22.08.2014)
+------------------
+- removed PDFreactor --addlog option
+
 0.4.5 (22.08.2014)
 ------------------
 - added supplementary commandline options to pdfreactor commandline call
