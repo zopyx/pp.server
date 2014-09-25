@@ -60,7 +60,7 @@ Installation
     debug_notfound = false
 
     [server:main]
-    use = egg:waitress+main
+    use = egg:waitress#main
     host = 127.0.0.1
     port = 6543
 

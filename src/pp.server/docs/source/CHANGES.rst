@@ -1,3 +1,7 @@
+0.4.7 (25.09.2014)
+------------------
+- fixed documentation bug
+
 0.4.6 (22.08.2014)
 ------------------
 - removed PDFreactor --addlog option
