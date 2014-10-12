@@ -46,10 +46,10 @@ def unoconv(work_dir, input_filename, output_format, cmd_options):
     cmd = '{} {} -f "{}" -o "{}" "{}"'.format(unoconv_bin, cmd_options, output_format, out_directory, input_filename)
     status, output = util.runcmd(cmd)
 
-    with open(os.path.join(work_dir, 'out', 'output.txt'), 'wb') as fp:
+    with open(os.path.join(work_dir, 'out', 'output.txt'), 'w') as fp:
         fp.write(cmd + '\n')
         fp.write(output + '\n')
-    with open(os.path.join(work_dir, 'out', 'done'), 'wb') as fp:
+    with open(os.path.join(work_dir, 'out', 'done'), 'w') as fp:
         fp.write('done')
 
     return dict(status=status,
