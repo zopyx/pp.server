@@ -306,7 +306,7 @@ License
 Contact
 -------
 
-| ZOPYX Limited
+| ZOPYX 
 | Hundskapfklinge 33
 | D-72074 Tuebingen, Germany
 | info@zopyx.com
