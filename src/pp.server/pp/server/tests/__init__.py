@@ -1,4 +1,4 @@
 ################################################################
 # pp.server - Produce & Publish Server
-# (C) 2013, ZOPYX Ltd, Tuebingen, Germany
+# (C) 2013, ZOPYX,  Tuebingen, Germany
 ################################################################
