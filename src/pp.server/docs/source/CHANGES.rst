@@ -1,3 +1,7 @@
+0.5.0 (2014/10/12)
+------------------
+- official Python 3.3/3.4 support 
+
 0.4.7 (25.09.2014)
 ------------------
 - fixed documentation bug

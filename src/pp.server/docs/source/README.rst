@@ -24,8 +24,7 @@ The web service provides both synchronous and asynchronous operations.
 Requirements
 ------------
 
-- Python 2.7 (tested)
-- or Python 3.3 (experimental)   
+- Python 2.7, 3.3, 3.4
 - the external binaries ``prince``, ``pdfreactor`` and/or ``unoconv`` 
   must be in the $PATH. Please refer to the installation documentation
   of the individual products.
@@ -33,7 +32,7 @@ Requirements
 Installation
 ------------
 
-- create an ``virtualenv`` environment (Python 2.7 (or Python 3.3)) - either within your
+- create an ``virtualenv`` environment (Python 2.7 (or Python 3.4)) - either within your
   current (empty) directory or by letting virtualenv create one for you.
   (``easy_install virtualenv`` if ``virtualenv`` is not available on your
   system)::
