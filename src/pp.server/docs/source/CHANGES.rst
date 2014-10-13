@@ -1,3 +1,7 @@
+0.5.1 (2014/10/12)
+------------------
+- improved error handling
+
 0.5.0 (2014/10/12)
 ------------------
 - official Python 3.3/3.4 support 

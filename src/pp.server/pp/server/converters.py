@@ -79,23 +79,27 @@ def pdf(work_dir, work_file, converter, cmd_options):
 
     if converter == 'princexml':
         if not princexml:
-            raise RuntimeError('"prince" not found')
+            return dict(status=9999,
+                        output=u'PrinceXML not installed')
         cmd = '{} {} -v "{}" "{}"'.format(princexml, cmd_options, source_html, target_filename) 
 
     elif converter == 'pdfreactor':
         if not pdfreactor:
-            raise RuntimeError('"pdfreactor" not found')
+            return dict(status=9999,
+                        output=u'PDFreactor not installed')
         cmd = '{} {} -a links -a bookmarks -v debug "{}" "{}"'.format(pdfreactor, cmd_options, source_html, target_filename) 
 
     elif converter == 'phantomjs':
         if not phantomjs:
-            raise RuntimeError('"phantomjs" not found')
+            return dict(status=9999,
+                        output=u'PhantomJS not installed')
         rasterize = pkg_resources.resource_filename('pp.server', 'scripts/rasterize.js')
         cmd = '{} {} --debug false "{}" "{}" "{}" A4'.format(phantomjs, cmd_options, rasterize, source_html, target_filename) 
 
     elif converter == 'calibre':
         if not calibre:
-            raise RuntimeError('"calibre" not found')
+            return dict(status=9999,
+                        output=u'Calibre not installed')
         cmd = '{} "{}" "{}" {}'.format(calibre, source_html, target_filename, cmd_options)
 
     else:
