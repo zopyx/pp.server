@@ -1,3 +1,7 @@
+0.5.2 (unreleased)
+------------------
+- support for Speedata Publisher 
+
 0.5.1 (2014/10/12)
 ------------------
 - improved error handling

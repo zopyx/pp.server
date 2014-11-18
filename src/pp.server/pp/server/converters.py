@@ -27,6 +27,12 @@ if util.which('phantomjs'):
 elif os.path.exists('bin/phantomjs'):
     phantomjs = 'bin/phantomjs'
 
+publisher = None
+if util.which('sp'):
+    publisher = 'sp'
+elif os.path.exists('bin/sp'):
+    publisher = 'bin/sp'
+
 calibre = None
 if util.which('ebook-convert'):
     calibre = 'ebook-convert'
@@ -88,6 +94,12 @@ def pdf(work_dir, work_file, converter, cmd_options):
             return dict(status=9999,
                         output=u'PDFreactor not installed')
         cmd = '{} {} -a links -a bookmarks -v debug "{}" "{}"'.format(pdfreactor, cmd_options, source_html, target_filename) 
+
+    elif converter == 'publisher':
+        if not publisher:
+            return dict(status=9999,
+                        output=u'Speedata Publisher not installed')
+        cmd = '{} {}'.format(publisher, cmd_options) 
 
     elif converter == 'phantomjs':
         if not phantomjs:

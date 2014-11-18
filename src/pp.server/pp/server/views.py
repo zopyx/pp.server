@@ -68,11 +68,13 @@ class WebViews(object):
         from pp.server.converters import phantomjs
         from pp.server.converters import calibre
         from pp.server.converters import unoconv
+        from pp.server.converters import publisher
         return dict(princexml=princexml is not None,
                     pdfreactor=pdfreactor is not None,
                     phantomjs=phantomjs is not None,
                     calibre=calibre is not None,
-                    unoconv=unoconv is not None)
+                    unoconv=unoconv is not None,
+                    publisher=publisher is not None)
 
     @view_config(route_name='cleanup', renderer='json', request_method='GET')
     def cleanup_queue(self):
