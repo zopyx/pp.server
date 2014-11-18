@@ -99,7 +99,7 @@ def pdf(work_dir, work_file, converter, cmd_options):
         if not publisher:
             return dict(status=9999,
                         output=u'Speedata Publisher not installed')
-        cmd = '{} {}'.format(publisher, cmd_options) 
+        cmd = '{} --jobname out --wd "{}" --outputdir "{}/out"'.format(publisher, work_dir, work_dir, cmd_options) 
 
     elif converter == 'phantomjs':
         if not phantomjs:
