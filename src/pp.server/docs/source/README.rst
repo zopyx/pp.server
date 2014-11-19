@@ -11,6 +11,7 @@ HTML/XML + assets to PDF using one of the following external PDF converters:
 - PrinceXML (www.princexml.com, commercial)
 - PDFreactor (www.realobjects.com, commercial)
 - PhantomJS (free, unsupported)  
+- Speedata Publisher (www.speedata.de, open-source, experimental support)
 
 In addition there is experimental support for generating EPUB documents
 using ``Calibre`` (www.calibre.org, open-source).
@@ -25,7 +26,15 @@ Requirements
 ------------
 
 - Python 2.7, 3.3, 3.4
-- the external binaries ``prince``, ``pdfreactor`` and/or ``unoconv`` 
+
+- the external binaries 
+
+  - PrinceXML: ``prince``, 
+  - PDFreactor: ``pdfreactor``,  
+  - Unoconv: ``unoconv`` 
+  - Speedata Publisher: ``sp``
+  - Calibre: ``ebook-convert``
+
   must be in the $PATH. Please refer to the installation documentation
   of the individual products.
 
@@ -84,6 +93,8 @@ must be included in the ``$PATH`` of your server.
 - ``phantomjs`` for PhantomJS
 
 - ``ebook-convert`` for Calibre
+
+- ``sp`` for the Speedata Publisher
 
 API documentation
 -----------------

@@ -1,4 +1,4 @@
-0.5.2 (unreleased)
+0.5.2 (2014/11/19)
 ------------------
 - support for Speedata Publisher 
 
