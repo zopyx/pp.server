@@ -69,11 +69,13 @@ class WebViews(object):
         from pp.server.converters import calibre
         from pp.server.converters import unoconv
         from pp.server.converters import publisher
+        from pp.server.converters import wkhtmltopdf
         return dict(princexml=princexml is not None,
                     pdfreactor=pdfreactor is not None,
                     phantomjs=phantomjs is not None,
                     calibre=calibre is not None,
                     unoconv=unoconv is not None,
+                    wkhtmltopdf=wkhtmltopdf is not None,
                     publisher=publisher is not None)
 
     @view_config(route_name='cleanup', renderer='json', request_method='GET')

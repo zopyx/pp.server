@@ -14,6 +14,12 @@ if util.which('pdfreactor'):
     pdfreactor = 'pdfreactor'
 elif os.path.exists('bin/pdfreactor'):
     pdfreactor = 'bin/pdfreactor'
+
+wkhtmltopdf= None
+if util.which('wkhtmltopdf'):
+    wkhtmltopdf = 'wkhtmltopdf'
+elif os.path.exists('bin/wkhtmltopdf'):
+    wkhtmltopdf = 'bin/wkhtmltopdf'
     
 princexml = None
 if util.which('prince'):
@@ -94,6 +100,12 @@ def pdf(work_dir, work_file, converter, cmd_options):
             return dict(status=9999,
                         output=u'PDFreactor not installed')
         cmd = '{} {} -a links -a bookmarks -v debug "{}" "{}"'.format(pdfreactor, cmd_options, source_html, target_filename) 
+
+    elif converter == 'wkhtmltopdf':
+        if not pdfreactor:
+            return dict(status=9999,
+                        output=u'wkhtmltopdf not installed')
+        cmd = '{} {} "{}" "{}"'.format(wkhtmltopdf, cmd_options, source_html, target_filename) 
 
     elif converter == 'publisher':
         if not publisher:
