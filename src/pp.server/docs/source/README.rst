@@ -250,7 +250,7 @@ returns:
     {"directories_removed": 22}
 
 Authorization support
-=====================
+---------------------
 
 The ``pp.server`` implementation provides a simple and optional authorization
 mechanism by accepting a ``pp-token`` header from the client. In order to
