@@ -1,3 +1,7 @@
+0.5.3 (2014/11/23)
+------------------
+- support for WKHTMLTOPDF
+
 0.5.2 (2014/11/19)
 ------------------
 - support for Speedata Publisher 

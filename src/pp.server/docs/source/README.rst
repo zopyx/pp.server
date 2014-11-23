@@ -12,6 +12,7 @@ HTML/XML + assets to PDF using one of the following external PDF converters:
 - PDFreactor (www.realobjects.com, commercial)
 - PhantomJS (free, unsupported)  
 - Speedata Publisher (www.speedata.de, open-source, experimental support)
+- WKHTMLTOPDF (www.wkhtmltopdf.org, open-source, experimental support)
 
 In addition there is experimental support for generating EPUB documents
 using ``Calibre`` (www.calibre.org, open-source).
@@ -34,6 +35,7 @@ Requirements
   - Unoconv: ``unoconv`` 
   - Speedata Publisher: ``sp``
   - Calibre: ``ebook-convert``
+  - WKHTMLTOPDF: ``wkhtmltopdf``    
 
   must be in the $PATH. Please refer to the installation documentation
   of the individual products.
@@ -91,6 +93,8 @@ must be included in the ``$PATH`` of your server.
 - ``pdfreactor`` for PDFreactor
 
 - ``phantomjs`` for PhantomJS
+
+- ``wkhtmltopdf`` for WKHTMLToPDF
 
 - ``ebook-convert`` for Calibre
 
