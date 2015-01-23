@@ -78,6 +78,7 @@ def pdf(work_dir, work_file, converter, cmd_options):
     # unzip archive first
     zf = zipfile.ZipFile(work_file)
     for name in zf.namelist():
+        print(name)
         filename = os.path.join(work_dir, name)
         with open(filename, 'wb') as fp:
             fp.write(zf.read(name))
@@ -132,7 +133,7 @@ def pdf(work_dir, work_file, converter, cmd_options):
 
     status, output = util.runcmd(cmd)
 
-    with open(os.path.join(work_dir, 'out', 'output.txt'), 'w') as fp:
+    with open(os.path.join(work_dir, 'out', 'output.txt'), 'w', encoding='utf8') as fp:
         fp.write(cmd + '\n')
         fp.write(output + '\n')
     with open(os.path.join(work_dir, 'out', 'done'), 'w') as fp:
