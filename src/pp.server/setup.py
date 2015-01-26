@@ -19,6 +19,7 @@ requires = [
     'flower',
     'waitress',
     'plac',
+    'pp.client-python'
     ]
 
 tests_require = [
