@@ -1,8 +1,8 @@
 import os
 import sys
 
-if sys.version_info[:2] not in ((2,7), (3,3), (3,4)):
-    raise RuntimeError('pp.server requires Python 2.7, 3.3 or 3.4')
+if sys.version_info[:2] not in ((3,3), (3,4), (3,5), (3,6)):
+    raise RuntimeError('pp.server requires Python 3.3 or higher')
 
 from setuptools import setup, find_packages
 
@@ -19,6 +19,7 @@ requires = [
     'flower',
     'waitress',
     'plac',
+    'pp.client-python'
     ]
 
 tests_require = [
@@ -26,7 +27,7 @@ tests_require = [
 ]
 
 setup(name='pp.server',
-      version='0.5.5',
+      version='0.6.0',
       description='pp.server - Produce & Publish Server',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[

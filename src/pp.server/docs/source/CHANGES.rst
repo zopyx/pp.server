@@ -1,3 +1,8 @@
+0.6.0 (2015/01/26)
+------------------
+- dropped Python 2.X support, Python 3.3 or higher 
+  is now a mandatory requirement
+
 0.5.5 (2015/01/23)
 ------------------
 - UTF8 handling fix
