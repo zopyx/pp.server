@@ -60,12 +60,19 @@ RUN rm prince.deb
 # CALIBRE
 RUN wget -nv -O- https://raw.githubusercontent.com/kovidgoyal/calibre/master/setup/linux-installer.py | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('/opt')"
 
+RUN useradd ppserver
+
 # INSTALL PRODUCE & PUBLISH SERVER
 RUN easy_install-3.4 virtualenv
 RUN virtualenv .
 RUN bin/python --version
 RUN bin/pip install pp.server
 ADD development.ini  /tmp/development.ini
+RUN mkdir /data/var
+RUN chown -R ppserver *
 
 EXPOSE 6543
+RUN ls -la /data
+WORKDIR .
+USER ppserver
 CMD PATH=$PATH:$PWD/PDFreactor/bin:$PWD/speedata-publisher/bin; echo $PATH; bin/python --version; bin/pserve /tmp/development.ini
