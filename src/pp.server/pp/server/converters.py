@@ -43,7 +43,7 @@ calibre = None
 if util.which('ebook-convert'):
     calibre = 'ebook-convert'
 
-unoconv = None
+unoconv_bin = None
 if util.which('unoconv'):
     unoconv_bin = 'unoconv'
 

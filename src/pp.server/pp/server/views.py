@@ -17,6 +17,7 @@ from pyramid.view import view_config
 from pp.server.logger import LOG
 from pp.server import converters
 from pp.server import tasks
+from pp.server import util
 
 
 queue_dir = os.path.join(os.getcwd(), 'var', 'queue')
@@ -67,17 +68,51 @@ class WebViews(object):
         from pp.server.converters import pdfreactor
         from pp.server.converters import phantomjs
         from pp.server.converters import calibre
-        from pp.server.converters import unoconv
+        from pp.server.converters import unoconv_bin
         from pp.server.converters import publisher
         from pp.server.converters import wkhtmltopdf
         return dict(princexml=princexml is not None,
                     pdfreactor=pdfreactor is not None,
                     phantomjs=phantomjs is not None,
                     calibre=calibre is not None,
-                    unoconv=unoconv is not None,
+                    unoconv=unoconv_bin is not None,
                     wkhtmltopdf=wkhtmltopdf is not None,
                     publisher=publisher is not None)
 
+    @view_config(route_name='converter_versions', renderer='json', request_method='GET')
+    def converter_versions(self):
+        from pp.server.converters import princexml
+        from pp.server.converters import pdfreactor
+        from pp.server.converters import phantomjs
+        from pp.server.converters import calibre
+        from pp.server.converters import unoconv_bin
+        from pp.server.converters import publisher
+        from pp.server.converters import wkhtmltopdf
+
+        result = dict()
+
+        if princexml:
+            status, output = util.runcmd('{} --version'.format(princexml))
+            result['princexml'] = output if status == 0 else 'n/a'
+
+        if pdfreactor:
+            status, output = util.runcmd('{} --version'.format(pdfreactor))
+            result['pdfreactor'] = output if status == 1 else 'n/a'
+
+        if wkhtmltopdf:
+            status, output = util.runcmd('{} --version'.format(wkhtmltopdf))
+            result['wkhtmltopdf'] = output if status == 0 else 'n/a'
+
+        if calibre:
+            status, output = util.runcmd('{} -convert --version'.format(calibre))
+            result['calibre'] = output if status == 0 else 'n/a'
+
+        if unoconv_bin:
+            status, output = util.runcmd('{} --version'.format(unoconv_bin))
+            result['unoconv'] = output if status == 0 else 'n/a'
+
+        return result
+    
     @view_config(route_name='cleanup', renderer='json', request_method='GET')
     def cleanup_queue(self):
 
@@ -105,7 +140,7 @@ class WebViews(object):
     def poll(self):
         """ Poll status of a job by a given ``job_id``"""
 
-        job_id = self.request.matchdict['jobid']
+        job_id = self.request.matchresult['jobid']
         out_directory = os.path.join(queue_dir, job_id, 'out')
         done_file = os.path.join(out_directory, 'done')
         if os.path.exists(done_file):

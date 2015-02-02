@@ -238,6 +238,16 @@ returns:
 
     {"unoconv": true, "pdfreactor": true, "phantomjs": false, "calibre": true, "princexml": true}
 
+
+Versions of installed converter:
+
+    http://host:port/api/converter-versions
+
+returns:
+
+    {'princexml': 'Version x.y', 'pdfreactor: 'Version a.b.c', ...}
+
+
 Other API methods
 +++++++++++++++++
 
