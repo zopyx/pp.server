@@ -1,3 +1,7 @@
+0.6.1 (2015/02/02)
+------------------
+- add /api/converter-versions to webservice API
+
 0.6.0 (2015/01/26)
 ------------------
 - dropped Python 2.X support, Python 3.3 or higher 

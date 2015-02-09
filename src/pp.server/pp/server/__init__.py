@@ -19,4 +19,5 @@ def main(global_config, **settings):
     config.add_route('version', '/api/version')
     config.add_route('cleanup', '/api/cleanup')
     config.add_route('available_converters', '/api/converters')
+    config.add_route('converter_versions', '/api/converter-versions')
     return config.make_wsgi_app()
