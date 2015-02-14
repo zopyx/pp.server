@@ -3,8 +3,14 @@
 # (C) 2013, ZOPYX,  Tuebingen, Germany
 ################################################################
 
-from pkgutil import extend_path
-__path__ = extend_path(__path__, __name__)
+
+try:
+    import pkg_resources
+    pkg_resources.declare_namespace(__name__)
+except ImportError:
+    import pkgutil
+    __path__ = pkgutil.extend_path(__path__, __name__)
+
 
 from pyramid.config import Configurator
 
