@@ -3,7 +3,8 @@ sdist:
 	bin/python setup.py sdist
 
 release:
-	mkrelease -p -d pypi
+	bin/pip install jarn.mkrelease
+	bin/mkrelease -p -d pypi
 
 docs:
 	cd docs; make html
@@ -17,3 +18,5 @@ test-install: sdist
 	ls dist
 	find dist -name pp.server-\* -exec cp {} /tmp/pp.server.tgz \;
 	/tmp/pp.server/bin/pip install /tmp/pp.server.tgz
+	cp development.ini /tmp/development.ini
+	/tmp/pp.server/bin/pserve /tmp/development.ini
