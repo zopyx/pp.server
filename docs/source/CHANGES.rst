@@ -4,7 +4,6 @@
 - 0.6.x was completely badly packaged
 - changed repo structure
 
--
 0.6.1 (2015/02/02)
 ------------------
 - add /api/converter-versions to webservice API
