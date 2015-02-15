@@ -27,7 +27,7 @@ tests_require = [
 ]
 
 setup(name='pp.server',
-      version='0.6.3',
+      version='0.7.0',
       description='pp.server - Produce & Publish Server',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
@@ -41,7 +41,7 @@ setup(name='pp.server',
       url='http://pypi.python.org/pypi/pp.server',
       keywords='web pyramid pdf unoconv conversion princexml pdfreactor',
       packages=find_packages(),
-      namespace_packages=['pp', 'pp.server'],
+      namespace_packages=['pp'],
       include_package_data=True,
       zip_safe=False,
       install_requires=requires,
