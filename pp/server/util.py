@@ -14,6 +14,7 @@ win32 = (sys.platform=='win32')
 def runcmd(cmd):                
     """ Execute a command using the subprocess module """
 
+    cmd = cmd.encode('utf8')
     LOG.info(cmd)
     if win32:
         cmd = cmd.replace('\\', '/')
