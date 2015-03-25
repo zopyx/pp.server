@@ -7,8 +7,7 @@
 # Usage:
 # docker run -p 8888:6543 zopyx/pp.server
 
-#FROM dockerfile/java:oracle-java7
-FROM java:8
+FROM ubuntu 
 
 MAINTAINER Andreas Jung <info@zopyx.com>
 
@@ -16,27 +15,24 @@ RUN apt-get update
 RUN apt-get install -y \
     curl \
     build-essential \
+    python3 \
     libssl-dev \
-    libxml2-dev \
-    libxslt1-dev \
     libbz2-dev \
     zlib1g-dev \
-    python3-setuptools \
-    python3-dev \
     libreadline-gplv2-dev \
-    python-imaging \
-    python-dev \
     libxml2-dev \
     libxslt1-dev \
+    libtiff5 \
     wget \
     fontconfig  \
     libfontconfig1  \
     libxrender1  \
     libgif4 \
     sudo \
-    python3.4-venv \
     xfonts-base \
     xfonts-75dpi
+
+RUN apt-get install -y unzip
 
 RUN mkdir -p /opt/pp
 RUN cd /opt/pp
@@ -47,7 +43,7 @@ RUN unzip p.zip
 RUN rm p.zip
 
 # PDFREACTOR
-RUN wget -nv -O p.tgz "http://www.pdfreactor.com/download/get/?product=pdfreactor&type=unix&jre=false"
+RUN wget -nv -O p.tgz "http://www.pdfreactor.com/download/get/?product=pdfreactor&type=unix-x64&jre=true" 
 RUN tar xfvz p.tgz
 RUN rm p.tgz 
 
@@ -62,10 +58,11 @@ RUN dpkg --install prince.deb
 RUN rm prince.deb
 
 # CALIBRE
-RUN wget -nv -O- https://raw.githubusercontent.com/kovidgoyal/calibre/master/setup/linux-installer.py | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('/opt')"
+#RUN wget -nv -O- https://raw.githubusercontent.com/kovidgoyal/calibre/master/setup/linux-installer.py | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('/opt')"
 
 RUN useradd ppserver
-RUN pyvenv-3.4 .  
+
+RUN pyvenv-3.4 x  
 RUN bin/python --version
 RUN bin/pip install pp.server
 ADD development.ini  /tmp/development.ini
