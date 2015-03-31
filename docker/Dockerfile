@@ -7,12 +7,13 @@
 # Usage:
 # docker run -p 8888:6543 zopyx/pp.server
 
-FROM ubuntu 
+FROM centos
 
 MAINTAINER Andreas Jung <info@zopyx.com>
 
-RUN apt-get update
-RUN apt-get install -y \
+RUN yum update
+RUN yum upgrade
+RUN yum install -y \
     curl \
     build-essential \
     python3 \
@@ -30,9 +31,8 @@ RUN apt-get install -y \
     libgif4 \
     sudo \
     xfonts-base \
+    unzip \
     xfonts-75dpi
-
-RUN apt-get install -y unzip
 
 RUN mkdir -p /opt/pp
 RUN cd /opt/pp
