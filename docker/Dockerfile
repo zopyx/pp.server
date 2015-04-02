@@ -7,32 +7,11 @@
 # Usage:
 # docker run -p 8888:6543 zopyx/pp.server
 
-FROM centos
-
+FROM fedora:latest
 MAINTAINER Andreas Jung <info@zopyx.com>
-
-RUN yum update
-RUN yum upgrade
-RUN yum install -y \
-    curl \
-    build-essential \
-    python3 \
-    libssl-dev \
-    libbz2-dev \
-    zlib1g-dev \
-    libreadline-gplv2-dev \
-    libxml2-dev \
-    libxslt1-dev \
-    libtiff5 \
-    wget \
-    fontconfig  \
-    libfontconfig1  \
-    libxrender1  \
-    libgif4 \
-    sudo \
-    xfonts-base \
-    unzip \
-    xfonts-75dpi
+RUN yum install -y wget tar  unzip python3-virtualenv
+RUN yum update -y
+Run yum upgrade -y
 
 RUN mkdir -p /opt/pp
 RUN cd /opt/pp
@@ -48,29 +27,29 @@ RUN tar xfvz p.tgz
 RUN rm p.tgz 
 
 # WKHTMLTOPDF
-#RUN wget -nv  -O wk.deb "http://garr.dl.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-trusty-amd64.deb"
+#RUN wget -nv  -O wk.deb "http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-wheezy-amd64.deb?r=http%3A%2F%2Fwkhtmltopdf.org%2Fdownloads.html&ts=1427822456&use_mirror=garr"
 #RUN dpkg --install wk.deb
 #RUN rm wk.deb
 
 # PRINCEXML
-RUN wget -nv -O prince.deb http://www.princexml.com/download/prince_9.0-5_ubuntu14.04_amd64.deb
-RUN dpkg --install prince.deb
-RUN rm prince.deb
+
+RUN wget -nv -O prince.tgz http://www.princexml.com/download/prince-9.0r5-linux-amd64-static.tar.gz 
+RUN mkdir prince
+RUN tar xfz prince.tgz -C prince --strip-components=3 
+RUN rm prince.tgz
 
 # CALIBRE
 #RUN wget -nv -O- https://raw.githubusercontent.com/kovidgoyal/calibre/master/setup/linux-installer.py | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('/opt')"
 
 RUN useradd ppserver
-
-RUN pyvenv-3.4 x  
+RUN pyvenv .  
 RUN bin/python --version
 RUN bin/pip install pp.server
 ADD development.ini  /tmp/development.ini
 
 RUN chown -R ppserver /opt/pp 
-#
 EXPOSE 6543
 RUN ls -la /opt/pp
 run pwd
 USER ppserver
-CMD PATH=$PATH:$PWD/PDFreactor/bin:$PWD/speedata-publisher/bin; echo $PATH; bin/python --version; bin/pserve /tmp/development.ini
+CMD PATH=$PATH:$PWD/prince/bin:$PWD/PDFreactor/bin:$PWD/speedata-publisher/bin; echo $PATH; bin/python --version; bin/pserve /tmp/development.ini
