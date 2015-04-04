@@ -9,7 +9,7 @@
 
 FROM fedora:latest
 MAINTAINER Andreas Jung <info@zopyx.com>
-RUN yum install -y wget tar  unzip python3-virtualenv
+RUN yum install -y wget tar  unzip python3-virtualenv sudo
 RUN yum update -y
 Run yum upgrade -y
 
@@ -21,9 +21,8 @@ RUN wget -nv -O p.zip http://download.speedata.de/publisher/stable/linux/speedat
 RUN unzip p.zip
 RUN rm p.zip
 
-# PDFREACTOR
 RUN wget -nv -O p.tgz "http://www.pdfreactor.com/download/get/?product=pdfreactor&type=unix-x64&jre=true" 
-RUN tar xfvz p.tgz
+RUN tar xfz p.tgz
 RUN rm p.tgz 
 
 # WKHTMLTOPDF
@@ -39,7 +38,7 @@ RUN tar xfz prince.tgz -C prince --strip-components=3
 RUN rm prince.tgz
 
 # CALIBRE
-#RUN wget -nv -O- https://raw.githubusercontent.com/kovidgoyal/calibre/master/setup/linux-installer.py | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('/opt')"
+RUN wget -nv -O- https://raw.githubusercontent.com/kovidgoyal/calibre/master/setup/linux-installer.py | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('/opt')"
 
 RUN useradd ppserver
 RUN pyvenv .  
