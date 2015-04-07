@@ -26,9 +26,10 @@ RUN tar xfz p.tgz
 RUN rm p.tgz 
 
 # WKHTMLTOPDF
-#RUN wget -nv  -O wk.deb "http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-wheezy-amd64.deb?r=http%3A%2F%2Fwkhtmltopdf.org%2Fdownloads.html&ts=1427822456&use_mirror=garr"
-#RUN dpkg --install wk.deb
-#RUN rm wk.deb
+RUN echo
+RUN wget -nv  -O wk.rpm https://kojipkgs.fedoraproject.org//packages/wkhtmltopdf/0.12.2.1/1.fc21/x86_64/wkhtmltopdf-0.12.2.1-1.fc21.x86_64.rpm 
+RUN yum install -y wk.rpm 
+RUn rm wk.rpm
 
 # PRINCEXML
 
