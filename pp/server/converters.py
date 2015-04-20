@@ -102,7 +102,7 @@ def pdf(work_dir, work_file, converter, cmd_options):
         cmd = '{} {} -a links -a bookmarks -v debug "{}" "{}"'.format(pdfreactor, cmd_options, source_html, target_filename) 
 
     elif converter == 'wkhtmltopdf':
-        if not pdfreactor:
+        if not wkhtmltopdf:
             return dict(status=9999,
                         output=u'wkhtmltopdf not installed')
         cmd = '{} {} "{}" "{}"'.format(wkhtmltopdf, cmd_options, source_html, target_filename) 
