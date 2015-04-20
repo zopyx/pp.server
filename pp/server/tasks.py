@@ -18,7 +18,7 @@ def unoconv(job_id, work_dir, input_filename, output_format):
     """ asyncronous Unoconv processing """
     current_task.update_state(state='PROGRESS',
                               meta=dict(job_id=job_id, work_dir=work_dir))
-    result = converters.unoconv(work_dir, input_filename, output_format)
+    result = converters.unoconv(work_dir, input_filename, output_format, cmd_options='')
     if result['status'] == 0:
         current_task.update_state(state='OK', meta=result)
     else:
