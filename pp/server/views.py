@@ -41,7 +41,7 @@ class WebViews(object):
 
         authenticator = self.request.registry.settings.get('pp.authenticator')
         if not authenticator:
-            return 
+            return
 
         method = getattr(authorization, authenticator, None)
         if method is None:
@@ -112,7 +112,7 @@ class WebViews(object):
             result['unoconv'] = output if status == 0 else 'n/a'
 
         return result
-    
+
     @view_config(route_name='cleanup', renderer='json', request_method='GET')
     def cleanup_queue(self):
 
@@ -140,7 +140,7 @@ class WebViews(object):
     def poll(self):
         """ Poll status of a job by a given ``job_id``"""
 
-        job_id = self.request.matchresult['jobid']
+        job_id = self.request.matchdict['jobid']
         out_directory = os.path.join(queue_dir, job_id, 'out')
         done_file = os.path.join(out_directory, 'done')
         if os.path.exists(done_file):
@@ -244,7 +244,7 @@ class WebViews(object):
             LOG.info('Queued pdf request({})'.format(new_id))
             return dict(id=new_id, message=u'Conversion request queued')
         else:
-            ts = time.time()                                               
+            ts = time.time()
             LOG.info('START: pdf({}, {}, {}, {})'.format(new_id, work_file, converter, async))
             result = converters.pdf(work_dir, work_file, converter, cmd_options)
             duration = time.time() - ts
