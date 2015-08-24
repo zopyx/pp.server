@@ -9,13 +9,21 @@
 
 FROM fedora:latest
 MAINTAINER Andreas Jung <info@zopyx.com>
-RUN yum install -y wget tar  unzip python3-virtualenv sudo
+RUN yum install -y wget tar  unzip python3-virtualenv sudo java-1.8.0-openjdk-headless.x86_64
 RUN yum update -y
 Run yum upgrade -y
 
 RUN mkdir -p /opt/pp
 RUN cd /opt/pp
 WORKDIR /opt/pp
+
+RUN wget -nv -O p.tgz https://github.com/dita-ot/dita-ot/releases/download/2.1/dita-ot-2.1.0.tar.gz 
+RUN tar xfvz p.tgz 
+RUN rm p.tgz
+
+RUN wget -nv -O p.zip http://www.xmlmind.com/ditac/_download/ditac-2_5_6.zip 
+RUN unzip p.zip
+RUN rm p.zip
 
 RUN wget -nv -O p.zip http://download.speedata.de/publisher/stable/linux/speedata-publisher-linux-amd64-2.2.0.zip
 RUN unzip p.zip
@@ -52,4 +60,4 @@ EXPOSE 6543
 RUN ls -la /opt/pp
 run pwd
 USER ppserver
-CMD PATH=$PATH:$PWD/prince/bin:$PWD/PDFreactor/bin:$PWD/speedata-publisher/bin; echo $PATH; bin/python --version; bin/pserve /tmp/development.ini
+CMD PATH=$PATH:$PWD/dita-ot-2.1.0/bin:$PWD/ditac-2_5_6/bin:$PWD/prince/bin:$PWD/PDFreactor/bin:$PWD/speedata-publisher/bin; echo $PATH; bin/python --version; bin/pserve /tmp/development.ini 
