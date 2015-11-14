@@ -83,6 +83,8 @@ def pdf(work_dir, work_file, converter, cmd_options):
     zf = zipfile.ZipFile(work_file)
     for name in zf.namelist():
         filename = os.path.join(work_dir, name)
+        if not os.path.exists(os.path.dirname(filename)):
+            os.makedirs(os.path.dirname(filename))
         with open(filename, 'wb') as fp:
             fp.write(zf.read(name))
 

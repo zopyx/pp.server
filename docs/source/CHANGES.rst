@@ -1,3 +1,7 @@
+0.7.4 (2015/11/14)
+------------------
+- support for nested uploaded ZIP files
+
 0.7.3 (2015/11/14)
 ------------------
 - support for Vivliostyle Formatter
