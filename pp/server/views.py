@@ -71,12 +71,14 @@ class WebViews(object):
         from pp.server.converters import unoconv_bin
         from pp.server.converters import publisher
         from pp.server.converters import wkhtmltopdf
+        from pp.server.converters import vivlio
         return dict(princexml=princexml is not None,
                     pdfreactor=pdfreactor is not None,
                     phantomjs=phantomjs is not None,
                     calibre=calibre is not None,
                     unoconv=unoconv_bin is not None,
                     wkhtmltopdf=wkhtmltopdf is not None,
+                    vivliostyle=vivlio is not None,
                     publisher=publisher is not None)
 
     @view_config(route_name='converter_versions', renderer='json', request_method='GET')
@@ -88,6 +90,7 @@ class WebViews(object):
         from pp.server.converters import unoconv_bin
         from pp.server.converters import publisher
         from pp.server.converters import wkhtmltopdf
+        from pp.server.converters import vivlio
 
         result = dict()
 
@@ -109,6 +112,10 @@ class WebViews(object):
 
         if unoconv_bin:
             status, output = util.runcmd('{} --version'.format(unoconv_bin))
+            result['unoconv'] = output if status == 0 else 'n/a'
+
+        if vivlio:
+            status, output = util.runcmd('{}'.format(vivlio))
             result['unoconv'] = output if status == 0 else 'n/a'
 
         return result

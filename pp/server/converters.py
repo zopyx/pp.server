@@ -39,6 +39,10 @@ if util.which('sp'):
 elif os.path.exists('bin/sp'):
     publisher = 'bin/sp'
 
+vivlio = None
+if util.which('vivliostyle-formatter'):
+    vivlio = 'vivliostyle-formatter'
+
 calibre = None
 if util.which('ebook-convert'):
     calibre = 'ebook-convert'
@@ -125,6 +129,15 @@ def pdf(work_dir, work_file, converter, cmd_options):
             return dict(status=9999,
                         output=u'Calibre not installed')
         cmd = '{} "{}" "{}" {}'.format(calibre, source_html, target_filename, cmd_options)
+
+    elif converter == 'vivliostyle':
+        out_directory = os.path.join(work_dir, 'out')
+        out_filename = 'out.pdf'
+        if not vivlio:
+            return dict(status=9999,
+                        output=u'Vivliostyle not installed')
+        cmd = '{} "{}" --output-dir "{}" --output-file-name "{}" "{}"'.format(vivlio, source_html, out_directory, out_filename, cmd_options)
+        print(cmd)
 
     else:
         return dict(status=9999,
