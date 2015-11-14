@@ -1,3 +1,7 @@
+0.7.3 (2015/11/14)
+------------------
+- support for Vivliostyle Formatter
+
 0.7.2 (2015/04/20)
 ------------------
 - merged https://bitbucket.org/ajung/pp.server/pull-request/1/

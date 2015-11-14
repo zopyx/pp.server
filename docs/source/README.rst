@@ -13,6 +13,7 @@ HTML/XML + assets to PDF using one of the following external PDF converters:
 - PhantomJS (free, unsupported)  
 - Speedata Publisher (www.speedata.de, open-source, experimental support)
 - WKHTMLTOPDF (www.wkhtmltopdf.org, open-source, experimental support)
+- Vivliostyle Formatter (www.vivliostyle.com, open-source, experimental support)
 
 In addition there is experimental support for generating EPUB documents
 using ``Calibre`` (www.calibre.org, open-source).
@@ -36,6 +37,7 @@ Requirements
   - Speedata Publisher: ``sp``
   - Calibre: ``ebook-convert``
   - WKHTMLTOPDF: ``wkhtmltopdf``    
+  - Vivliostyle: ``vivliostyle-formatter``    
 
   must be in the $PATH. Please refer to the installation documentation
   of the individual products.
@@ -100,6 +102,8 @@ must be included in the ``$PATH`` of your server.
 
 - ``sp`` for the Speedata Publisher
 
+- ``vivliostyle`` for the Vivliostyle Formatter
+
 API documentation
 -----------------
 
@@ -134,7 +138,7 @@ with the following parameters:
 - ``file`` - the ZIP archive (multi/part encoding)
 
 - ``converter`` - a string that determines the the PDF
-  converter to be used (either ``princexml``, ``pdfreactor``, ``phantomjs`` 
+  converter to be used (either ``princexml``, ``pdfreactor``, ``phantomjs``, ``vivliostyle``,
   or ``calibre`` for generating EPUB content)
 
 - ``async`` - asynchronous ("1") or synchronous conversion ("0", default)
