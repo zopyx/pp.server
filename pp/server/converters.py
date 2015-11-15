@@ -73,7 +73,7 @@ def unoconv(work_dir, input_filename, output_format, cmd_options):
                 out_directory=out_directory)
 
 
-def pdf(work_dir, work_file, converter, cmd_options):
+def pdf(work_dir, work_file, converter, cmd_options, source_filename='index.html'):
     """ Converter a given ZIP file
         containing input files (HTML + XML) and asset files
         to PDF.
@@ -88,7 +88,7 @@ def pdf(work_dir, work_file, converter, cmd_options):
         with open(filename, 'wb') as fp:
             fp.write(zf.read(name))
 
-    source_html = os.path.join(work_dir, 'index.html')
+    source_html = os.path.join(work_dir, source_filename)
 
     if converter == 'calibre':
         target_filename = os.path.join(work_dir, 'out', 'out.epub')
