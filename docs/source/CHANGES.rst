@@ -1,3 +1,7 @@
+0.7.5 (2015/11/18)
+------------------
+- fixed race condition while creating directories
+
 0.7.4 (2015/11/14)
 ------------------
 - support for nested uploaded ZIP files

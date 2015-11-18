@@ -237,8 +237,9 @@ class WebViews(object):
 
         new_id = str(uuid.uuid4())
         work_dir = os.path.join(queue_dir, new_id)
-        os.mkdir(work_dir)
-        os.mkdir(os.path.join(work_dir, 'out'))
+        out_dir = os.path.join(work_dir, 'out')
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
         work_file = os.path.join(work_dir, 'in.zip')
         with open(work_file, 'wb') as fp:
             fp.write(zip_data)
