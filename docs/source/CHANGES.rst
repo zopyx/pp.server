@@ -1,3 +1,7 @@
+0.7.6 (2015/11/30)
+------------------
+- support for PDFreactor 8
+
 0.7.5 (2015/11/18)
 ------------------
 - fixed race condition while creating directories

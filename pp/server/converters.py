@@ -15,6 +15,12 @@ if util.which('pdfreactor'):
 elif os.path.exists('bin/pdfreactor'):
     pdfreactor = 'bin/pdfreactor'
 
+pdfreactor8 = None
+if util.which('pdfreactor8'):
+    pdfreactor8 = 'pdfreactor8'
+elif os.path.exists('bin/pdfreactor8'):
+    pdfreactor8 = 'bin/pdfreactor8'
+
 wkhtmltopdf= None
 if util.which('wkhtmltopdf'):
     wkhtmltopdf = 'wkhtmltopdf'
@@ -106,6 +112,12 @@ def pdf(work_dir, work_file, converter, cmd_options, source_filename='index.html
             return dict(status=9999,
                         output=u'PDFreactor not installed')
         cmd = '{} {} -a links -a bookmarks -v debug "{}" "{}"'.format(pdfreactor, cmd_options, source_html, target_filename) 
+
+    elif converter == 'pdfreactor8':
+        if not pdfreactor8:
+            return dict(status=9999,
+                        output=u'PDFreactor 8 not installed')
+        cmd = '{} {} --addLinks --addBookmarks --logLevel debug -i "{}" -o "{}"'.format(pdfreactor8, cmd_options, source_html, target_filename) 
 
     elif converter == 'wkhtmltopdf':
         if not wkhtmltopdf:

@@ -32,7 +32,8 @@ Requirements
 - the external binaries 
 
   - PrinceXML: ``prince``, 
-  - PDFreactor: ``pdfreactor``,  
+  - PDFreactor up to version 7: ``pdfreactor``,  
+  - PDFreactor version 8 or higher: ``pdfreactor8``,  
   - Unoconv: ``unoconv`` 
   - Speedata Publisher: ``sp``
   - Calibre: ``ebook-convert``
@@ -92,7 +93,9 @@ must be included in the ``$PATH`` of your server.
 
 - ``prince`` for PrinceXML
 
-- ``pdfreactor`` for PDFreactor
+- ``pdfreactor`` for PDFreactor 7
+
+- ``pdfreactor8`` for PDFreactor 8 or higher
 
 - ``phantomjs`` for PhantomJS
 

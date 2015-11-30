@@ -66,6 +66,7 @@ class WebViews(object):
     def available_converters(self):
         from pp.server.converters import princexml
         from pp.server.converters import pdfreactor
+        from pp.server.converters import pdfreactor8
         from pp.server.converters import phantomjs
         from pp.server.converters import calibre
         from pp.server.converters import unoconv_bin
@@ -74,6 +75,7 @@ class WebViews(object):
         from pp.server.converters import vivlio
         return dict(princexml=princexml is not None,
                     pdfreactor=pdfreactor is not None,
+                    pdfreactor8=pdfreactor8 is not None,
                     phantomjs=phantomjs is not None,
                     calibre=calibre is not None,
                     unoconv=unoconv_bin is not None,
@@ -85,6 +87,7 @@ class WebViews(object):
     def converter_versions(self):
         from pp.server.converters import princexml
         from pp.server.converters import pdfreactor
+        from pp.server.converters import pdfreactor8
         from pp.server.converters import phantomjs
         from pp.server.converters import calibre
         from pp.server.converters import unoconv_bin
@@ -101,6 +104,10 @@ class WebViews(object):
         if pdfreactor:
             status, output = util.runcmd('{} --version'.format(pdfreactor))
             result['pdfreactor'] = output if status == 1 else 'n/a'
+
+        if pdfreactor8:
+            status, output = util.runcmd('{} --version'.format(pdfreactor8))
+            result['pdfreactor8'] = output if status == 1 else 'n/a'
 
         if wkhtmltopdf:
             status, output = util.runcmd('{} --version'.format(wkhtmltopdf))
