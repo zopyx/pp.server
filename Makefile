@@ -10,7 +10,7 @@ docs:
 	cd docs; make html
 
 upload-docs:
-	python setup.py upload_docs --upload-dir docs/build/html
+	bin/python setup.py upload_docs --upload-dir docs/build/html
 
 test-install: sdist
 	rm -fr /tmp/pp.server
