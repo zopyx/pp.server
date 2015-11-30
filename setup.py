@@ -53,6 +53,7 @@ setup(name='pp.server',
       entry_points="""\
       [console_scripts]
       unoconv = pp.server.unoconv:main
+      pdfreactor8=pp.server.pdfreactor8:main
       [paste.app_factory]
       main = pp.server:main
       """,
