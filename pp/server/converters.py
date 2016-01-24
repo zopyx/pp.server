@@ -49,6 +49,10 @@ vivlio = None
 if util.which('vivliostyle-formatter'):
     vivlio = 'vivliostyle-formatter'
 
+antennahouse = None
+if util.which('run.sh'):
+    antennahouse = 'run.sh'
+
 calibre = None
 if util.which('ebook-convert'):
     calibre = 'ebook-convert'
@@ -150,8 +154,14 @@ def pdf(work_dir, work_file, converter, cmd_options, source_filename='index.html
         if not vivlio:
             return dict(status=9999,
                         output=u'Vivliostyle not installed')
-        cmd = '{} "{}" --output-dir "{}" --output-file-name "{}" "{}"'.format(vivlio, source_html, out_directory, out_filename, cmd_options)
-        print(cmd)
+        cmd = '{} "{}" --output "{}/{}" "{}"'.format(vivlio, source_html, out_directory, out_filename, cmd_options)
+    elif converter == 'antennahouse':
+        out_directory = os.path.join(work_dir, 'out')
+        out_filename = 'out.pdf'
+        if not antennahouse:
+            return dict(status=9999,
+                        output=u'Antennahouse not installed')
+        cmd = '{} {} -d "{}" -o "{}/{}"'.format(antennahouse, cmd_options, source_html, out_directory, out_filename)
 
     else:
         return dict(status=9999,

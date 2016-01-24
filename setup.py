@@ -27,7 +27,7 @@ tests_require = [
 ]
 
 setup(name='pp.server',
-      version='0.7.6',
+      version='0.7.7',
       description='pp.server - Produce & Publish Server',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[

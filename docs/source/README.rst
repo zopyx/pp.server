@@ -13,7 +13,8 @@ HTML/XML + assets to PDF using one of the following external PDF converters:
 - PhantomJS (free, unsupported)  
 - Speedata Publisher (www.speedata.de, open-source, experimental support)
 - WKHTMLTOPDF (www.wkhtmltopdf.org, open-source, experimental support)
-- Vivliostyle Formatter (www.vivliostyle.com, open-source, experimental support)
+- Vivliostyle Formatter (www.vivliostyle.com, commercial, experimental support)
+- Antennahouse 6.2 (www.antennahouse.com, commercial)
 
 In addition there is experimental support for generating EPUB documents
 using ``Calibre`` (www.calibre.org, open-source).
@@ -39,6 +40,7 @@ Requirements
   - Calibre: ``ebook-convert``
   - WKHTMLTOPDF: ``wkhtmltopdf``    
   - Vivliostyle: ``vivliostyle-formatter``    
+  - Antennahouse: ``run.sh``    
 
   must be in the $PATH. Please refer to the installation documentation
   of the individual products.
@@ -106,6 +108,8 @@ must be included in the ``$PATH`` of your server.
 - ``sp`` for the Speedata Publisher
 
 - ``vivliostyle`` for the Vivliostyle Formatter
+
+- ``antennahouse`` for the Antennahouse
 
 API documentation
 -----------------

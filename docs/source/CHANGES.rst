@@ -1,3 +1,8 @@
+0.7.7 (2016/01/24)
+------------------
+- updated support for latest Vivliostyle formatter
+- added support for Antennahouse Formatter
+
 0.7.6 (2015/11/30)
 ------------------
 - support for PDFreactor 8
