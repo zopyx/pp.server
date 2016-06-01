@@ -1,3 +1,7 @@
+0.7.10 (2016/06/01)
+------------------
+- updated to Pyramid 1.7
+
 0.7.7 (2016/01/24)
 ------------------
 - updated support for latest Vivliostyle formatter
