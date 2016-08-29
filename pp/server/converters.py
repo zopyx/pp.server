@@ -16,10 +16,10 @@ elif os.path.exists('bin/pdfreactor'):
     pdfreactor = 'bin/pdfreactor'
 
 pdfreactor8 = None
-if util.which('pdfreactor8'):
-    pdfreactor8 = 'pdfreactor8'
-elif os.path.exists('bin/pdfreactor8'):
-    pdfreactor8 = 'bin/pdfreactor8'
+if util.which('pdfreactor.py'):
+    pdfreactor8 = 'pdfreactor.py'
+elif os.path.exists('bin/pdfreactor.py'):
+    pdfreactor8 = 'bin/pdfreactor.py'
 
 wkhtmltopdf= None
 if util.which('wkhtmltopdf'):

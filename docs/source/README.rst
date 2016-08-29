@@ -34,7 +34,7 @@ Requirements
 
   - PrinceXML: ``prince``, 
   - PDFreactor up to version 7: ``pdfreactor``,  
-  - PDFreactor version 8 or higher: ``pdfreactor8``,  
+  - PDFreactor version 8 or higher: ``pdfreactor.py``,  
   - Unoconv: ``unoconv`` 
   - Speedata Publisher: ``sp``
   - Calibre: ``ebook-convert``
