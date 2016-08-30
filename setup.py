@@ -17,6 +17,7 @@ requires = [
     'sqlalchemy',
     'celery',
     'flower',
+    'circus',
     'waitress',
     'plac',
     'pp.client-python'

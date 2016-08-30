@@ -1,3 +1,9 @@
+0.7.13 (2016/08/30)
+-------------------
+
+- added ``circus`` dependency in order to provide daemonizing
+  support out of the box
+
 0.7.12 (2016/08/29)
 -------------------
 - fix for PDFreactor 8
