@@ -79,13 +79,22 @@ Installation
     host = 127.0.0.1
     port = 6543
 
+- create a ``circus.ini`` configuration file (and change it according to your needs)::
+
+    [watcher:pserve]
+    cmd = bin/pserve server.ini
+
+    [env:pserve]
+    PATH = $PATH
+
+
 - start the server (in foreground)::
 
     bin/pserve server.ini 
 
 - or start it in background::
 
-    bin/pserve server.ini  --daemon
+    bin/circus circus.ini  --daemon
 
 Converter requirements
 ----------------------
