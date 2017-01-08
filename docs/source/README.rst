@@ -28,7 +28,7 @@ The web service provides both synchronous and asynchronous operations.
 Requirements
 ------------
 
-- Python 3.3 or higher, no support for Python 2.x
+- Python 3.5 or higher, no support for Python 2.x
 
 - the external binaries 
 
