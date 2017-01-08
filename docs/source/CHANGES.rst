@@ -1,3 +1,8 @@
+1.0.0 (2017/01/08)
+-------------------
+- first official release
+- requires Python 3.5 or higher
+
 0.7.13 (2016/08/30)
 -------------------
 
