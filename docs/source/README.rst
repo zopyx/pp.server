@@ -94,7 +94,7 @@ Installation
 
 - or start it in background::
 
-    bin/circus circus.ini  --daemon
+    bin/circusd circus.ini  --daemon
 
 Converter requirements
 ----------------------
