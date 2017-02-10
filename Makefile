@@ -14,7 +14,7 @@ upload-docs:
 
 test-install: sdist
 	rm -fr /tmp/pp.server
-	virtualenv-3.4 /tmp/pp.server
+	virtualenv-3.6 /tmp/pp.server
 	ls dist
 	find dist -name pp.server-\* -exec cp {} /tmp/pp.server.tgz \;
 	/tmp/pp.server/bin/pip install /tmp/pp.server.tgz
