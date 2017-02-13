@@ -26,7 +26,7 @@ if util.which('wkhtmltopdf'):
     wkhtmltopdf = 'wkhtmltopdf'
 elif os.path.exists('bin/wkhtmltopdf'):
     wkhtmltopdf = 'bin/wkhtmltopdf'
-    
+
 princexml = None
 if util.which('prince'):
     princexml = 'prince'
@@ -109,38 +109,38 @@ def pdf(work_dir, work_file, converter, cmd_options, source_filename='index.html
         if not princexml:
             return dict(status=9999,
                         output=u'PrinceXML not installed')
-        cmd = '{} {} -v "{}" "{}"'.format(princexml, cmd_options, source_html, target_filename) 
+        cmd = '{} {} -v "{}" -o "{}"'.format(princexml, cmd_options, source_html, target_filename)
 
     elif converter == 'pdfreactor':
         if not pdfreactor:
             return dict(status=9999,
                         output=u'PDFreactor not installed')
-        cmd = '{} {} -a links -a bookmarks -v debug "{}" "{}"'.format(pdfreactor, cmd_options, source_html, target_filename) 
+        cmd = '{} {} -a links -a bookmarks -v debug "{}" "{}"'.format(pdfreactor, cmd_options, source_html, target_filename)
 
     elif converter == 'pdfreactor8':
         if not pdfreactor8:
             return dict(status=9999,
                         output=u'PDFreactor 8 not installed')
-        cmd = '{} {} --addLinks --addBookmarks --logLevel debug -i "{}" -o "{}"'.format(pdfreactor8, cmd_options, source_html, target_filename) 
+        cmd = '{} {} --addLinks --addBookmarks --logLevel debug -i "{}" -o "{}"'.format(pdfreactor8, cmd_options, source_html, target_filename)
 
     elif converter == 'wkhtmltopdf':
         if not wkhtmltopdf:
             return dict(status=9999,
                         output=u'wkhtmltopdf not installed')
-        cmd = '{} {} "{}" "{}"'.format(wkhtmltopdf, cmd_options, source_html, target_filename) 
+        cmd = '{} {} "{}" "{}"'.format(wkhtmltopdf, cmd_options, source_html, target_filename)
 
     elif converter == 'publisher':
         if not publisher:
             return dict(status=9999,
                         output=u'Speedata Publisher not installed')
-        cmd = '{} --jobname out --wd "{}" --outputdir "{}/out"'.format(publisher, work_dir, work_dir, cmd_options) 
+        cmd = '{} --jobname out --wd "{}" --outputdir "{}/out"'.format(publisher, work_dir, work_dir, cmd_options)
 
     elif converter == 'phantomjs':
         if not phantomjs:
             return dict(status=9999,
                         output=u'PhantomJS not installed')
         rasterize = pkg_resources.resource_filename('pp.server', 'scripts/rasterize.js')
-        cmd = '{} {} --debug false "{}" "{}" "{}" A4'.format(phantomjs, cmd_options, rasterize, source_html, target_filename) 
+        cmd = '{} {} --debug false "{}" "{}" "{}" A4'.format(phantomjs, cmd_options, rasterize, source_html, target_filename)
 
     elif converter == 'calibre':
         if not calibre:

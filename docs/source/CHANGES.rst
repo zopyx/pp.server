@@ -1,5 +1,10 @@
+1.0.3 (2017/02/13)
+------------------
+
+- calling princexml with explicit option -o (Prince 11 compatibility)
+
 1.0.0 (2017/01/08)
--------------------
+------------------
 - first official release
 - requires Python 3.5 or higher
 
