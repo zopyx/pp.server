@@ -20,6 +20,7 @@ requires = [
     'circus',
     'waitress',
     'plac',
+    'circus',
     'pp.client-python'
     ]
 
