@@ -17,7 +17,6 @@ requires = [
     'sqlalchemy',
     'celery',
     'flower',
-    'circus',
     'waitress',
     'plac',
     'circus',
