@@ -150,7 +150,7 @@ def pdf(work_dir, work_file, converter, cmd_options, source_filename='index.html
         if not weasyprint:
             return dict(status=9999,
                         output=u'weasyprint not installed')
-        cmd = '{} "{}" "{}" {}'.format(weasyprint, cmd_options, source_html, target_filename)
+        cmd = '{} {} "{}" "{}"'.format(weasyprint, cmd_options, source_html, target_filename)
 
     elif converter == 'calibre':
         if not calibre:
