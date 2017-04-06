@@ -45,6 +45,10 @@ if util.which('sp'):
 elif os.path.exists('bin/sp'):
     publisher = 'bin/sp'
 
+weasyprint = None
+if util.which('weasyprint'):
+    weasyprint = 'weasyprint'
+
 vivlio = None
 if util.which('vivliostyle-formatter'):
     vivlio = 'vivliostyle-formatter'
@@ -141,6 +145,12 @@ def pdf(work_dir, work_file, converter, cmd_options, source_filename='index.html
                         output=u'PhantomJS not installed')
         rasterize = pkg_resources.resource_filename('pp.server', 'scripts/rasterize.js')
         cmd = '{} {} --debug false "{}" "{}" "{}" A4'.format(phantomjs, cmd_options, rasterize, source_html, target_filename)
+
+    elif converter == 'weasyprint':
+        if not weasyprint:
+            return dict(status=9999,
+                        output=u'weasyprint not installed')
+        cmd = '{} "{}" "{}" {}'.format(weasyprint, cmd_options, source_html, target_filename)
 
     elif converter == 'calibre':
         if not calibre:

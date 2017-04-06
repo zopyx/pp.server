@@ -74,6 +74,7 @@ class WebViews(object):
         from pp.server.converters import wkhtmltopdf
         from pp.server.converters import vivlio
         from pp.server.converters import antennahouse
+        from pp.server.converters import weasyprint
         return dict(princexml=princexml is not None,
                     pdfreactor=pdfreactor is not None,
                     pdfreactor8=pdfreactor8 is not None,
@@ -82,6 +83,7 @@ class WebViews(object):
                     unoconv=unoconv_bin is not None,
                     wkhtmltopdf=wkhtmltopdf is not None,
                     vivliostyle=vivlio is not None,
+                    weasyprint=weasyprint is not None,
                     antennahouse=antennahouse is not None,
                     publisher=publisher is not None)
 
