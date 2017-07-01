@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Produce &amp; Publish Server</title>
+    <meta name="keywords" content="python web application" />
+    <meta name="description" content="Pyramid web application" />
+    <link href="/static/default.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div id="header">
+        <img src="/static/pp-logo.png" /> 
+        <h1>Produce &amp; Publish Server</h1>
+    </div>
+
+    <form method="POST" action="/upload-action" enctype="multipart/form-data">
+        <input type="file" name="file"/>
+        <br/>
+        <input type="submit" value="Upload" />
+    </form>
+
+    <div id="footer">
+        (C) 2009-2017, ZOPYX, 
+        <a href="http://www.produce-and-publish.info">www.produce-and-publish.info</a>, 
+        <a href="mailto:info@zopyx.com">info@zopyx.com</a> 
+        &bull; Published under the GNU Public License Version 2 (GPL 2)
+    </div>
+
+</body>
+</html>

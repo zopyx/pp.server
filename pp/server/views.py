@@ -13,6 +13,8 @@ import shutil
 import tempfile
 import zipfile
 from pyramid.view import view_config
+from pyramid.response import Response
+from pyramid.response import FileResponse
 
 from pp.server.logger import LOG
 from pp.server import converters
@@ -56,6 +58,38 @@ class WebViews(object):
                     python_version=sys.version,
                     available_converters=available_converters
                     )
+
+    @view_config(route_name='upload', renderer='upload.pt', request_method='GET')
+    def upload_form(self):
+        return dict()
+
+    @view_config(route_name='upload_action', request_method='POST')
+    def upload_action(self):
+
+        params = self.request.params
+        zip_data = params['file'].file.read()
+        converter = params.get('converter', 'princexml')
+        cmd_options = params.get('cmd_options', '')
+
+        new_id = str(uuid.uuid4())
+        work_dir = os.path.join(queue_dir, new_id)
+        out_dir = os.path.join(work_dir, 'out')
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
+        work_file = os.path.join(work_dir, 'in.zip')
+        with open(work_file, 'wb') as fp:
+            fp.write(zip_data)
+
+        result = converters.pdf(work_dir, work_file, converter, cmd_options)
+        if result['status'] == 0:
+            bn = os.path.splitext(os.path.basename(params['file'].filename))[0]
+            response = FileResponse(result['filename'])
+            response.headers['content-type'] = 'application/pdf'
+            response.headers['content-disposition'] = 'attachment; filename={0}.pdf'.format(bn)
+            return response
+        else:
+            return Response(status=500, body='Conversion error')
+
 
     @view_config(route_name='version', renderer='json', request_method='GET')
     def version(self):

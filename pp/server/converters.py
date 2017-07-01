@@ -92,6 +92,8 @@ def pdf(work_dir, work_file, converter, cmd_options, source_filename='index.html
     # unzip archive first
     zf = zipfile.ZipFile(work_file)
     for name in zf.namelist():
+        if name.endswith('/'): # directory
+            continue
         filename = os.path.join(work_dir, name)
         if not os.path.exists(os.path.dirname(filename)):
             os.makedirs(os.path.dirname(filename))

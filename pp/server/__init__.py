@@ -14,6 +14,8 @@ def main(global_config, **settings):
     config.include('pyramid_chameleon')
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
+    config.add_route('upload', '/upload')
+    config.add_route('upload_action', '/upload-action')
     config.scan()
     config.add_route('unoconv_api_1', '/api/1/unoconv')
     config.add_route('pdf_api_1', '/api/1/pdf')
