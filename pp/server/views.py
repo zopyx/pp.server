@@ -62,7 +62,9 @@ class WebViews(object):
 
     @view_config(route_name='upload', renderer='upload.pt', request_method='GET')
     def upload_form(self):
-        return dict()
+        available_converters = sorted(
+            [k for k, v in self.available_converters().items() if v])
+        return dict(available_converters=available_converters)
 
     @view_config(route_name='upload_action', request_method='POST')
     def upload_action(self):

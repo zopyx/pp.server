@@ -17,6 +17,10 @@
     <form method="POST" action="/upload-action" enctype="multipart/form-data">
         <input type="file" name="file"/>
         <br/>
+        <select name="converter">
+            <option tal:repeat="converter available_converters" tal:attributes="value converter" tal:content="converter"/>
+        </select>
+        <br/>
         <input type="submit" value="Upload" />
     </form>
 

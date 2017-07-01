@@ -165,7 +165,7 @@ def pdf(work_dir, work_file, converter, cmd_options, source_filename='index.html
         if not vivlio:
             return dict(status=9999,
                         output=u'Vivliostyle not installed')
-        cmd = '{} "{}" --output "{}/{}" "{}"'.format(
+        cmd = '{} "{}" --output="{}/{}" "{}"'.format(
             vivlio, source_html, out_directory, out_filename, cmd_options)
     elif converter == 'antennahouse':
         out_directory = os.path.join(work_dir, 'out')
