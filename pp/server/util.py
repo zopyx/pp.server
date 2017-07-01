@@ -9,9 +9,10 @@ import tempfile
 from subprocess import Popen, PIPE
 from pp.server.logger import LOG
 
-win32 = (sys.platform=='win32')
+win32 = (sys.platform == 'win32')
 
-def runcmd(cmd):                
+
+def runcmd(cmd):
     """ Execute a command using the subprocess module """
 
     cmd = cmd.encode('utf8')
@@ -24,7 +25,7 @@ def runcmd(cmd):
     else:
         stdin = open('/dev/null')
         stdout = stderr = PIPE
-        p = Popen(cmd, 
+        p = Popen(cmd,
                   shell=True,
                   stdin=stdin,
                   stdout=stdout,
@@ -54,7 +55,7 @@ def checkEnvironment(envname):
 
     if not os.path.exists(dirname):
         LOG.debug('The directory referenced through the environment '
-                  'variable $%s does not exit (%s)' % 
+                  'variable $%s does not exit (%s)' %
                   (envname, dirname))
         return False
     return True
@@ -66,7 +67,7 @@ def which(command):
         is available somewhere within the $PATH and returns
         True or False.
     """
-    path_env = os.environ.get('PATH', '') # also on win32?
+    path_env = os.environ.get('PATH', '')  # also on win32?
     for path in path_env.split(':'):
         fullname = os.path.join(path, command)
         if os.path.exists(fullname):

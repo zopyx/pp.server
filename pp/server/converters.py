@@ -21,7 +21,7 @@ if util.which('pdfreactor.py'):
 elif os.path.exists('bin/pdfreactor.py'):
     pdfreactor8 = 'bin/pdfreactor.py'
 
-wkhtmltopdf= None
+wkhtmltopdf = None
 if util.which('wkhtmltopdf'):
     wkhtmltopdf = 'wkhtmltopdf'
 elif os.path.exists('bin/wkhtmltopdf'):
@@ -69,7 +69,8 @@ def unoconv(work_dir, input_filename, output_format, cmd_options):
 
     base, ext = os.path.splitext(input_filename)
     out_directory = os.path.join(work_dir, 'out')
-    cmd = '{} {} -f "{}" -o "{}" "{}"'.format(unoconv_bin, cmd_options, output_format, out_directory, input_filename)
+    cmd = '{} {} -f "{}" -o "{}" "{}"'.format(
+        unoconv_bin, cmd_options, output_format, out_directory, input_filename)
     status, output = util.runcmd(cmd)
 
     with open(os.path.join(work_dir, 'out', 'output.txt'), 'w') as fp:
@@ -92,7 +93,7 @@ def pdf(work_dir, work_file, converter, cmd_options, source_filename='index.html
     # unzip archive first
     zf = zipfile.ZipFile(work_file)
     for name in zf.namelist():
-        if name.endswith('/'): # directory
+        if name.endswith('/'):  # directory
             continue
         filename = os.path.join(work_dir, name)
         if not os.path.exists(os.path.dirname(filename)):
@@ -111,44 +112,52 @@ def pdf(work_dir, work_file, converter, cmd_options, source_filename='index.html
         if not princexml:
             return dict(status=9999,
                         output=u'PrinceXML not installed')
-        cmd = '{} {} -v "{}" -o "{}"'.format(princexml, cmd_options, source_html, target_filename)
+        cmd = '{} {} -v "{}" -o "{}"'.format(princexml,
+                                             cmd_options, source_html, target_filename)
 
     elif converter == 'pdfreactor':
         if not pdfreactor:
             return dict(status=9999,
                         output=u'PDFreactor not installed')
-        cmd = '{} {} -a links -a bookmarks -v debug "{}" "{}"'.format(pdfreactor, cmd_options, source_html, target_filename)
+        cmd = '{} {} -a links -a bookmarks -v debug "{}" "{}"'.format(
+            pdfreactor, cmd_options, source_html, target_filename)
 
     elif converter == 'pdfreactor8':
         if not pdfreactor8:
             return dict(status=9999,
                         output=u'PDFreactor 8 not installed')
-        cmd = '{} {} --addLinks --addBookmarks --logLevel debug -i "{}" -o "{}"'.format(pdfreactor8, cmd_options, source_html, target_filename)
+        cmd = '{} {} --addLinks --addBookmarks --logLevel debug -i "{}" -o "{}"'.format(
+            pdfreactor8, cmd_options, source_html, target_filename)
 
     elif converter == 'wkhtmltopdf':
         if not wkhtmltopdf:
             return dict(status=9999,
                         output=u'wkhtmltopdf not installed')
-        cmd = '{} {} "{}" "{}"'.format(wkhtmltopdf, cmd_options, source_html, target_filename)
+        cmd = '{} {} "{}" "{}"'.format(
+            wkhtmltopdf, cmd_options, source_html, target_filename)
 
     elif converter == 'publisher':
         if not publisher:
             return dict(status=9999,
                         output=u'Speedata Publisher not installed')
-        cmd = '{} --jobname out --wd "{}" --outputdir "{}/out"'.format(publisher, work_dir, work_dir, cmd_options)
+        cmd = '{} --jobname out --wd "{}" --outputdir "{}/out"'.format(
+            publisher, work_dir, work_dir, cmd_options)
 
     elif converter == 'phantomjs':
         if not phantomjs:
             return dict(status=9999,
                         output=u'PhantomJS not installed')
-        rasterize = pkg_resources.resource_filename('pp.server', 'scripts/rasterize.js')
-        cmd = '{} {} --debug false "{}" "{}" "{}" A4'.format(phantomjs, cmd_options, rasterize, source_html, target_filename)
+        rasterize = pkg_resources.resource_filename(
+            'pp.server', 'scripts/rasterize.js')
+        cmd = '{} {} --debug false "{}" "{}" "{}" A4'.format(
+            phantomjs, cmd_options, rasterize, source_html, target_filename)
 
     elif converter == 'calibre':
         if not calibre:
             return dict(status=9999,
                         output=u'Calibre not installed')
-        cmd = '{} "{}" "{}" {}'.format(calibre, source_html, target_filename, cmd_options)
+        cmd = '{} "{}" "{}" {}'.format(
+            calibre, source_html, target_filename, cmd_options)
 
     elif converter == 'vivliostyle':
         out_directory = os.path.join(work_dir, 'out')
@@ -156,14 +165,16 @@ def pdf(work_dir, work_file, converter, cmd_options, source_filename='index.html
         if not vivlio:
             return dict(status=9999,
                         output=u'Vivliostyle not installed')
-        cmd = '{} "{}" --output "{}/{}" "{}"'.format(vivlio, source_html, out_directory, out_filename, cmd_options)
+        cmd = '{} "{}" --output "{}/{}" "{}"'.format(
+            vivlio, source_html, out_directory, out_filename, cmd_options)
     elif converter == 'antennahouse':
         out_directory = os.path.join(work_dir, 'out')
         out_filename = 'out.pdf'
         if not antennahouse:
             return dict(status=9999,
                         output=u'Antennahouse not installed')
-        cmd = '{} {} -d "{}" -o "{}/{}"'.format(antennahouse, cmd_options, source_html, out_directory, out_filename)
+        cmd = '{} {} -d "{}" -o "{}/{}"'.format(
+            antennahouse, cmd_options, source_html, out_directory, out_filename)
 
     else:
         return dict(status=9999,

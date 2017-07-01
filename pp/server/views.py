@@ -27,7 +27,7 @@ if not os.path.exists(queue_dir):
     os.makedirs(queue_dir)
 
 
-QUEUE_CLEANUP_TIME = 24 * 60 * 60 # 1 day
+QUEUE_CLEANUP_TIME = 24 * 60 * 60  # 1 day
 
 
 class WebViews(object):
@@ -53,7 +53,8 @@ class WebViews(object):
     @view_config(route_name='home', renderer='index.pt', request_method='GET')
     def index(self):
         version = pkg_resources.require('pp.server')[0].version
-        available_converters = sorted([k for k, v in self.available_converters().items() if v])
+        available_converters = sorted(
+            [k for k, v in self.available_converters().items() if v])
         return dict(version=version,
                     python_version=sys.version,
                     available_converters=available_converters
@@ -68,6 +69,8 @@ class WebViews(object):
 
         params = self.request.params
         zip_data = params['file'].file.read()
+        basename = os.path.basename(params['file'].filename)
+        bn, ext = os.path.splitext(basename)
         converter = params.get('converter', 'princexml')
         cmd_options = params.get('cmd_options', '')
 
@@ -80,16 +83,19 @@ class WebViews(object):
         with open(work_file, 'wb') as fp:
             fp.write(zip_data)
 
-        result = converters.pdf(work_dir, work_file, converter, cmd_options)
-        if result['status'] == 0:
-            bn = os.path.splitext(os.path.basename(params['file'].filename))[0]
-            response = FileResponse(result['filename'])
-            response.headers['content-type'] = 'application/pdf'
-            response.headers['content-disposition'] = 'attachment; filename={0}.pdf'.format(bn)
-            return response
+        if ext == '.zip':
+            result = converters.pdf(
+                work_dir, work_file, converter, cmd_options)
+            if result['status'] == 0:
+                response = FileResponse(result['filename'])
+                response.headers['content-type'] = 'application/pdf'
+                response.headers['content-disposition'] = 'attachment; filename={0}.pdf'.format(
+                    bn)
+                return response
+            else:
+                return Response(status=500, body='Conversion error')
         else:
-            return Response(status=500, body='Conversion error')
-
+            return Response(status=500, body='Unknown file type')
 
     @view_config(route_name='version', renderer='json', request_method='GET')
     def version(self):
@@ -151,7 +157,8 @@ class WebViews(object):
             result['wkhtmltopdf'] = output if status == 0 else 'n/a'
 
         if calibre:
-            status, output = util.runcmd('{} -convert --version'.format(calibre))
+            status, output = util.runcmd(
+                '{} -convert --version'.format(calibre))
             result['calibre'] = output if status == 0 else 'n/a'
 
         if unoconv_bin:
@@ -199,22 +206,25 @@ class WebViews(object):
         out_directory = os.path.join(queue_dir, job_id, 'out')
         done_file = os.path.join(out_directory, 'done')
         if os.path.exists(done_file):
-            files = [fname for fname in os.listdir(out_directory) if fname.startswith('out.')]
+            files = [fname for fname in os.listdir(
+                out_directory) if fname.startswith('out.')]
             if files:
-                bin_data = base64.encodestring(open(os.path.join(out_directory, files[0]), 'rb').read())
+                bin_data = base64.encodestring(
+                    open(os.path.join(out_directory, files[0]), 'rb').read())
                 bin_data = bin_data.decode('ascii')
-                output_data = open(os.path.join(out_directory, 'output.txt'), 'r').read()
+                output_data = open(os.path.join(
+                    out_directory, 'output.txt'), 'r').read()
                 return dict(done=True,
                             status=0,
                             data=bin_data,
                             output=output_data)
             else:
-                output_data = open(os.path.join(out_directory, 'output.txt'), 'r').read()
+                output_data = open(os.path.join(
+                    out_directory, 'output.txt'), 'r').read()
                 return dict(done=True,
                             status=-1,
                             output=output_data)
         return dict(done=False)
-
 
     @view_config(route_name='unoconv_api_1', request_method='POST', renderer='json')
     def unoconv(self):
@@ -247,13 +257,17 @@ class WebViews(object):
             return dict(id=new_id, message=u'Conversion request queued')
         else:
             ts = time.time()
-            LOG.info('START: unoconv({}, {}, {}, {})'.format(new_id, work_file, output_format, async))
-            result = converters.unoconv(work_dir, work_file, output_format, cmd_options)
+            LOG.info('START: unoconv({}, {}, {}, {})'.format(
+                new_id, work_file, output_format, async))
+            result = converters.unoconv(
+                work_dir, work_file, output_format, cmd_options)
             duration = time.time() - ts
-            LOG.info('END : unoconv({} {} sec): {}'.format(new_id, duration, result['status']))
+            LOG.info('END : unoconv({} {} sec): {}'.format(
+                new_id, duration, result['status']))
             if result['output']:
-                LOG.info('OUTPUT: unoconv({}):\n{}'.format(new_id, result['output']))
-            if result['status'] == 0: #OK
+                LOG.info('OUTPUT: unoconv({}):\n{}'.format(
+                    new_id, result['output']))
+            if result['status'] == 0:  # OK
                 out_directory = result['out_directory']
                 zip_name = tempfile.mktemp()
                 zip_out = zipfile.ZipFile(zip_name, 'w')
@@ -267,7 +281,7 @@ class WebViews(object):
                 return dict(status='OK',
                             data=bin_data,
                             output=result['output'])
-            else: # error
+            else:  # error
                 return dict(status='ERROR',
                             output=result['output'])
 
@@ -294,26 +308,30 @@ class WebViews(object):
 
         if async:
             result = tasks.pdf.delay(job_id=new_id,
-                            work_dir=work_dir,
-                            work_file=work_file,
-                            converter=converter)
+                                     work_dir=work_dir,
+                                     work_file=work_file,
+                                     converter=converter)
             LOG.info('Queued pdf request({})'.format(new_id))
             return dict(id=new_id, message=u'Conversion request queued')
         else:
             ts = time.time()
-            LOG.info('START: pdf({}, {}, {}, {})'.format(new_id, work_file, converter, async))
-            result = converters.pdf(work_dir, work_file, converter, cmd_options)
+            LOG.info('START: pdf({}, {}, {}, {})'.format(
+                new_id, work_file, converter, async))
+            result = converters.pdf(
+                work_dir, work_file, converter, cmd_options)
             duration = time.time() - ts
-            LOG.info('END : pdf({} {} sec): {}'.format(new_id, duration, result['status']))
+            LOG.info('END : pdf({} {} sec): {}'.format(
+                new_id, duration, result['status']))
             if result['output']:
-                LOG.info('OUTPUT: pdf({}):\n{}'.format(new_id, result['output']))
+                LOG.info('OUTPUT: pdf({}):\n{}'.format(
+                    new_id, result['output']))
             output = result['output']
-            if result['status'] == 0: #OK
+            if result['status'] == 0:  # OK
                 pdf_data = open(result['filename'], 'rb').read()
                 pdf_data = base64.encodestring(pdf_data).decode('ascii')
                 return dict(status='OK',
                             data=pdf_data,
                             output=output)
-            else: # error
+            else:  # error
                 return dict(status='ERROR',
                             output=output)
