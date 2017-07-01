@@ -12,6 +12,8 @@ import pkg_resources
 import shutil
 import tempfile
 import zipfile
+
+from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
 from pyramid.response import Response
 from pyramid.response import FileResponse
@@ -64,13 +66,18 @@ class WebViews(object):
     def upload_form(self):
         available_converters = sorted(
             [k for k, v in self.available_converters().items() if v])
-        return dict(available_converters=available_converters)
+        return dict(request=self.request, available_converters=available_converters)
 
     @view_config(route_name='upload_action', request_method='POST')
     def upload_action(self):
 
         params = self.request.params
-        zip_data = params['file'].file.read()
+        try:
+            zip_data = params['file'].file.read()
+        except AttributeError:
+            msg = 'No file given'
+            return HTTPFound(location=self.request.application_url + '/upload?msg={0}'.format(msg))
+
         basename = os.path.basename(params['file'].filename)
         bn, ext = os.path.splitext(basename)
         converter = params.get('converter', 'princexml')
@@ -95,9 +102,11 @@ class WebViews(object):
                     bn)
                 return response
             else:
-                return Response(status=500, body='Conversion error')
+                msg = 'Unsupported format'
+                return HTTPFound(location=self.request.application_url + '/upload?msg={0}'.format(msg))
         else:
-            return Response(status=500, body='Unknown file type')
+            msg = 'Conversion error'
+            return HTTPFound(location=self.request.application_url + '/upload?msg={0}'.format(msg))
 
     @view_config(route_name='version', renderer='json', request_method='GET')
     def version(self):

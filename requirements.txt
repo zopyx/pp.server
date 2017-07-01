@@ -16,7 +16,7 @@ plac==0.9.6
 plaster==0.5
 plaster-pastedeploy==0.3.1
 pp.client-python==0.4.4
--e git+git@bitbucket.org:ajung/pp.server.git@c182255af193652347e446e9a4fe906b1f0b3f0c#egg=pp.server
+-e git+git@bitbucket.org:ajung/pp.server.git@3f2a3ff586fb3b58a58429645b1e96a93a80c239#egg=pp.server
 psutil==5.2.2
 pyparsing==2.2.0
 pyramid==1.9

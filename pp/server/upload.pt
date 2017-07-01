@@ -14,15 +14,22 @@
         <h1>Produce &amp; Publish Server</h1>
     </div>
 
-    <form method="POST" action="/upload-action" enctype="multipart/form-data">
-        <input type="file" name="file"/>
-        <br/>
-        <select name="converter">
-            <option tal:repeat="converter available_converters" tal:attributes="value converter" tal:content="converter"/>
-        </select>
-        <br/>
-        <input type="submit" value="Upload" />
-    </form>
+    <div class="error" tal:condition="request.params.msg | nothing" tal:content="request.params.msg" />
+
+    <fieldset>
+        <legend>Upload</legend>
+        <form method="POST" action="/upload-action" enctype="multipart/form-data">
+            File: <input type="file" name="file"/>
+            <br/>
+            Converter:
+            <select name="converter">
+                <option tal:repeat="converter available_converters" tal:attributes="value converter" tal:content="converter"/>
+            </select>
+            <br/>
+            <br/>
+            <input type="submit" value="Upload" />
+        </form>
+    </fieldset>
 
     <div id="footer">
         (C) 2009-2017, ZOPYX, 
