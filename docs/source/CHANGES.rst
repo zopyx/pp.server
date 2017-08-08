@@ -1,3 +1,7 @@
+1.0.6 (2017/08/08)
+------------------
+- display available converters during startup
+
 1.0.5 (2017/04/06)
 ------------------
 - support for WeasyPrint

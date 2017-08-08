@@ -22,4 +22,9 @@ def main(global_config, **settings):
     config.add_route('cleanup', '/api/cleanup')
     config.add_route('available_converters', '/api/converters')
     config.add_route('converter_versions', '/api/converter-versions')
+
+    from pp.server.views import WebViews
+    v = WebViews(request=None)
+    installed = [c for c, avail in v.available_converters().items() if avail]
+    print('Installed:', ', '.join(installed))
     return config.make_wsgi_app()
