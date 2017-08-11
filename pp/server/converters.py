@@ -178,6 +178,8 @@ def pdf(work_dir, work_file, converter, cmd_options, source_filename='index.html
                     output=u'Unknown converter "{}"'.format(converter))
 
     status, output = util.runcmd(cmd)
+    if converter == 'publisher':
+        status = 0
 
     with open(os.path.join(work_dir, 'out', 'output.txt'), 'w', encoding='utf8') as fp:
         fp.write(cmd + '\n')
