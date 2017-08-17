@@ -139,10 +139,11 @@ class WebViews(object):
     @view_config(route_name='cleanup', renderer='json', request_method='GET')
     def cleanup_queue(self):
 
+
         try:
-            lc = self.request.registry.settings.last_cleanup
-        except AttributeError:
-            lc = time.time()
+            lc = self.request.registry.settings['last_cleanup']
+        except (KeyError, AttributeError):
+            lc = time.time() - 3600*24*10
             pass
 
         now = time.time()
@@ -156,7 +157,7 @@ class WebViews(object):
                 LOG.debug('Cleanup: {}'.format(fullname))
                 shutil.rmtree(fullname)
                 removed += 1
-        self.request.registry.settings.last_cleanup = time.time()
+        self.request.registry.settings['last_cleanup'] = time.time()
         return dict(directories_removed=removed)
 
     @view_config(route_name='poll_api_1', renderer='json', request_method='GET')

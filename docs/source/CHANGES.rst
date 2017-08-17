@@ -1,3 +1,7 @@
+1.0.7 (2017/08/17)
+------------------
+- fixed a very old bug in cleanup code
+
 1.0.6 (2017/08/08)
 ------------------
 - display available converters during startup
