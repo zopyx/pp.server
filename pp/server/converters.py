@@ -4,6 +4,7 @@
 ################################################################
 
 import os
+import json
 import zipfile
 import pkg_resources
 from pp.server import util
@@ -102,6 +103,21 @@ def pdf(work_dir, work_file, converter, cmd_options, source_filename='index.html
         with open(filename, 'wb') as fp:
             fp.write(zf.read(name))
 
+    # check for project.json
+    json_fn = os.path.join(work_dir, 'project.json')
+    project_data = None
+    if os.path.exists(json_fn):
+        with open(json_fn, 'rb') as fp:
+            project_data = json.load(fp)
+
+    if project_data:
+        converter = project_data.get('converter')
+        cmd = project_data.get('command')
+        cmd = 'cd "{work_dir}"; {cmd}  2>&1'.format(work_dir=work_dir, cmd=cmd)
+        status, output = util.runcmd(cmd)
+        if status != 0:
+            raise RuntimeError('{cmd} failed with exit code {status}'.format(cmd=cmd, status=status))
+    
     source_html = os.path.join(work_dir, source_filename)
 
     if converter == 'calibre':
