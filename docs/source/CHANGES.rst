@@ -1,3 +1,7 @@
+1.0.8 (2017/10/23)
+------------------
+- internal release
+
 1.0.7 (2017/08/17)
 ------------------
 - fixed a very old bug in cleanup code
