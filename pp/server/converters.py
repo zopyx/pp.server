@@ -114,18 +114,19 @@ def pdf(work_dir, work_file, converter, cmd_options, source_filename='index.html
             project_data = json.load(fp)
 
     if project_data:
+        execute_on = project_data.get('execute_on', 'client')
+        if execute_on == 'server':
+            settings = pyramid.threadlocal.get_current_registry().settings
+            remote_exec = asbool(settings.get('remote_execution', 'false'))
+            if not remote_exec:
+                raise RuntimeError('Remote execution is disabled (set remote_execution=true in [app:main])')
 
-        settings = pyramid.threadlocal.get_current_registry().settings
-        remote_exec = asbool(settings.get('remote_execution', 'false'))
-        if not remote_exec:
-            raise RuntimeError('Remote execution is disabled (set remote_execution=true in [app:main])')
-
-        converter = project_data.get('converter')
-        cmd = project_data.get('command')
-        cmd = 'cd "{work_dir}"; {cmd}  2>&1'.format(work_dir=work_dir, cmd=cmd)
-        status, output = util.runcmd(cmd)
-        if status != 0:
-            raise RuntimeError('{cmd} failed with exit code {status}'.format(cmd=cmd, status=status))
+            converter = project_data.get('converter')
+            cmd = project_data.get('command')
+            cmd = 'cd "{work_dir}"; {cmd}  2>&1'.format(work_dir=work_dir, cmd=cmd)
+            status, output = util.runcmd(cmd)
+            if status != 0:
+                raise RuntimeError('{cmd} failed with exit code {status}'.format(cmd=cmd, status=status))
 
     source_html = os.path.join(work_dir, source_filename)
 
