@@ -113,6 +113,7 @@ def pdf(work_dir, work_file, converter, cmd_options, source_filename='index.html
         with open(json_fn, 'rb') as fp:
             project_data = json.load(fp)
 
+    cmd_output = ''
     if project_data:
         execute_on = project_data.get('execute_on', 'client')
         if execute_on == 'server':
@@ -124,7 +125,7 @@ def pdf(work_dir, work_file, converter, cmd_options, source_filename='index.html
             converter = project_data.get('converter')
             cmd = project_data.get('command')
             cmd = 'cd "{work_dir}"; {cmd}  2>&1'.format(work_dir=work_dir, cmd=cmd)
-            status, output = util.runcmd(cmd)
+            status, cmd_output = util.runcmd(cmd)
             if status != 0:
                 raise RuntimeError('{cmd} failed with exit code {status}'.format(cmd=cmd, status=status))
 
@@ -208,11 +209,13 @@ def pdf(work_dir, work_file, converter, cmd_options, source_filename='index.html
         status = 0
 
     with open(os.path.join(work_dir, 'out', 'output.txt'), 'w', encoding='utf8') as fp:
+        if cmd_output:
+            fp.write(cmd_output + '\n\n')
         fp.write(cmd + '\n')
         fp.write(output + '\n')
     with open(os.path.join(work_dir, 'out', 'done'), 'w') as fp:
         fp.write('done')
 
     return dict(status=status,
-                output=output,
+                output=cmd_output + output,
                 filename=target_filename)
