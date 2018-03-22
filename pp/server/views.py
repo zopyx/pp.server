@@ -139,6 +139,8 @@ class WebViews(object):
     @view_config(route_name='cleanup', renderer='json', request_method='GET')
     def cleanup_queue(self):
 
+        if not os.path.exists(queue_dir):
+            os.makedirs(queue_dir)
 
         try:
             lc = self.request.registry.settings['last_cleanup']
