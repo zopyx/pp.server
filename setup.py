@@ -19,9 +19,9 @@ requires = [
     'flower',
     'waitress',
     'plac',
+    'tornado==4.2',
     'circus',
     'pp.client-python',
-    'tornado==4.2',
     ]
 
 tests_require = [
@@ -29,7 +29,7 @@ tests_require = [
 ]
 
 setup(name='pp.server',
-      version='1.0.8.4',
+      version='1.0.8.5',
       description='pp.server - Produce & Publish Server',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
