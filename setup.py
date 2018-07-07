@@ -13,10 +13,9 @@ CHANGES = open(os.path.join(here, 'docs', 'source', 'CHANGES.rst')).read()
 requires = [
     'pyramid',
     'pyramid_chameleon',
+    'easyprocess',
     'waitress',
     'plac',
-    'circus',
-    'pp.client-python'
     ]
 
 tests_require = [
