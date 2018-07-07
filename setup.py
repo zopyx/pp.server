@@ -15,6 +15,7 @@ requires = [
     'pyramid_chameleon',
     'easyprocess',
     'gunicorn',
+    'circus',
     'plac',
     ]
 
