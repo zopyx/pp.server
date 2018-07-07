@@ -12,14 +12,22 @@
   <div id="header">
       <img src="/static/pp-logo.png" /> 
       <h1>Produce &amp; Publish Server</h1>
-      <h3>Server version ${version} </h3>
-      <h3>Python version ${python_version} </h3>
-      <h3>Available converters:</h3>
-      <ul>
-          <li tal:repeat="converter available_converters">
-              <span tal:content="converter" />
-          </li>
-      </ul>
+      <h3>Server version: ${version} </h3>
+      <h3>Python version: ${python_version} </h3>
+
+      <table border="1">
+          <thead>
+              <th>Converter</th>
+              <th>Version</th>
+          </thead>
+          <tbody>
+              <tr tal:repeat="k converter_versions">
+                  <td>${k}</td>
+                  <td class="pre">${converter_versions[k]}</td>
+              </tr>
+          </tbody>
+      </table>
+
   </div>
   <br/>
 

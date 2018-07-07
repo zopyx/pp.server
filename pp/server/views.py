@@ -40,7 +40,7 @@ class WebViews(object):
         return dict(
             version=version,
             python_version=sys.version,
-            available_converters=available_converters,
+            converter_versions=self.converter_versions(),
         )
 
     @view_config(route_name="version", renderer="json", request_method="GET")
@@ -103,7 +103,7 @@ class WebViews(object):
 
         if pdfreactor8:
             status, output = util.runcmd("{} --version".format(pdfreactor8))
-            result["pdfreactor8"] = output if status == 1 else "n/a"
+            result["pdfreactor8"] = output if status == 0 else "n/a"
 
         if wkhtmltopdf:
             status, output = util.runcmd("{} --version".format(wkhtmltopdf))
@@ -125,6 +125,9 @@ class WebViews(object):
             status, output = util.runcmd("{} -v".format(antennahouse))
             result["vivliostyle"] = output if status == 0 else "n/a"
 
+        if publisher:
+            status, output = util.runcmd("{} --version".format(publisher))
+            result["publisher"] = output if status == 0 else "n/a"
         return result
 
     @view_config(route_name="cleanup", renderer="json", request_method="GET")
