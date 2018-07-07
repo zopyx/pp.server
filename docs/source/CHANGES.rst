@@ -1,3 +1,12 @@
+2.0.0 (unreleased)
+------------------
+- major cleanup
+- removed async functionality
+- switch from waitress to gunicorn
+- switched from subprocess to easyprocess
+- webpage displays installed converters and their versions
+
+
 1.0.8 (2017/10/23)
 ------------------
 - internal release

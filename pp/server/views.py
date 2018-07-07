@@ -90,6 +90,7 @@ class WebViews(object):
         from pp.server.converters import wkhtmltopdf
         from pp.server.converters import vivlio
         from pp.server.converters import antennahouse
+        from pp.server.converters import weasyprint
 
         result = dict()
 
@@ -128,6 +129,11 @@ class WebViews(object):
         if publisher:
             status, output = util.runcmd("{} --version".format(publisher))
             result["publisher"] = output if status == 0 else "n/a"
+
+        if weasyprint:
+            status, output = util.runcmd("{} --version".format(weasyprint))
+            result["weasyprint"] = output if status == 0 else "n/a"
+
         return result
 
     @view_config(route_name="cleanup", renderer="json", request_method="GET")
