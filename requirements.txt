@@ -16,6 +16,6 @@ requests==2.10.0
 tornado==4.2
 translationstring==1.3
 venusian==1.0
-waitress==0.9.0
+gunicorn
 zope.deprecation==4.1.2
 zope.interface==4.1.3
