@@ -91,7 +91,7 @@ def unoconv(work_dir, input_filename, output_format, cmd_options):
     return dict(status=status, output=output, out_directory=out_directory)
 
 
-def pdf(work_dir, work_file, converter, cmd_options, source_filename="index.html"):
+def pdf(work_dir, work_file, converter, logger, cmd_options, source_filename="index.html"):
     """ Converter a given ZIP file
         containing input files (HTML + XML) and asset files
         to PDF.
@@ -219,16 +219,14 @@ def pdf(work_dir, work_file, converter, cmd_options, source_filename="index.html
     else:
         return dict(status=9999, output=u'Unknown converter "{}"'.format(converter))
 
+    logger('CMD: {}'.format(cmd))
+
     status, output = util.runcmd(cmd)
     if converter == "publisher":
         status = 0
 
-    with open(os.path.join(work_dir, "out", "output.txt"), "w", encoding="utf8") as fp:
-        if cmd_output:
-            fp.write(cmd_output + "\n\n")
-        fp.write(cmd + "\n")
-        fp.write(output + "\n")
-    with open(os.path.join(work_dir, "out", "done"), "w") as fp:
-        fp.write("done")
+    logger('STATUS: {}'.format(status))
+    logger('OUTPUT')
+    logger(output)
 
     return dict(status=status, output=cmd_output + output, filename=target_filename)

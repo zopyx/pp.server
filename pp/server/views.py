@@ -7,11 +7,12 @@ import os
 import sys
 import base64
 import time
-import uuid
 import pkg_resources
+import functools
 import shutil
 import tempfile
 import zipfile
+import datetime
 from pyramid.view import view_config
 
 from pp.server.logger import LOG
@@ -25,6 +26,19 @@ if not os.path.exists(queue_dir):
 
 
 QUEUE_CLEANUP_TIME = 24 * 60 * 60  # 1 day
+
+
+def new_converter_id(converter):
+    """ New converter id based on timestamp + converter name """
+    return datetime.datetime.now().strftime('%Y%m%dT%H%M%S.%f') + '-' + converter
+
+
+def converter_log(work_dir, msg):
+    """ Logging per conversion (by work dir) """
+    converter_logfile = os.path.join(work_dir, 'converter.log')
+    msg = datetime.datetime.now().strftime('%Y%m%dT%H%M%S') + ' ' + msg
+    with open(converter_logfile, 'a') as fp:
+        fp.write(msg + '\n')
 
 
 class WebViews(object):
@@ -171,7 +185,7 @@ class WebViews(object):
         output_format = params.get("output_format", "pdf")
         cmd_options = params.get("cmd_options", "")
 
-        new_id = str(uuid.uuid4())
+        new_id = new_converter_id('unoconv')
         work_dir = os.path.join(queue_dir, new_id)
         os.mkdir(work_dir)
         os.mkdir(os.path.join(work_dir, "out"))
@@ -179,15 +193,18 @@ class WebViews(object):
         with open(work_file, "wb") as fp:
             fp.write(input_data)
 
+
+        log = functools.partial(converter_log, work_dir)
+
         ts = time.time()
-        LOG.info("START: unoconv({}, {}, {})".format(new_id, work_file, output_format))
+        log("START: unoconv({}, {}, {})".format(new_id, work_file, output_format))
         result = converters.unoconv(work_dir, work_file, output_format, cmd_options)
         duration = time.time() - ts
-        LOG.info(
+        log(
             "END : unoconv({} {} sec): {}".format(new_id, duration, result["status"])
         )
         if result["output"]:
-            LOG.info("OUTPUT: unoconv({}):\n{}".format(new_id, result["output"]))
+            log("OUTPUT: unoconv({}):\n{}".format(new_id, result["output"]))
         if result["status"] == 0:  # OK
             out_directory = result["out_directory"]
             zip_name = tempfile.mktemp()
@@ -213,7 +230,7 @@ class WebViews(object):
         converter = params.get("converter", "princexml")
         cmd_options = params.get("cmd_options", "")
 
-        new_id = str(uuid.uuid4())
+        new_id = new_converter_id(converter)
         work_dir = os.path.join(queue_dir, new_id)
         out_dir = os.path.join(work_dir, "out")
         if not os.path.exists(out_dir):
@@ -222,13 +239,15 @@ class WebViews(object):
         with open(work_file, "wb") as fp:
             fp.write(zip_data)
 
+        log = functools.partial(converter_log, work_dir)
+
         ts = time.time()
-        LOG.info("START: pdf({}, {}, {})".format(new_id, work_file, converter))
-        result = converters.pdf(work_dir, work_file, converter, cmd_options)
+        log("START: pdf({}, {}, {})".format(new_id, work_file, converter))
+        result = converters.pdf(work_dir, work_file, converter, log, cmd_options)
         duration = time.time() - ts
-        LOG.info("END : pdf({} {} sec): {}".format(new_id, duration, result["status"]))
+        log("END : pdf({} {} sec): {}".format(new_id, duration, result["status"]))
         if result["output"]:
-            LOG.info("OUTPUT: pdf({}):\n{}".format(new_id, result["output"]))
+            log("OUTPUT: pdf({}):\n{}".format(new_id, result["output"]))
         output = result["output"]
         if result["status"] == 0:  # OK
             pdf_data = open(result["filename"], "rb").read()
