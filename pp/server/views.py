@@ -33,21 +33,6 @@ class WebViews(object):
     def __init__(self, request):
         self.request = request
 
-    def check_authentication(self):
-
-        from pp.server import authorization
-        from pyramid.httpexceptions import HTTPForbidden
-        from pyramid.httpexceptions import HTTPInternalServerError
-
-        authenticator = self.request.registry.settings.get('pp.authenticator')
-        if not authenticator:
-            return
-
-        method = getattr(authorization, authenticator, None)
-        if method is None:
-            raise HTTPInternalServerError
-        method(self.request)
-
     @view_config(route_name='home', renderer='index.pt', request_method='GET')
     def index(self):
         version = pkg_resources.require('pp.server')[0].version
@@ -139,7 +124,6 @@ class WebViews(object):
     @view_config(route_name='cleanup', renderer='json', request_method='GET')
     def cleanup_queue(self):
 
-
         try:
             lc = self.request.registry.settings['last_cleanup']
         except (KeyError, AttributeError):
@@ -159,31 +143,6 @@ class WebViews(object):
                 removed += 1
         self.request.registry.settings['last_cleanup'] = time.time()
         return dict(directories_removed=removed)
-
-    @view_config(route_name='poll_api_1', renderer='json', request_method='GET')
-    def poll(self):
-        """ Poll status of a job by a given ``job_id``"""
-
-        job_id = self.request.matchdict['jobid']
-        out_directory = os.path.join(queue_dir, job_id, 'out')
-        done_file = os.path.join(out_directory, 'done')
-        if os.path.exists(done_file):
-            files = [fname for fname in os.listdir(out_directory) if fname.startswith('out.')]
-            if files:
-                bin_data = base64.encodestring(open(os.path.join(out_directory, files[0]), 'rb').read())
-                bin_data = bin_data.decode('ascii')
-                output_data = open(os.path.join(out_directory, 'output.txt'), 'r').read()
-                return dict(done=True,
-                            status=0,
-                            data=bin_data,
-                            output=output_data)
-            else:
-                output_data = open(os.path.join(out_directory, 'output.txt'), 'r').read()
-                return dict(done=True,
-                            status=-1,
-                            output=output_data)
-        return dict(done=False)
-
 
     @view_config(route_name='unoconv_api_1', request_method='POST', renderer='json')
     def unoconv(self):

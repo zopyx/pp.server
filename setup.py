@@ -1,8 +1,8 @@
 import os
 import sys
 
-if sys.version_info[:2] not in ((2,7), (3,4), (3,5), (3,6)):
-    raise RuntimeError('pp.server requires Python 3.5 or higher')
+if sys.version_info[:2] not in ((3,6), (3,7)):
+    raise RuntimeError('pp.server requires Python 3.6 or higher')
 
 from setuptools import setup, find_packages
 
@@ -13,10 +13,6 @@ CHANGES = open(os.path.join(here, 'docs', 'source', 'CHANGES.rst')).read()
 requires = [
     'pyramid',
     'pyramid_chameleon',
-    'waitress',
-    'sqlalchemy',
-    'celery',
-    'flower',
     'waitress',
     'plac',
     'circus',

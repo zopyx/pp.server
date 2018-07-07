@@ -2,14 +2,9 @@ Babel==2.3.4
 Chameleon==2.24
 Logbook==0.12.5
 PasteDeploy==1.5.2
-SQLAlchemy==1.0.13
 WebOb==1.6.1
-amqp==1.4.9
 anyjson==0.3.3
 billiard==3.3.0.23
-celery==3.1.23
-flower==0.9.1
-kombu==3.0.35
 plac==0.9.1
 pp.client-python==0.4.4
 -e git+git@bitbucket.org:ajung/pp.server.git@2fff22eae85af65a303cac797b5ea5b56c46ae38#egg=pp.server-origin/HEAD
