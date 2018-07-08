@@ -85,16 +85,16 @@ Installation
 
 - create a ``circus.ini`` configuration file (and change it according to your needs)::
 
-    [watcher:pserve]
-    cmd = bin/pserve server.ini
+    [watcher:gunicorn]
+    cmd = bin/gunicorn --paste server.ini
 
-    [env:pserve]
+    [env:gunicorn]
     PATH = $PATH
 
 
 - start the server (in foreground)::
 
-    bin/pserve server.ini 
+    bin/gunicorn --paste server.ini 
 
 - or start it in background::
 
