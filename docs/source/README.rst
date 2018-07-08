@@ -14,7 +14,7 @@ HTML/XML + assets to PDF using one of the following external PDF converters:
 - Speedata Publisher (www.speedata.de, open-source, experimental support)
 - WKHTMLTOPDF (www.wkhtmltopdf.org, open-source, experimental support)
 - Vivliostyle Formatter (www.vivliostyle.com, commercial, experimental support)
-- VersType Formatter (www.trim-marks.com, commercial, experimental support)
+- VersaType Formatter (www.trim-marks.com, commercial, experimental support)
 - Antennahouse 6.2 (www.antennahouse.com, commercial)
 - Weasyprint (free, unsupported)
 
@@ -52,7 +52,7 @@ Requirements
 Installation
 ------------
 
-- create an ``virtualenv`` environment (Python 2.7 (or Python 3.4)) - either within your
+- create an ``virtualenv`` environment- either within your
   current (empty) directory or by letting virtualenv create one for you.
   (``easy_install virtualenv`` if ``virtualenv`` is not available on your
   system)::
