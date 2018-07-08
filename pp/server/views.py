@@ -75,6 +75,7 @@ class WebViews(object):
         from pp.server.converters import publisher
         from pp.server.converters import wkhtmltopdf
         from pp.server.converters import vivlio
+        from pp.server.converters import versatype
         from pp.server.converters import antennahouse
         from pp.server.converters import weasyprint
 
@@ -87,6 +88,7 @@ class WebViews(object):
             unoconv=unoconv_bin is not None,
             wkhtmltopdf=wkhtmltopdf is not None,
             vivliostyle=vivlio is not None,
+            versatype=versatype is not None,
             weasyprint=weasyprint is not None,
             antennahouse=antennahouse is not None,
             publisher=publisher is not None,
@@ -103,6 +105,7 @@ class WebViews(object):
         from pp.server.converters import publisher
         from pp.server.converters import wkhtmltopdf
         from pp.server.converters import vivlio
+        from pp.server.converters import versatype
         from pp.server.converters import antennahouse
         from pp.server.converters import weasyprint
 
@@ -135,6 +138,10 @@ class WebViews(object):
         if vivlio:
             status, output = util.runcmd("{} --version".format(vivlio))
             result["vivliostyle"] = output if status == 0 else "n/a"
+
+        if versatype:
+            status, output = util.runcmd("{} --version".format(versatype))
+            result["versatype"] = output if status == 0 else "n/a"
 
         if antennahouse:
             status, output = util.runcmd("{} -v".format(antennahouse))
@@ -203,8 +210,6 @@ class WebViews(object):
         log(
             "END : unoconv({} {} sec): {}".format(new_id, duration, result["status"])
         )
-        if result["output"]:
-            log("OUTPUT: unoconv({}):\n{}".format(new_id, result["output"]))
         if result["status"] == 0:  # OK
             out_directory = result["out_directory"]
             zip_name = tempfile.mktemp()
@@ -235,6 +240,8 @@ class WebViews(object):
         out_dir = os.path.join(work_dir, "out")
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
+        
+        
         work_file = os.path.join(work_dir, "in.zip")
         with open(work_file, "wb") as fp:
             fp.write(zip_data)
@@ -242,12 +249,17 @@ class WebViews(object):
         log = functools.partial(converter_log, work_dir)
 
         ts = time.time()
-        log("START: pdf({}, {}, {})".format(new_id, work_file, converter))
+        msg = "START: pdf({}, {}, {})".format(new_id, work_file, converter)
+        log(msg)
+        LOG.info(msg)
+
         result = converters.pdf(work_dir, work_file, converter, log, cmd_options)
+
         duration = time.time() - ts
-        log("END : pdf({} {} sec): {}".format(new_id, duration, result["status"]))
-        if result["output"]:
-            log("OUTPUT: pdf({}):\n{}".format(new_id, result["output"]))
+        msg  = "END : pdf({} {} sec): {}".format(new_id, duration, result["status"])
+        log(msg)
+        LOG.info(msg)
+
         output = result["output"]
         if result["status"] == 0:  # OK
             pdf_data = open(result["filename"], "rb").read()

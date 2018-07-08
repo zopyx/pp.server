@@ -22,9 +22,9 @@ def runcmd(cmd):
     status = handle.return_code
 
     if stdout:
-        LOG.info(stdout)
+        LOG.debug(stdout)
     if stderr:
-        LOG.info(stderr)
+        LOG.debug(stderr)
     return status, (stdout + stderr)
 
 

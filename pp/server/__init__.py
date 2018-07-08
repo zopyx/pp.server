@@ -9,6 +9,7 @@ from pyramid.config import Configurator
 import pyramid.threadlocal
 from pyramid.settings import asbool
 
+from pp.server.logger import LOG
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -30,10 +31,10 @@ def main(global_config, **settings):
 
     v = WebViews(request=None)
     installed = [c for c, avail in v.available_converters().items() if avail]
-    print("Installed:", ", ".join(installed))
+    LOG.info("Installed: {}".format(", ".join(installed)))
 
     remote_exec = asbool(settings.get("remote_execution", "false"))
     settings["remote_exec"] = remote_exec
-    print("Remote execution enabled: {0}".format(remote_exec))
+    LOG.info("Remote execution enabled: {0}".format(remote_exec))
 
     return config.make_wsgi_app()

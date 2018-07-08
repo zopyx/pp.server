@@ -57,6 +57,10 @@ vivlio = None
 if util.which("vivliostyle-formatter"):
     vivlio = "vivliostyle-formatter"
 
+versatype = None
+if util.which("versatype-converter"):
+    versatype = "versatype-converter"
+
 antennahouse = None
 if util.which("run.sh"):
     antennahouse = "run.sh"
@@ -206,6 +210,14 @@ def pdf(work_dir, work_file, converter, logger, cmd_options, source_filename="in
             return dict(status=9999, output=u"Vivliostyle not installed")
         cmd = '{} "{}" --output "{}/{}" "{}"'.format(
             vivlio, source_html, out_directory, out_filename, cmd_options
+        )
+    elif converter == "versatype":
+        out_directory = os.path.join(work_dir, "out")
+        out_filename = "out.pdf"
+        if not versatype:
+            return dict(status=9999, output=u"Versatype not installed")
+        cmd = '{} "{}" --output "{}/{}" "{}"'.format(
+            versatype, source_html, out_directory, out_filename, cmd_options
         )
     elif converter == "antennahouse":
         out_directory = os.path.join(work_dir, "out")
