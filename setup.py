@@ -24,7 +24,7 @@ tests_require = [
 ]
 
 setup(name='pp.server',
-      version='2.0a3',
+      version='2.0a4',
       description='pp.server - Produce & Publish Server',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
@@ -51,6 +51,7 @@ setup(name='pp.server',
       [console_scripts]
       unoconv = pp.server.unoconv:main
       pdfreactor8=pp.server.pdfreactor8:main
+      pp-server-templates=pp.server.templates:main
       [paste.app_factory]
       main = pp.server:main
       """,
