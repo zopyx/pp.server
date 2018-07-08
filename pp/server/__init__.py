@@ -11,6 +11,7 @@ from pyramid.settings import asbool
 
 from pp.server.logger import LOG
 
+
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
