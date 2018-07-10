@@ -83,7 +83,7 @@ Installation
     host = 127.0.0.1
     port = 6543
 
-- create a ``circus.ini`` configuration file (and change it according to your needs)::
+- create a ``circusd.ini`` configuration file (and change it according to your needs)::
 
     [watcher:gunicorn]
     cmd = bin/gunicorn --paste server.ini
@@ -91,6 +91,9 @@ Installation
     [env:gunicorn]
     PATH = $PATH
 
+- both configuration files can be created automatically using the helper script::
+
+    bin/pp-server-templates
 
 - start the server (in foreground)::
 
@@ -98,7 +101,7 @@ Installation
 
 - or start it in background::
 
-    bin/circusd circus.ini  --daemon
+    bin/circusd circusd.ini  --daemon
 
 Converter requirements
 ----------------------
