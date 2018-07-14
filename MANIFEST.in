@@ -1,4 +1,3 @@
 include *.txt *.ini *.cfg *.rst
 recursive-include-dir docs
-
-recursive-include ppwebservice *.ico *.png *.css *.gif *.jpg *.pt *.txt *.mak *.mako *.js *.html *.xml
+recursive-include *.ico *.png *.css *.gif *.jpg *.pt *.txt *.mak *.mako *.js *.html *.xml

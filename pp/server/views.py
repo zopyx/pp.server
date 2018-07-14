@@ -41,7 +41,8 @@ def converter_log(work_dir, msg):
         try:
             fp.write(msg + "\n")
         except UnicodeError:
-            fp.write(msg.encode("ascii", "replace").decode("ascii", "replace") + "\n")
+            fp.write(msg.encode("ascii", "replace").decode(
+                "ascii", "replace") + "\n")
 
 
 class WebViews(object):
@@ -51,9 +52,6 @@ class WebViews(object):
     @view_config(route_name="home", renderer="index.pt", request_method="GET")
     def index(self):
         version = pkg_resources.require("pp.server")[0].version
-        available_converters = sorted(
-            [k for k, v in self.available_converters().items() if v]
-        )
         return dict(
             version=version,
             python_version=sys.version,
@@ -122,6 +120,10 @@ class WebViews(object):
             status, output = util.runcmd("{} --version".format(pdfreactor))
             result["pdfreactor"] = output if status == 1 else "n/a"
 
+        if phantomjs:
+            status, output = util.runcmd("{} --version".format(phantomjs))
+            result["phantomjs"] = output if status == 0 else "n/a"
+
         if pdfreactor8:
             status, output = util.runcmd("{} --version".format(pdfreactor8))
             result["pdfreactor8"] = output if status == 0 else "n/a"
@@ -131,7 +133,8 @@ class WebViews(object):
             result["wkhtmltopdf"] = output if status == 0 else "n/a"
 
         if calibre:
-            status, output = util.runcmd("{} -convert --version".format(calibre))
+            status, output = util.runcmd(
+                "{} -convert --version".format(calibre))
             result["calibre"] = output if status == 0 else "n/a"
 
         if unoconv_bin:
@@ -209,10 +212,13 @@ class WebViews(object):
         log = functools.partial(converter_log, work_dir)
 
         ts = time.time()
-        log("START: unoconv({}, {}, {})".format(new_id, work_file, output_format))
-        result = converters.unoconv(work_dir, work_file, output_format, cmd_options)
+        log("START: unoconv({}, {}, {})".format(
+            new_id, work_file, output_format))
+        result = converters.unoconv(
+            work_dir, work_file, output_format, cmd_options)
         duration = time.time() - ts
-        log("END : unoconv({} {} sec): {}".format(new_id, duration, result["status"]))
+        log("END : unoconv({} {} sec): {}".format(
+            new_id, duration, result["status"]))
         if result["status"] == 0:  # OK
             out_directory = result["out_directory"]
             zip_name = tempfile.mktemp()
@@ -255,10 +261,12 @@ class WebViews(object):
         log(msg)
         LOG.info(msg)
 
-        result = converters.pdf(work_dir, work_file, converter, log, cmd_options)
+        result = converters.pdf(work_dir, work_file,
+                                converter, log, cmd_options)
 
         duration = time.time() - ts
-        msg = "END : pdf({} {} sec): {}".format(new_id, duration, result["status"])
+        msg = "END : pdf({} {} sec): {}".format(
+            new_id, duration, result["status"])
         log(msg)
         LOG.info(msg)
 

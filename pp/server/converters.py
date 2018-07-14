@@ -132,7 +132,8 @@ def pdf(
 
             converter = project_data.get("converter")
             cmd = project_data.get("command")
-            cmd = 'cd "{work_dir}"; {cmd}  2>&1'.format(work_dir=work_dir, cmd=cmd)
+            cmd = 'cd "{work_dir}"; {cmd}  2>&1'.format(
+                work_dir=work_dir, cmd=cmd)
             status, cmd_output = util.runcmd(cmd)
             if status != 0:
                 raise RuntimeError(
@@ -186,7 +187,8 @@ def pdf(
     elif converter == "phantomjs":
         if not phantomjs:
             return dict(status=9999, output=u"PhantomJS not installed")
-        rasterize = pkg_resources.resource_filename("pp.server", "scripts/rasterize.js")
+        rasterize = pkg_resources.resource_filename(
+            "pp.server", "scripts/rasterize.js")
         cmd = '{} {} --debug false "{}" "{}" "{}" A4'.format(
             phantomjs, cmd_options, rasterize, source_html, target_filename
         )

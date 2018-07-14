@@ -180,7 +180,8 @@ def find_offices():
             for ure in ("ure-link", "ure", "URE", ""):
                 if os.path.isfile(realpath(basepath, basis, ure, "lib", "unorc")):
                     urepath = realpath(basepath, basis, ure)
-                    info(3, "Found %s in %s" % ("unorc", realpath(urepath, "lib")))
+                    info(3, "Found %s in %s" %
+                         ("unorc", realpath(urepath, "lib")))
                     # Break the inner loop...
                     break
             # Continue if the inner loop wasn't broken.
@@ -285,7 +286,8 @@ def office_environ(office):
 
 def debug_office():
     if "URE_BOOTSTRAP" in os.environ:
-        print("URE_BOOTSTRAP=%s" % os.environ["URE_BOOTSTRAP"], file=sys.stderr)
+        print("URE_BOOTSTRAP=%s" %
+              os.environ["URE_BOOTSTRAP"], file=sys.stderr)
     if "UNO_PATH" in os.environ:
         print("UNO_PATH=%s" % os.environ["UNO_PATH"], file=sys.stderr)
     if "UNO_TYPES" in os.environ:
@@ -296,7 +298,8 @@ def debug_office():
     if "PYTHONPATH" in os.environ:
         print("PYTHONPATH=%s" % os.environ["PYTHONPATH"], file=sys.stderr)
     if "LD_LIBRARY_PATH" in os.environ:
-        print("LD_LIBRARY_PATH=%s" % os.environ["LD_LIBRARY_PATH"], file=sys.stderr)
+        print("LD_LIBRARY_PATH=%s" %
+              os.environ["LD_LIBRARY_PATH"], file=sys.stderr)
 
 
 def python_switch(office):
@@ -340,7 +343,8 @@ def python_switch(office):
             )
 
         try:
-            os.execvpe(office.python, [office.python] + sys.argv[0:], os.environ)
+            os.execvpe(office.python, [
+                       office.python] + sys.argv[0:], os.environ)
         except OSError:
             # Mac OS X versions prior to 10.6 do not support execv in
             # a process that contains multiple threads.  Instead of
@@ -354,7 +358,8 @@ def python_switch(office):
             # appear to be consistent, so we can't easily check for
             # this error specifically.
             ret = os.spawnvpe(
-                os.P_WAIT, office.python, [office.python] + sys.argv[0:], os.environ
+                os.P_WAIT, office.python, [
+                    office.python] + sys.argv[0:], os.environ
             )
             sys.exit(ret)
 
@@ -417,14 +422,17 @@ fmts = FmtList()
 
 # TextDocument
 fmts.add("document", "bib", "bib", "BibTeX", "BibTeX_Writer")  # 22
-fmts.add("document", "doc", "doc", "Microsoft Word 97/2000/XP", "MS Word 97")  # 29
-fmts.add("document", "doc6", "doc", "Microsoft Word 6.0", "MS WinWord 6.0")  # 24
+fmts.add("document", "doc", "doc",
+         "Microsoft Word 97/2000/XP", "MS Word 97")  # 29
+fmts.add("document", "doc6", "doc",
+         "Microsoft Word 6.0", "MS WinWord 6.0")  # 24
 fmts.add("document", "doc95", "doc", "Microsoft Word 95", "MS Word 95")  # 28
 fmts.add("document", "docbook", "xml", "DocBook", "DocBook File")  # 39
 fmts.add(
     "document", "docx", "docx", "Microsoft Office Open XML", "Office Open XML Text"
 )
-fmts.add("document", "docx7", "docx", "Microsoft Office Open XML", "MS Word 2007 XML")
+fmts.add("document", "docx7", "docx",
+         "Microsoft Office Open XML", "MS Word 2007 XML")
 fmts.add(
     "document",
     "fodt",
@@ -445,7 +453,8 @@ fmts.add("document", "odt", "odt", "ODF Text Document", "writer8")  # 10
 fmts.add(
     "document", "ooxml", "xml", "Microsoft Office Open XML", "MS Word 2003 XML"
 )  # 11
-fmts.add("document", "ott", "ott", "Open Document Text", "writer8_template")  # 21
+fmts.add("document", "ott", "ott",
+         "Open Document Text", "writer8_template")  # 21
 fmts.add("document", "pdb", "pdb", "AportisDoc (Palm)", "AportisDoc Palm DB")
 fmts.add(
     "document", "pdf", "pdf", "Portable Document Format", "writer_pdf_Export"
@@ -471,7 +480,8 @@ fmts.add(
 )  # 1
 fmts.add("document", "text", "txt", "Text Encoded", "Text (encoded)")  # 26
 fmts.add("document", "txt", "txt", "Text", "Text")  # 34
-fmts.add("document", "uot", "uot", "Unified Office Format text", "UOF text")  # 27
+fmts.add("document", "uot", "uot",
+         "Unified Office Format text", "UOF text")  # 27
 fmts.add(
     "document",
     "vor",
@@ -493,7 +503,8 @@ fmts.add(
     "StarWriter 3.0 Template",
     "StarWriter 3.0 Vorlage/Template",
 )  # 4
-fmts.add("document", "xhtml", "html", "XHTML Document", "XHTML Writer File")  # 33
+fmts.add("document", "xhtml", "html",
+         "XHTML Document", "XHTML Writer File")  # 33
 
 # WebDocument
 fmts.add(
@@ -572,7 +583,8 @@ fmts.add(
 )  # 7
 
 # Spreadsheet
-fmts.add("spreadsheet", "csv", "csv", "Text CSV", "Text - txt - csv (StarCalc)")  # 16
+fmts.add("spreadsheet", "csv", "csv", "Text CSV",
+         "Text - txt - csv (StarCalc)")  # 16
 fmts.add("spreadsheet", "dbf", "dbf", "dBASE", "dBase")  # 22
 fmts.add("spreadsheet", "dif", "dif", "Data Interchange Format", "DIF")  # 5
 fmts.add(
@@ -643,9 +655,12 @@ fmts.add(
     "StarCalc 5.0 Vorlage/Template",
 )  # 20
 fmts.add("spreadsheet", "xhtml", "xhtml", "XHTML", "XHTML Calc File")  # 26
-fmts.add("spreadsheet", "xls", "xls", "Microsoft Excel 97/2000/XP", "MS Excel 97")  # 12
-fmts.add("spreadsheet", "xls5", "xls", "Microsoft Excel 5.0", "MS Excel 5.0/95")  # 8
-fmts.add("spreadsheet", "xls95", "xls", "Microsoft Excel 95", "MS Excel 95")  # 10
+fmts.add("spreadsheet", "xls", "xls",
+         "Microsoft Excel 97/2000/XP", "MS Excel 97")  # 12
+fmts.add("spreadsheet", "xls5", "xls",
+         "Microsoft Excel 5.0", "MS Excel 5.0/95")  # 8
+fmts.add("spreadsheet", "xls95", "xls",
+         "Microsoft Excel 95", "MS Excel 95")  # 10
 fmts.add(
     "spreadsheet",
     "xlt",
@@ -678,7 +693,8 @@ fmts.add(
 # Graphics
 fmts.add("graphics", "bmp", "bmp", "Windows Bitmap", "draw_bmp_Export")  # 21
 fmts.add("graphics", "emf", "emf", "Enhanced Metafile", "draw_emf_Export")  # 15
-fmts.add("graphics", "eps", "eps", "Encapsulated PostScript", "draw_eps_Export")  # 48
+fmts.add("graphics", "eps", "eps",
+         "Encapsulated PostScript", "draw_eps_Export")  # 48
 fmts.add(
     "graphics",
     "fodg",
@@ -706,9 +722,11 @@ fmts.add(
 )  # 20
 fmts.add("graphics", "pbm", "pbm", "Portable Bitmap", "draw_pbm_Export")  # 14
 fmts.add("graphics", "pct", "pct", "Mac Pict", "draw_pct_Export")  # 41
-fmts.add("graphics", "pdf", "pdf", "Portable Document Format", "draw_pdf_Export")  # 28
+fmts.add("graphics", "pdf", "pdf",
+         "Portable Document Format", "draw_pdf_Export")  # 28
 fmts.add("graphics", "pgm", "pgm", "Portable Graymap", "draw_pgm_Export")  # 11
-fmts.add("graphics", "png", "png", "Portable Network Graphic", "draw_png_Export")  # 2
+fmts.add("graphics", "png", "png",
+         "Portable Network Graphic", "draw_png_Export")  # 2
 fmts.add("graphics", "ppm", "ppm", "Portable Pixelmap", "draw_ppm_Export")  # 5
 fmts.add("graphics", "ras", "ras", "Sun Raster Image", "draw_ras_Export")  # 31
 fmts.add(
@@ -718,15 +736,18 @@ fmts.add(
     "OpenOffice.org 1.0 Drawing Template",
     "draw_StarOffice_XML_Draw_Template",
 )  # 53
-fmts.add("graphics", "svg", "svg", "Scalable Vector Graphics", "draw_svg_Export")  # 50
+fmts.add("graphics", "svg", "svg",
+         "Scalable Vector Graphics", "draw_svg_Export")  # 50
 fmts.add("graphics", "svm", "svm", "StarView Metafile", "draw_svm_Export")  # 55
-fmts.add("graphics", "swf", "swf", "Macromedia Flash (SWF)", "draw_flash_Export")  # 23
+fmts.add("graphics", "swf", "swf", "Macromedia Flash (SWF)",
+         "draw_flash_Export")  # 23
 fmts.add(
     "graphics", "sxd", "sxd", "OpenOffice.org 1.0 Drawing", "StarOffice XML (Draw)"
 )  # 26
 fmts.add("graphics", "sxd3", "sxd", "StarDraw 3.0", "StarDraw 3.0")  # 40
 fmts.add("graphics", "sxd5", "sxd", "StarDraw 5.0", "StarDraw 5.0")  # 44
-fmts.add("graphics", "sxw", "sxw", "StarOffice XML (Draw)", "StarOffice XML (Draw)")
+fmts.add("graphics", "sxw", "sxw",
+         "StarOffice XML (Draw)", "StarOffice XML (Draw)")
 fmts.add(
     "graphics", "tiff", "tiff", "Tagged Image File Format", "draw_tif_Export"
 )  # 13
@@ -741,8 +762,10 @@ fmts.add("graphics", "xhtml", "xhtml", "XHTML", "XHTML Draw File")  # 45
 fmts.add("graphics", "xpm", "xpm", "X PixMap", "draw_xpm_Export")  # 19
 
 # Presentation
-fmts.add("presentation", "bmp", "bmp", "Windows Bitmap", "impress_bmp_Export")  # 15
-fmts.add("presentation", "emf", "emf", "Enhanced Metafile", "impress_emf_Export")  # 16
+fmts.add("presentation", "bmp", "bmp",
+         "Windows Bitmap", "impress_bmp_Export")  # 15
+fmts.add("presentation", "emf", "emf",
+         "Enhanced Metafile", "impress_emf_Export")  # 16
 fmts.add(
     "presentation", "eps", "eps", "Encapsulated PostScript", "impress_eps_Export"
 )  # 17
@@ -770,18 +793,22 @@ fmts.add(
     "Joint Photographic Experts Group",
     "impress_jpg_Export",
 )  # 19
-fmts.add("presentation", "met", "met", "OS/2 Metafile", "impress_met_Export")  # 20
-fmts.add("presentation", "odg", "odg", "ODF Drawing (Impress)", "impress8_draw")  # 29
+fmts.add("presentation", "met", "met",
+         "OS/2 Metafile", "impress_met_Export")  # 20
+fmts.add("presentation", "odg", "odg",
+         "ODF Drawing (Impress)", "impress8_draw")  # 29
 fmts.add("presentation", "odp", "odp", "ODF Presentation", "impress8")  # 9
 fmts.add(
     "presentation", "otp", "otp", "ODF Presentation Template", "impress8_template"
 )  # 38
-fmts.add("presentation", "pbm", "pbm", "Portable Bitmap", "impress_pbm_Export")  # 21
+fmts.add("presentation", "pbm", "pbm",
+         "Portable Bitmap", "impress_pbm_Export")  # 21
 fmts.add("presentation", "pct", "pct", "Mac Pict", "impress_pct_Export")  # 22
 fmts.add(
     "presentation", "pdf", "pdf", "Portable Document Format", "impress_pdf_Export"
 )  # 23
-fmts.add("presentation", "pgm", "pgm", "Portable Graymap", "impress_pgm_Export")  # 24
+fmts.add("presentation", "pgm", "pgm",
+         "Portable Graymap", "impress_pgm_Export")  # 24
 fmts.add(
     "presentation", "png", "png", "Portable Network Graphic", "impress_png_Export"
 )  # 25
@@ -799,7 +826,8 @@ fmts.add(
     "Microsoft PowerPoint 97/2000/XP Template",
     "MS PowerPoint 97 Vorlage",
 )  # 3
-fmts.add("presentation", "ppm", "ppm", "Portable Pixelmap", "impress_ppm_Export")  # 26
+fmts.add("presentation", "ppm", "ppm",
+         "Portable Pixelmap", "impress_ppm_Export")  # 26
 fmts.add(
     "presentation",
     "pptx",
@@ -818,7 +846,8 @@ fmts.add(
     "presentation", "ppt", "ppt", "Microsoft PowerPoint 97/2000/XP", "MS PowerPoint 97"
 )  # 36
 fmts.add("presentation", "pwp", "pwp", "PlaceWare", "placeware_Export")  # 30
-fmts.add("presentation", "ras", "ras", "Sun Raster Image", "impress_ras_Export")  # 27
+fmts.add("presentation", "ras", "ras",
+         "Sun Raster Image", "impress_ras_Export")  # 27
 fmts.add(
     "presentation",
     "sda",
@@ -826,7 +855,8 @@ fmts.add(
     "StarDraw 5.0 (OpenOffice.org Impress)",
     "StarDraw 5.0 (StarImpress)",
 )  # 8
-fmts.add("presentation", "sdd", "sdd", "StarImpress 5.0", "StarImpress 5.0")  # 6
+fmts.add("presentation", "sdd", "sdd",
+         "StarImpress 5.0", "StarImpress 5.0")  # 6
 fmts.add(
     "presentation",
     "sdd3",
@@ -834,7 +864,8 @@ fmts.add(
     "StarDraw 3.0 (OpenOffice.org Impress)",
     "StarDraw 3.0 (StarImpress)",
 )  # 42
-fmts.add("presentation", "sdd4", "sdd", "StarImpress 4.0", "StarImpress 4.0")  # 37
+fmts.add("presentation", "sdd4", "sdd",
+         "StarImpress 4.0", "StarImpress 4.0")  # 37
 fmts.add(
     "presentation",
     "sxd",
@@ -852,7 +883,8 @@ fmts.add(
 fmts.add(
     "presentation", "svg", "svg", "Scalable Vector Graphics", "impress_svg_Export"
 )  # 14
-fmts.add("presentation", "svm", "svm", "StarView Metafile", "impress_svm_Export")  # 13
+fmts.add("presentation", "svm", "svm",
+         "StarView Metafile", "impress_svm_Export")  # 13
 fmts.add(
     "presentation", "swf", "swf", "Macromedia Flash (SWF)", "impress_flash_Export"
 )  # 34
@@ -893,7 +925,8 @@ fmts.add(
     "StarDraw 5.0 Template (OpenOffice.org Impress)",
     "StarDraw 5.0 Vorlage (StarImpress)",
 )  # 2
-fmts.add("presentation", "wmf", "wmf", "Windows Metafile", "impress_wmf_Export")  # 11
+fmts.add("presentation", "wmf", "wmf",
+         "Windows Metafile", "impress_wmf_Export")  # 11
 fmts.add("presentation", "xhtml", "xml", "XHTML", "XHTML Impress File")  # 33
 fmts.add("presentation", "xpm", "xpm", "X PixMap", "impress_xpm_Export")  # 10
 
@@ -953,7 +986,8 @@ class Options:
             )
         except getopt.error as exc:
             print(
-                "unoconv: %s, try unoconv -h for a list of all the options" % str(exc)
+                "unoconv: %s, try unoconv -h for a list of all the options" % str(
+                    exc)
             )
             sys.exit(255)
 
@@ -976,16 +1010,19 @@ class Options:
                     if name in ("FilterOptions"):
                         self.exportfilteroptions = value
                     elif value in ("True", "true"):
-                        self.exportfilter.append(PropertyValue(name, 0, True, 0))
+                        self.exportfilter.append(
+                            PropertyValue(name, 0, True, 0))
                     elif value in ("False", "false"):
-                        self.exportfilter.append(PropertyValue(name, 0, False, 0))
+                        self.exportfilter.append(
+                            PropertyValue(name, 0, False, 0))
                     else:
                         try:
                             self.exportfilter.append(
                                 PropertyValue(name, 0, int(value), 0)
                             )
                         except ValueError:
-                            self.exportfilter.append(PropertyValue(name, 0, value, 0))
+                            self.exportfilter.append(
+                                PropertyValue(name, 0, value, 0))
                 else:
                     print(
                         "Warning: Option %s cannot be parsed, ignoring." % arg,
@@ -1000,16 +1037,19 @@ class Options:
                     if name in ("FilterOptions"):
                         self.importfilteroptions = value
                     elif value in ("True", "true"):
-                        self.importfilter.append(PropertyValue(name, 0, True, 0))
+                        self.importfilter.append(
+                            PropertyValue(name, 0, True, 0))
                     elif value in ("False", "false"):
-                        self.importfilter.append(PropertyValue(name, 0, False, 0))
+                        self.importfilter.append(
+                            PropertyValue(name, 0, False, 0))
                     else:
                         try:
                             self.importfilter.append(
                                 PropertyValue(name, 0, int(value), 0)
                             )
                         except ValueError:
-                            self.importfilter.append(PropertyValue(name, 0, value, 0))
+                            self.importfilter.append(
+                                PropertyValue(name, 0, value, 0))
                 else:
                     print(
                         "Warning: Option %s cannot be parsed, ignoring." % arg,
@@ -1338,7 +1378,8 @@ class Convertor:
             print("Input file:", inputfn, file=sys.stderr)
 
         if not os.path.exists(inputfn):
-            print("unoconv: file `%s' does not exist." % inputfn, file=sys.stderr)
+            print("unoconv: file `%s' does not exist." %
+                  inputfn, file=sys.stderr)
             exitcode = 1
 
         try:
@@ -1366,7 +1407,8 @@ class Convertor:
                         "FilterData",
                         0,
                         uno.Any(
-                            "[]com.sun.star.beans.PropertyValue", tuple(op.importfilter)
+                            "[]com.sun.star.beans.PropertyValue", tuple(
+                                op.importfilter)
                         ),
                         0,
                     ),
@@ -1393,7 +1435,8 @@ class Convertor:
                     templateurl = unohelper.absolutize(
                         self.cwd, unohelper.systemPathToFileUrl(op.template)
                     )
-                    document.StyleFamilies.loadStylesFromURL(templateurl, templateprops)
+                    document.StyleFamilies.loadStylesFromURL(
+                        templateurl, templateprops)
                 else:
                     print(
                         "unoconv: template file `%s' does not exist." % op.template,
@@ -1458,7 +1501,8 @@ class Convertor:
                         "FilterData",
                         0,
                         uno.Any(
-                            "[]com.sun.star.beans.PropertyValue", tuple(op.exportfilter)
+                            "[]com.sun.star.beans.PropertyValue", tuple(
+                                op.exportfilter)
                         ),
                         0,
                     ),
@@ -1471,7 +1515,8 @@ class Convertor:
                 elif os.path.isdir(op.output):
                     outputfn = realpath(
                         op.output,
-                        os.path.basename(outputfn) + os.extsep + outputfmt.extension,
+                        os.path.basename(outputfn) +
+                        os.extsep + outputfmt.extension,
                     )
                 elif len(op.filenames) > 1:
                     outputfn = op.output + os.extsep + outputfmt.extension
@@ -1525,7 +1570,8 @@ class Convertor:
 
         except IOException as e:
             # for attr in dir(e): print '%s: %s', (attr, getattr(e, attr))
-            error("unoconv: IOException during %s phase:\n%s" % (phase, e.Message))
+            error("unoconv: IOException during %s phase:\n%s" %
+                  (phase, e.Message))
             exitcode = 3
 
         except CannotConvertException as e:
@@ -1545,7 +1591,8 @@ class Convertor:
                 exitcode = e.ErrCode
                 pass
             if hasattr(e, "Message"):
-                error("unoconv: UnoException during %s phase:\n%s" % (phase, e.Message))
+                error("unoconv: UnoException during %s phase:\n%s" %
+                      (phase, e.Message))
                 exitcode = 5
             else:
                 error(
@@ -1578,7 +1625,8 @@ class Listener:
             except NoConnectException as e:
                 pass
             else:
-                info(1, "Existing %s listener found, nothing to do." % product.ooName)
+                info(1, "Existing %s listener found, nothing to do." %
+                     product.ooName)
                 return
             if product.ooName != "LibreOffice" or LooseVersion(
                 product.ooSetupVersion
@@ -1705,7 +1753,8 @@ def die(ret, msg=None):
         # LibreOffice processes may get stuck and we have to kill them
         # Is it still running ?
         if ooproc.poll() == None:
-            info(1, "%s instance still running, please investigate..." % product.ooName)
+            info(1, "%s instance still running, please investigate..." %
+                 product.ooName)
             ooproc.wait()
             info(
                 2,

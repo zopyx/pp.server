@@ -21,7 +21,7 @@ RUN wget -nv -O p.tgz https://github.com/dita-ot/dita-ot/releases/download/2.1/d
 RUN tar xfvz p.tgz 
 RUN rm p.tgz
 
-RUN wget -nv -O p.zip http://www.xmlmind.com/ditac/_download/ditac-2_5_6.zip 
+RUN wget -nv -O p.zip http://www.xmlmind.com/ditac/_download/ditac-3_2_5.zip
 RUN unzip p.zip
 RUN rm p.zip
 
