@@ -180,7 +180,7 @@ def pdf(
     elif converter == "publisher":
         if not publisher:
             return dict(status=9999, output=u"Speedata Publisher not installed")
-        cmd = '{} --jobname out --timeout 30 --runs 2 --wd "{}" --outputdir "{}/out"'.format(
+        cmd = '{} --jobname out --timeout 30 --runs 2 --wd "{}" --outputdir "{}/out" {}'.format(
             publisher, work_dir, work_dir, cmd_options
         )
 
