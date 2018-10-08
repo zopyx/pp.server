@@ -10,4 +10,5 @@ RUN bin/pip install pp.server; \
     bin/pp-server-templates
 
 RUN ln -sf /speedata-publisher/bin/sp /usr/bin/sp
+VOLUME ["/pp-server/var"]
 CMD bin/circusd circusd.ini
