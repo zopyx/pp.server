@@ -1,0 +1,13 @@
+FROM fedora
+RUN dnf -y install unzip python3-devel gcc-c++ redhat-rpm-config wget
+WORKDIR /
+RUN wget -q https://download.speedata.de/dl/speedata-publisher-linux-amd64-3.4.1.zip; \
+    unzip speedata-publisher-linux-amd64-3.4.1.zip
+
+RUN mkdir /pp-server; python3 -m venv /pp-server
+WORKDIR /pp-server
+RUN bin/pip install pp.server; \
+    bin/pp-server-templates
+
+RUN ln -sf /speedata-publisher/bin/sp /usr/bin/sp
+CMD bin/circusd circusd.ini
