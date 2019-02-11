@@ -1,3 +1,8 @@
+2.0.3 (2019/02/11)
+------------------
+- minor installation issues with `var` folder gunicorn.log
+- added optional `PP_SPOOL_DIRECTORY` environment support
+
 2.0.0 (2018/07/14)
 ------------------
 - major cleanup

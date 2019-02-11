@@ -19,10 +19,12 @@ from pp.server.logger import LOG
 from pp.server import converters
 from pp.server import util
 
-
 queue_dir = os.path.join(os.getcwd(), "var", "queue")
+queue_dir = os.environ.get('PP_SPOOL_DIRECTORY', queue_dir)
 if not os.path.exists(queue_dir):
     os.makedirs(queue_dir)
+
+print('PP_SPOOL_DIRECTORY:', queue_dir)
 
 
 QUEUE_CLEANUP_TIME = 24 * 60 * 60  # 1 day

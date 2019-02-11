@@ -15,7 +15,7 @@ HTML/XML + assets to PDF using one of the following external PDF converters:
 - WKHTMLTOPDF (www.wkhtmltopdf.org, open-source, experimental support)
 - Vivliostyle Formatter (www.vivliostyle.com, commercial, experimental support)
 - VersaType Formatter (www.trim-marks.com, commercial, experimental support)
-- Antennahouse 6.2 (www.antennahouse.com, commercial)
+- Antennahouse 6.6 (www.antennahouse.com, commercial)
 - Weasyprint (free, unsupported)
 
 In addition there is experimental support for generating EPUB documents
@@ -30,7 +30,7 @@ The web service provides only synchronous operation.
 Requirements
 ------------
 
-- Python 3.5 or higher, no support for Python 2.x
+- Python 3.6 or higher, no support for Python 2.x
 
 - the external binaries 
 
@@ -52,16 +52,9 @@ Requirements
 Installation
 ------------
 
-- create an ``virtualenv`` environment- either within your
-  current (empty) directory or by letting virtualenv create one for you.
-  (``easy_install virtualenv`` if ``virtualenv`` is not available on your
-  system)::
+- create a Python 3  virtual environment using::
 
-    virtualenv --no-site-packages .
-
-  or:: 
-
-    virtualenv --no-site-packages pp.server
+    python3 -m venv pp.server
 
 - install the Produce & Publish server::
 
@@ -79,9 +72,50 @@ Installation
     debug_notfound = false
 
     [server:main]
-    use = egg:waitress#main
-    host = 127.0.0.1
+    use = egg:gunicorn#main
+    host = 0.0.0.0
     port = 6543
+
+
+
+    [loggers]
+    keys = root, myproject
+
+    [handlers]
+    keys = console, logfile
+
+    [formatters]
+    keys = generic, form01
+
+    [formatter_form01]
+    format = %(asctime)s %(levelname)-5.5s [%(name)s:%(lineno)s][%(threadName)s] %(message)s
+    datefmt=
+    class=logging.Formatter
+
+    [logger_root]
+    level = INFO
+    handlers = console, logfile
+
+    [logger_myproject]
+    level = DEBUG
+    handlers =
+    qualname = myproject
+
+
+    [handler_console]
+    class = StreamHandler
+    args = (sys.stderr,)
+    level = NOTSET
+    formatter = form01
+
+    [handler_logfile]
+    class = FileHandler
+    level = INFO
+    formatter = form01
+    args=('var/gunicorn.log', 'w')
+
+    [formatter_generic]
+    format = %(asctime)s %(levelname)-5.5s [%(name)s:%(lineno)s][%(threadName)s] %(message)s
 
 - create a ``circusd.ini`` configuration file (and change it according to your needs)::
 
@@ -90,7 +124,9 @@ Installation
 
     [env:gunicorn]
     PATH = $PATH
+    TZ = $TZ
 
+ 
 - both configuration files can be created automatically using the helper script::
 
     bin/pp-server-templates
@@ -146,6 +182,13 @@ With the default server configuration this translates to::
     or
 
     http://localhost:6543/api/1/unoconv
+
+Environment variables
++++++++++++++++++++++
+
+`pp.server` uses the `var` folder of the installation directory by default as
+temporary folder for conversion data. Set the environment variable `PP_SPOOL_DIRECTORY` 
+if you need different spool directory instead.
 
 
 PDF conversion API
