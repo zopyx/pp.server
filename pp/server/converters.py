@@ -164,11 +164,20 @@ def pdf(
         )
 
     elif converter == "pdfreactor8":
+        
         if not pdfreactor8:
             return dict(status=9999, output=u"PDFreactor 8 not installed")
-        cmd = '{} {} --addLinks --addBookmarks --logLevel debug -i "{}" -o "{}"'.format(
-            pdfreactor8, cmd_options, source_html, target_filename
-        )
+        if 'PP_PDFREACTOR_DOCKER' in os.environ:
+            # for using PDFreactor under Docker we need to rewrite the source URI
+            parts = work_dir.split('/')
+            source_docker_html = 'file:///docs/{}/index.html'.format(parts[-1])
+            cmd = '{} {} --addLinks --addBookmarks --logLevel debug -i "{}" -o "{}"'.format(
+                pdfreactor8, cmd_options, source_docker_html, target_filename
+            )
+        else:
+            cmd = '{} {} --addLinks --addBookmarks --logLevel debug -i "{}" -o "{}"'.format(
+                pdfreactor8, cmd_options, source_html, target_filename
+            )
 
     elif converter == "wkhtmltopdf":
         if not wkhtmltopdf:

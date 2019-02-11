@@ -188,7 +188,11 @@ Environment variables
 
 `pp.server` uses the `var` folder of the installation directory by default as
 temporary folder for conversion data. Set the environment variable `PP_SPOOL_DIRECTORY` 
-if you need different spool directory instead.
+if you need different spool directory instead. 
+
+If you run PDFreactor 10 or higher under Docker then you must set the environment
+variable `PP_PDFREACTOR_DOCKER=1` in order to generated a proper `file:///docs/...`
+URI for `pdfreactor.py`.
 
 
 PDF conversion API

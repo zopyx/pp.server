@@ -1,3 +1,8 @@
+2.0.4 (2019/02/11)
+------------------
+- minor installation issues with `var` folder gunicorn.log
+- added optional `PP_PDFREACTOR_DOCKER` environment support
+
 2.0.3 (2019/02/11)
 ------------------
 - minor installation issues with `var` folder gunicorn.log
