@@ -186,7 +186,10 @@ class WebViews(object):
             mtime = os.path.getmtime(fullname)
             if now - mtime > QUEUE_CLEANUP_TIME:
                 LOG.debug("Cleanup: {}".format(fullname))
-                shutil.rmtree(fullname)
+                if os.path.isdir(fullname):
+                    shutil.rmtree(fullname)
+                elif os.path.isfile(fullname):
+                    os.unlink(fullname)
                 removed += 1
         self.request.registry.settings["last_cleanup"] = time.time()
         return dict(directories_removed=removed)
