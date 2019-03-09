@@ -8,7 +8,7 @@ RUN echo
 RUN mkdir /pp-server; python3 -m venv /pp-server
 WORKDIR /pp-server
 RUN echo
-RUN bin/pip install pp.server; \
+RUN bin/pip install --no-cache pp.server; \
     bin/pp-server-templates
 
 RUN ln -sf /speedata-publisher/bin/sp /usr/bin/sp
