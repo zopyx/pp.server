@@ -3,3 +3,6 @@ build:
 
 build-clean:
 	docker build --no-cache -t zopyx/pp-server-speedata .
+
+push:
+	docker push zopyx/pp-server-speedata 
