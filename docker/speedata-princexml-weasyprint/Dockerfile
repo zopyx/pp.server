@@ -1,5 +1,7 @@
 FROM fedora
-RUN dnf -y install unzip python3-devel gcc-c++ redhat-rpm-config wget 
+RUN dnf -y install unzip python3-devel gcc-c++ redhat-rpm-config wget curl cabextract xorg-x11-font-utils fontconfig
+RUN dnf install -y https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm
+
 WORKDIR /
 RUN wget -q https://download.speedata.de/dl/speedata-publisher-linux-amd64-3.6.1.zip; \
     unzip speedata-publisher-linux-amd64-3.6.1.zip
@@ -16,7 +18,5 @@ RUN bin/pip install --no-cache pp.server weasyprint; \
 RUN ln -sf /speedata-publisher/bin/sp /usr/bin/sp
 RUN ln -sf $PWD/bin/weasyprint /usr/bin/weasyprint
 
-run dnf install -y curl cabextract xorg-x11-font-utils fontconfig
-run dnf install -y https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm
 VOLUME ["/pp-server/var"]
 CMD bin/circusd circusd.ini
