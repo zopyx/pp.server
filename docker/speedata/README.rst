@@ -29,7 +29,7 @@ The `-p|--port` option is need to expose the REST API endpoint to the Docker hos
 
 .. code::
 
-    run docker -p 6543:6543 --volume /my/local/var/folder:/pp-server/var zopyx/pp-server-speedata 
+    docker run -p 6543:6543 --volume /my/local/var/folder:/pp-server/var zopyx/pp-server-speedata 
 
 
 Access
