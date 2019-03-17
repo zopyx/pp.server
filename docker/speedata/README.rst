@@ -21,9 +21,10 @@ Run
 
 It is possible to use the container for storing the temporary files (container
 will grow over time) or you specify an external spool directory using the
-`--volume` option when you run the Docker image. The usage of an external spool directory
-is recommended in order to access the logfile `gunicorn.log` easily in case of error
-or for debugging purposes.
+`--volume` option when you run the Docker image. The exported volume name is
+`/pp-server/var`.  The usage of an external spool directory is recommended in
+order to access the logfile `gunicorn.log` easily in case of error or for
+debugging purposes.
 
 The `-p|--port` option is need to expose the REST API endpoint to the Docker host.
 
