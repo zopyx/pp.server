@@ -164,7 +164,7 @@ def pdf(
         )
 
     elif converter == "pdfreactor8":
-        
+
         if not pdfreactor8:
             return dict(status=9999, output=u"PDFreactor 8 not installed")
         if 'PP_PDFREACTOR_DOCKER' in os.environ:

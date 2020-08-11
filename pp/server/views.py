@@ -156,7 +156,7 @@ class WebViews(object):
 
         if antennahouse:
             status, output = util.runcmd("{} -v".format(antennahouse))
-            result["vivliostyle"] = output if status == 0 else "n/a"
+            result["antennahouse"] = output if status == 0 else "n/a"
 
         if publisher:
             status, output = util.runcmd("{} --version".format(publisher))
