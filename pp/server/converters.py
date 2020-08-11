@@ -73,6 +73,13 @@ unoconv_bin = None
 if util.which("unoconv"):
     unoconv_bin = "unoconv"
 
+typesetsh = None
+if util.which("typeset.sh.phar"):
+    typesetsh = "typeset.sh.phar"
+
+pagedjs = None
+if util.which("pagedjs-cli"):
+    pagedjs = "pagedjs-cli"
 
 def unoconv(work_dir, input_filename, output_format, cmd_options):
     """ Convert ``input_filename`` using ``unoconv`` to

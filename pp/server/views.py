@@ -84,6 +84,8 @@ class WebViews(object):
         from pp.server.converters import versatype
         from pp.server.converters import antennahouse
         from pp.server.converters import weasyprint
+        from pp.server.converters import pagedjs
+        from pp.server.converters import typesetsh
 
         return dict(
             princexml=princexml is not None,
@@ -98,6 +100,8 @@ class WebViews(object):
             weasyprint=weasyprint is not None,
             antennahouse=antennahouse is not None,
             publisher=publisher is not None,
+            typesetsh=typesetsh is not None,
+            pagedjs=pagedjs is not None,
         )
 
     @view_config(route_name="converter_versions", renderer="json", request_method="GET")
@@ -114,6 +118,8 @@ class WebViews(object):
         from pp.server.converters import versatype
         from pp.server.converters import antennahouse
         from pp.server.converters import weasyprint
+        from pp.server.converters import pagedjs
+        from pp.server.converters import typesetsh
 
         result = dict()
 
@@ -165,6 +171,14 @@ class WebViews(object):
         if weasyprint:
             status, output = util.runcmd("{} --version".format(weasyprint))
             result["weasyprint"] = output if status == 0 else "n/a"
+
+        if pagedjs:
+            status, output = util.runcmd("{} --version".format(pagedjs))
+            result["pagedjs-cli"] = output if status == 0 else "n/a"
+
+        if typesetsh:
+            status, output = util.runcmd("{} --version".format(typesetsh))
+            result["typeset.sh"] = output if status == 0 else "n/a"
 
         return result
 
