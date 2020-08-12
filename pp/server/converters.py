@@ -248,6 +248,23 @@ def pdf(
             antennahouse, cmd_options, source_html, out_directory, out_filename
         )
 
+    elif converter == "typesetsh":
+        out_directory = os.path.join(work_dir, "out")
+        out_filename = "out.pdf"
+        if not typesetsh:
+            return dict(status=9999, output=u"Typeset.sh not installed")
+        cmd = '{} render:html --allow-local / -rx "{}" "{}/{}"'.format(
+            typesetsh, source_html, out_directory, out_filename
+        )
+
+    elif converter == "pagedjs":
+        out_directory = os.path.join(work_dir, "out")
+        out_filename = "out.pdf"
+        if not pagedjs:
+            return dict(status=9999, output=u"pagedjs-cli not installed")
+        cmd = '{} render:html --allow-local / -rx "{}" "{}/{}"'.format(
+            typesetsh, source_html, out_directory, out_filename
+        )
     else:
         return dict(status=9999, output=u'Unknown converter "{}"'.format(converter))
 
