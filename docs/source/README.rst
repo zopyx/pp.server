@@ -17,6 +17,8 @@ HTML/XML + assets to PDF using one of the following external PDF converters:
 - VersaType Formatter (www.trim-marks.com, commercial, experimental support)
 - Antennahouse 6.6 (www.antennahouse.com, commercial)
 - Weasyprint (free, unsupported)
+- Typeset.sh  (www.typeset.sh, commercial)
+- PagedJS  (www.pagedjs.org, free)
 
 In addition there is experimental support for generating EPUB documents
 using ``Calibre`` (www.calibre.org, open-source).
@@ -45,6 +47,8 @@ Requirements
   - VersaType : ``versatype-converter``    
   - Weasyprint: ``weasyprint``    
   - Antennahouse: ``run.sh``    
+  - Typeset.sh: ``typeset.sh.phar``    
+  - PageJS: ``pagedjs-cli``    
 
   must be in the $PATH. Please refer to the installation documentation
   of the individual products.
@@ -166,6 +170,12 @@ must be included in the ``$PATH`` of your server.
 - ``weasyprint`` for Weasyprint
 
 - ``antennahouse`` for the Antennahouse
+
+ - ``pagedjs`` for the PagedJS
+
+ - ``typesetsh`` for the Typeset.sh
+
+
 
 API documentation
 -----------------

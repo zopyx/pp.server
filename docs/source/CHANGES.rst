@@ -1,3 +1,7 @@
+2.1.0 (2020/08/12)
+------------------
+- support for `pagedjs-cli` and `typeset.sh` added
+
 2.0.4 (2019/02/11)
 ------------------
 - minor installation issues with `var` folder gunicorn.log
