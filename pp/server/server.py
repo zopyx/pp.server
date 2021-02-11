@@ -10,23 +10,21 @@ import pkg_resources
 from typing import Optional
 
 from fastapi import FastAPI
-from fastapi import Form 
-from fastapi import Body 
-from fastapi import File 
-from fastapi import UploadFile 
-from fastapi import Request 
+from fastapi import Form
+from fastapi import Body
+from fastapi import File
+from fastapi import UploadFile
+from fastapi import Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from pp.server import registry
-from pp.server.converters  import convert_pdf
+from pp.server.converters import convert_pdf
 from pp.server.logger import LOG
-
 
 QUEUE_CLEANUP_TIME = 24 * 60 * 60  # 1 day
 LAST_CLEANUP = time.time() - 3600 * 24 * 10
-
 
 # bootstrap
 registry._register_converters()
@@ -37,10 +35,8 @@ dirname = os.path.dirname(__file__)
 static_dir = os.path.join(dirname, 'static')
 templates_dir = os.path.join(dirname, 'templates')
 
-
 templates = Jinja2Templates(directory=templates_dir)
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
-
 
 queue_dir = os.path.join(os.getcwd(), "var", "queue")
 queue_dir = os.environ.get('PP_SPOOL_DIRECTORY', queue_dir)
@@ -52,16 +48,16 @@ if not os.path.exists(queue_dir):
 
 print('PP_SPOOL_DIRECTORY:', queue_dir)
 
+
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     version = pkg_resources.require("pp.server")[0].version
     params = {
-        "request": request, 
+        "request": request,
         "converters": registry.available_converters(),
         "converter_versions": registry.converter_versions(),
         "version": version,
-        "python_version": sys.version,
-    }
+        "python_version": sys.version,}
     return templates.TemplateResponse("index.html", params)
 
 
@@ -69,6 +65,7 @@ async def index(request: Request):
 async def converters():
     """ Return names of all converters """
     return dict(converters=registry.available_converters())
+
 
 @app.get("/converter-versions")
 async def converters():
@@ -89,13 +86,13 @@ async def version():
 
 
 @app.post("/convert")
-async def pdf(converter: str ='', file: bytes = File(...)):
-    
+async def pdf(converter: str = '', file: bytes = File(...)):
+
     cleanup_queue()
 
-    zip_data = file 
-    converter = 'typesetsh' 
-    cmd_options = '' 
+    zip_data = file
+    converter = 'typesetsh'
+    cmd_options = ''
 
     new_id = new_converter_id(converter)
     work_dir = os.path.join(queue_dir, new_id)
@@ -113,12 +110,10 @@ async def pdf(converter: str ='', file: bytes = File(...)):
     msg = "START: pdf({}, {}, {})".format(new_id, work_file, converter)
     log(msg)
     LOG.info(msg)
-    result = convert_pdf(work_dir, work_file,
-                            converter, log, cmd_options)
+    result = convert_pdf(work_dir, work_file, converter, log, cmd_options)
 
     duration = time.time() - ts
-    msg = "END : pdf({} {} sec): {}".format(
-        new_id, duration, result["status"])
+    msg = "END : pdf({} {} sec): {}".format(new_id, duration, result["status"])
     log(msg)
     LOG.info(msg)
 
@@ -130,6 +125,7 @@ async def pdf(converter: str ='', file: bytes = File(...)):
     else:  # error
         return dict(status="ERROR", output=output)
 
+
 def cleanup_queue():
 
     global LAST_CLEANUP
@@ -138,7 +134,7 @@ def cleanup_queue():
         os.makedirs(queue_dir)
 
     now = time.time()
-    if now - LAST_CLEANUP< QUEUE_CLEANUP_TIME:
+    if now - LAST_CLEANUP < QUEUE_CLEANUP_TIME:
         return
     removed = 0
     for dirname in os.listdir(queue_dir):
@@ -155,6 +151,7 @@ def cleanup_queue():
     LAST_CLEANUP = time.time()
     return dict(directories_removed=removed)
 
+
 def new_converter_id(converter):
     """ New converter id based on timestamp + converter name """
     return datetime.datetime.now().strftime("%Y%m%dT%H%M%S.%f") + "-" + converter
@@ -168,5 +165,4 @@ def converter_log(work_dir, msg):
         try:
             fp.write(msg + "\n")
         except UnicodeError:
-            fp.write(msg.encode("ascii", "replace").decode(
-                "ascii", "replace") + "\n")
+            fp.write(msg.encode("ascii", "replace").decode("ascii", "replace") + "\n")

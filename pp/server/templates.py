@@ -3,7 +3,6 @@
 # (C) 2013, ZOPYX,  Tuebingen, Germany
 ################################################################
 
-
 import os
 import pkg_resources
 

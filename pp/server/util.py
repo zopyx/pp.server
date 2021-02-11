@@ -38,10 +38,8 @@ def checkEnvironment(envname):
         return False
 
     if not os.path.exists(dirname):
-        LOG.debug(
-            "The directory referenced through the environment "
-            "variable ${} does not exit ({})".format(envname, dirname)
-        )
+        LOG.debug("The directory referenced through the environment "
+                  "variable ${} does not exit ({})".format(envname, dirname))
         return False
     return True
 
@@ -55,7 +53,6 @@ def which(command: str) -> bool:
     path_env = os.environ.get("PATH", "")  # also on win32?
     for path in path_env.split(":"):
         fullname = os.path.join(path, command)
-        print(fullname)
         if os.path.exists(fullname):
             return True
     return False
