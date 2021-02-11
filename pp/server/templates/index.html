@@ -23,10 +23,12 @@
               <th>Version</th>
           </thead>
           <tbody>
-              <tr tal:repeat="k converter_versions">
-                  <td>${k}</td>
-                  <td class="pre">${converter_versions[k]}</td>
-              </tr>
+              {% for k in converters %}
+                <tr>
+                    <td>{{k}}</td>
+                    <td class="pre">{{ converter_versions[k] }}</td>
+                </tr>
+              {%endfor %}
           </tbody>
       </table>
 

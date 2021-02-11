@@ -35,6 +35,7 @@ def index(request: Request):
     params = {
         "request": request, 
         "converters": registry.available_converters(),
+        "converter_versions": registry.converter_versions(),
         "version": version,
         "python_version": sys.version,
     }
@@ -45,6 +46,11 @@ def index(request: Request):
 def converters():
     """ Return names of all converters """
     return dict(converters=registry.available_converters())
+
+@app.get("/converter-versions")
+def converters():
+    """ Return names of all converters """
+    return dict(converters=registry.converter_versions())
 
 
 @app.get("/converter")

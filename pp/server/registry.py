@@ -2,8 +2,10 @@
 
 
 import os
+from pdb import Pdb
 
 from pp.server.util import which
+from pp.server.util import runcmd
 
 REGISTRY = dict()
 
@@ -29,6 +31,7 @@ def register_converter(converter_name: str, converter_cmd: str):
     directly in the $PATH or some `bin/` path.
     """
 
+    REGISTRY[converter_name] = False
     if which(converter_cmd):
         REGISTRY[converter_name] = True
     elif which(f"bin/{converter_name}"):
@@ -37,7 +40,7 @@ def register_converter(converter_name: str, converter_cmd: str):
 
 def available_converters() -> [str]:
     """ Return list of available converter names """
-    return list(REGISTRY.keys())
+    return sorted(list([c for c in REGISTRY if REGISTRY[c]]))
 
 
 def has_converter(converter_name: str) -> bool:
@@ -48,6 +51,57 @@ def has_converter(converter_name: str) -> bool:
 def get_converter_registry():
     """ Return the converter registry """
     return REGISTRY
+
+
+def converter_versions():
+
+    result = dict()
+
+    if REGISTRY["prince"]:
+        status, output = runcmd("prince --version")
+        result["prince"] = output if status == 0 else "n/a"
+
+    if REGISTRY["pdfreactor"]:
+        status, output = runcmd("pdfreactor.py --version")
+        result["pdfreactor"] = output if status == 0 else "n/a"
+
+    if REGISTRY["phantomjs"]:
+        status, output = runcmd("phantomjs --version")
+        result["phantomjs"] = output if status == 0 else "n/a"
+
+    if REGISTRY["calibre"]:
+        status, output = runcmd("ebook-convert --version")
+        result["calibre"] = output if status == 0 else "n/a"
+
+    if REGISTRY["vivliostyle"]:
+        status, output = runcmd("vivliostyle-formatter --version".format(vivlio))
+        result["vivliostyle"] = output if status == 0 else "n/a"
+
+    if REGISTRY["versatype"]:
+        status, output = runcmd("versatype-formatter --version")
+        result["versatype"] = output if status == 0 else "n/a"
+
+    if REGISTRY["antennahouse"]:
+        status, output = runcmd("run.sh -v")
+        result["antennahouse"] = output if status == 0 else "n/a"
+
+    if REGISTRY["speedata"]:
+        status, output = runcmd("sp --version")
+        result["publisher"] = output if status == 0 else "n/a"
+
+    if REGISTRY["weasyprint"]:
+        status, output = runcmd("weasyprint --version")
+        result["weasyprint"] = output if status == 0 else "n/a"
+
+    if REGISTRY["pagedjs"]:
+        status, output = runcmd("pagedjs-cli --version")
+        result["pagedjs-cli"] = output if status == 0 else "n/a"
+
+    if REGISTRY["typesetsh"]:
+        status, output = runcmd("typeset.sh.phar --version")
+        result["typeset.sh"] = output if status == 0 else "n/a"
+
+    return result
 
 
 def main():
