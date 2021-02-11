@@ -59,3 +59,7 @@ def has_converter(converter_name):
     return dict(has_converter=registry.has_converter(converter_name))
 
 
+@app.get("/version")
+def version():
+    version = pkg_resources.require("pp.server")[0].version
+    return dict(version=version, module="pp.server")
