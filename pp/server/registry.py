@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+################################################################
+# pp.server - Produce & Publish Server
+# (C) 2021, ZOPYX,  Tuebingen, Germany
+################################################################
+
 import os
 from pdb import Pdb
 
