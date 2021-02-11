@@ -1,8 +1,8 @@
 import os
 import sys
 
-if sys.version_info[:2] not in ((3,6), (3,7), (3,8)):
-    raise RuntimeError('pp.server requires Python 3.6 or higher')
+if sys.version_info[:2] not in ((3,7), (3,8), (3,9), (3, 10)):
+    raise RuntimeError('pp.server requires Python 3.7 or higher')
 
 from setuptools import setup, find_packages
 
