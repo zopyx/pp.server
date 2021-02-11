@@ -46,7 +46,7 @@ def checkEnvironment(envname):
     return True
 
 
-def which(command):
+def which(command: str) -> bool:
     """ Implements a functionality similar to the UNIX
         ``which`` command. The method checks if ``command``
         is available somewhere within the $PATH and returns

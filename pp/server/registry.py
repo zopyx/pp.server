@@ -42,7 +42,7 @@ def available_converters() -> [str]:
 
 def has_converter(converter_name: str) -> bool:
     """ Check if a given converter name is registered """
-    return converter_name in available_converters
+    return converter_name in available_converters()
 
 
 def get_converter_registry():
