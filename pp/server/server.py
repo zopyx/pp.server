@@ -104,15 +104,11 @@ async def cleanup():
 
 
 @app.post("/convert")
-async def convert(converter: str = "", file: bytes = File(...)):
+async def convert(converter: str = Form(...), cmd_options: str = Form(...), data: str = Form(...)):
 
     cleanup_queue()
 
-    zip_data = file
-    converter = "speeda"
-    cmd_options = ""
-
-    LOG.error(f"Hardcoded converter: {converter}")
+    zip_data = base64.decodebytes(data.encode("ascii"))
 
     new_id = new_converter_id(converter)
     work_dir = os.path.join(queue_dir, new_id)

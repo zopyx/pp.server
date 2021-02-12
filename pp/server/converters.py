@@ -51,7 +51,7 @@ CONVERTERS = {
     "speedata": {
         "cmd": "sp",
         "version": "sp --version",
-        "convert": 'sp --jobname out --timeout 30 --runs 2 --wd "{word_dir}" --outputdir "{work_dir}/out" {cmd_options}',
+        "convert": 'sp --jobname out --timeout 30 --runs 2 --wd "{work_dir}" --outputdir "{work_dir}/out" {cmd_options}',
     },
     "calibre": {
         "cmd": "ebook-convert",
@@ -119,6 +119,7 @@ def convert_pdf(
         cmd = converter_config["convert"]
         cmd = cmd.format(
             cmd_options=cmd_options,
+            work_dir=work_dir,
             target_filename=target_filename,
             source_html=source_html,
         )
