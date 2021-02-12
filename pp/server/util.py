@@ -14,6 +14,7 @@ win32 = sys.platform == "win32"
 def runcmd(cmd):
     """ Execute a command using the easyprocess module """
 
+    LOG.info(cmd)
     handle = easyprocess.EasyProcess(cmd)
     handle.call()
     stderr = handle.stderr
@@ -21,15 +22,15 @@ def runcmd(cmd):
     status = handle.return_code
 
     if stdout:
-        LOG.debug(stdout)
+        LOG.info(f"Output:\n{stdout}")
     if stderr:
-        LOG.debug(stderr)
+        LOG.info(f"Output:\n{stderr}")
     return status, (stdout + stderr)
 
 
-def checkEnvironment(envname):
-    """ Check if the given name of an environment variable exists and
-        if it points to an existing directory.
+def checkEnvironment(envname: str) -> bool:
+    """Check if the given name of an environment variable exists and
+    if it points to an existing directory.
     """
 
     dirname = os.environ.get(envname)
@@ -38,17 +39,19 @@ def checkEnvironment(envname):
         return False
 
     if not os.path.exists(dirname):
-        LOG.debug("The directory referenced through the environment "
-                  "variable ${} does not exit ({})".format(envname, dirname))
+        LOG.debug(
+            "The directory referenced through the environment "
+            "variable ${} does not exit ({})".format(envname, dirname)
+        )
         return False
     return True
 
 
 def which(command: str) -> bool:
-    """ Implements a functionality similar to the UNIX
-        ``which`` command. The method checks if ``command``
-        is available somewhere within the $PATH and returns
-        True or False.
+    """Implements a functionality similar to the UNIX
+    ``which`` command. The method checks if ``command``
+    is available somewhere within the $PATH and returns
+    True or False.
     """
     path_env = os.environ.get("PATH", "")  # also on win32?
     for path in path_env.split(":"):

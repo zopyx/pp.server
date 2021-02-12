@@ -28,30 +28,35 @@ from pp.server import registry
 from pp.server.converters import convert_pdf
 from pp.server.logger import LOG
 
+# How often to cleanup the queue directory?
 QUEUE_CLEANUP_TIME = 24 * 60 * 60  # 1 day
+
+# Internal timestamp for the last cleanup action
 LAST_CLEANUP = time.time() - 3600 * 24 * 10
 
-# bootstrap
+# Bootstrap: register all convertes
 registry._register_converters()
 
+# Bootstrap: FastAPI App
 app = FastAPI()
 
+# Bootstrap: register resources for HTML view
 dirname = os.path.dirname(__file__)
-static_dir = os.path.join(dirname, 'static')
-templates_dir = os.path.join(dirname, 'templates')
-
+static_dir = os.path.join(dirname, "static")
+templates_dir = os.path.join(dirname, "templates")
 templates = Jinja2Templates(directory=templates_dir)
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
+# Bootstrap: spool directory
 queue_dir = os.path.join(os.getcwd(), "var", "queue")
-queue_dir = os.environ.get('PP_SPOOL_DIRECTORY', queue_dir)
+queue_dir = os.environ.get("PP_SPOOL_DIRECTORY", queue_dir)
 if not os.path.exists(queue_dir):
     try:
         os.makedirs(queue_dir)
     except FileExistsError:
         pass
 
-print('PP_SPOOL_DIRECTORY:', queue_dir)
+LOG.info("QUEUE:" + queue_dir)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -62,7 +67,8 @@ async def index(request: Request):
         "converters": registry.available_converters(),
         "converter_versions": registry.converter_versions(),
         "version": version,
-        "python_version": sys.version,}
+        "python_version": sys.version,
+    }
     return templates.TemplateResponse("index.html", params)
 
 
@@ -73,7 +79,7 @@ async def converters():
 
 
 @app.get("/converter-versions")
-async def converters():
+async def converter_versions():
     """ Return names of all converters """
     return dict(converters=registry.converter_versions())
 
@@ -91,13 +97,13 @@ async def version():
 
 
 @app.post("/convert")
-async def pdf(converter: str = '', file: bytes = File(...)):
+async def pdf(converter: str = "", file: bytes = File(...)):
 
     cleanup_queue()
 
     zip_data = file
-    converter = 'typesetsh'
-    cmd_options = ''
+    converter = "typesetsh"
+    cmd_options = ""
 
     new_id = new_converter_id(converter)
     work_dir = os.path.join(queue_dir, new_id)

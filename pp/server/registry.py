@@ -10,6 +10,7 @@ from pdb import Pdb
 
 from pp.server.util import which
 from pp.server.util import runcmd
+from pp.server.logger import LOG
 from pp.server.converters import CONVERTERS
 
 REGISTRY = dict()
@@ -32,6 +33,8 @@ def register_converter(converter_name: str, converter_cmd: str):
         REGISTRY[converter_name] = True
     elif which(f"bin/{converter_name}"):
         REGISTRY[converter_name] = True
+    if REGISTRY[converter_name]:
+        LOG.info(f"Converter {converter_name} registered")
 
 
 def available_converters() -> [str]:
