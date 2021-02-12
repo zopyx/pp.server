@@ -1,7 +1,7 @@
 pp.server - Produce & Publish Server
 ====================================
 
-``pp.server`` is a Pyramid based server implementation and implements the
+``pp.server`` is a FastAPI based server implementation and implements the
 server side functionality of the Produce & Publish platform.  It is known as
 the ``Produce & Publish Server``.
 
@@ -10,12 +10,11 @@ HTML/XML + assets to PDF using one of the following external PDF converters:
 
 - PrinceXML (www.princexml.com, commercial)
 - PDFreactor (www.realobjects.com, commercial)
-- PhantomJS (free, unsupported)  
 - Speedata Publisher (www.speedata.de, open-source, experimental support)
 - WKHTMLTOPDF (www.wkhtmltopdf.org, open-source, experimental support)
 - Vivliostyle Formatter (www.vivliostyle.com, commercial, experimental support)
 - VersaType Formatter (www.trim-marks.com, commercial, experimental support)
-- Antennahouse 6.6 (www.antennahouse.com, commercial)
+- Antennahouse 7 (www.antennahouse.com, commercial)
 - Weasyprint (free, unsupported)
 - Typeset.sh  (www.typeset.sh, commercial)
 - PagedJS  (www.pagedjs.org, free)
@@ -23,23 +22,17 @@ HTML/XML + assets to PDF using one of the following external PDF converters:
 In addition there is experimental support for generating EPUB documents
 using ``Calibre`` (www.calibre.org, open-source).
 
-In addition the Produce & Publish server provides a simple conversion
-API for converting format A to B (as supported through LibreOffice
-or OpenOffice). The conversion is build on top of ``unoconv``.
-
 The web service provides only synchronous operation.
 
 Requirements
 ------------
 
-- Python 3.6 or higher, no support for Python 2.x
+- Python 3.8 or higher, no support for Python 2.x
 
 - the external binaries 
 
   - PrinceXML: ``prince``, 
-  - PDFreactor up to version 7: ``pdfreactor``,  
-  - PDFreactor version 8 or higher: ``pdfreactor.py``,  
-  - Unoconv: ``unoconv`` 
+  - PDFreactor: ``pdfreactor.py``,  
   - Speedata Publisher: ``sp``
   - Calibre: ``ebook-convert``
   - WKHTMLTOPDF: ``wkhtmltopdf``    
@@ -151,11 +144,7 @@ must be included in the ``$PATH`` of your server.
 
 - ``prince`` for PrinceXML
 
-- ``pdfreactor`` for PDFreactor 7
-
-- ``pdfreactor8`` for PDFreactor 8 or higher
-
-- ``phantomjs`` for PhantomJS
+- ``pdfreactor`` for PDFreactor 8 or higher
 
 - ``wkhtmltopdf`` for WKHTMLToPDF
 
@@ -171,9 +160,9 @@ must be included in the ``$PATH`` of your server.
 
 - ``antennahouse`` for the Antennahouse
 
- - ``pagedjs`` for the PagedJS
+- ``pagedjs`` for the PagedJS
 
- - ``typesetsh`` for the Typeset.sh
+- ``typesetsh`` for the Typeset.sh
 
 
 
@@ -183,15 +172,19 @@ API documentation
 All API methods are available through a REST api
 following API URL endpoint::
 
-    http://host:port/api/1/<command>
+    http://host:port/<command>
 
 With the default server configuration this translates to::
 
-    http://localhost:6543/api/1/pdf
+    http://localhost:6543/convert
 
-    or
+REST API Introspection
+----------------------
 
-    http://localhost:6543/api/1/unoconv
+`pp.server` is implemented based on the FastAPI framework for Python.
+You can access the REST API  documentation directly through
+    
+    http://localhost:6543/docs
 
 Environment variables
 +++++++++++++++++++++
@@ -214,7 +207,7 @@ archive. The filename of the content **must** be named ``index.html``.
 
 You have to ``POST`` the data to the 
 
-    http://host:port/api/1/pdf
+    http://host:port/convert
 
 with the following parameters:
 
@@ -241,48 +234,12 @@ pairs:
 - ``output`` - the conversion transcript (output of the converter run)
 
   
-Unoconv conversion API
-++++++++++++++++++++++
-
-The unoconv web service wraps the OpenOffice/LibreOffice server mode
-in order to perform document conversion (mainly used in the Produce & Publish
-world for convertering DOC(X) documents to HTML/XML).
-
-Remember that all converters use HTML or XML as input for the conversion. All
-input data (HTML/XML, images, stylesheets, fonts etc.) must be stored in ZIP
-archive. The filename of the content **must** be named ``index.html``.
-
-You have to ``POST`` the data to the 
-
-    http://host:port/api/1/unoconv
-
-with the following parameters:
-
-
-- ``file`` - the source files (multi/part encoding)
-
-- ``cmd_options`` - an optional string of command line parameters added 
-  as given to the ``unoconv`` calls
-
-Returns:
-
-The API returns its result as JSON structure with the following key-value
-pairs:
-
-- ``status`` - either ``OK`` or ``ERROR``
-
-- ``data`` - the converted output files as ZIP archive (e.g.
-  a DOCX file containing images will be converted to a HTML file
-  plus the list of extract image files)
-
-- ``output`` - the conversion transcript (output of the converter run)
-
 Introspection API methods
 +++++++++++++++++++++++++
 
 Produce & Publish server version:
 
-    http://host:port/api/version
+    http://host:port/version
 
 returns:
 
@@ -290,7 +247,7 @@ returns:
    
 Installed/available converters:
 
-    http://host:port/api/converters
+    http://host:port/converters
 
 returns:
 
@@ -299,7 +256,7 @@ returns:
 
 Versions of installed converter:
 
-    http://host:port/api/converter-versions
+    http://host:port/converter-versions
 
 returns:
 
@@ -311,7 +268,7 @@ Other API methods
 
 Cleanup of the queue directory (removes conversion data older than one day)
 
-    http://host:port/api/cleanup
+    http://host:port/cleanup
 
 returns:
 

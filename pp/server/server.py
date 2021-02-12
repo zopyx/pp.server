@@ -96,8 +96,14 @@ async def version():
     return dict(version=version, module="pp.server")
 
 
+@app.get("/cleanup")
+async def cleanup():
+    cleanup_queue()
+    return dict(status='OK')
+
+
 @app.post("/convert")
-async def pdf(converter: str = "", file: bytes = File(...)):
+async def convert(converter: str = "", file: bytes = File(...)):
 
     cleanup_queue()
 
@@ -115,17 +121,17 @@ async def pdf(converter: str = "", file: bytes = File(...)):
     with open(work_file, "wb") as fp:
         fp.write(zip_data)
 
-    log = functools.partial(converter_log, work_dir)
+    conversion_log = functools.partial(converter_log, work_dir)
 
     ts = time.time()
     msg = "START: pdf({}, {}, {})".format(new_id, work_file, converter)
-    log(msg)
+    conversion_log(msg)
     LOG.info(msg)
     result = convert_pdf(work_dir, work_file, converter, log, cmd_options)
 
     duration = time.time() - ts
     msg = "END : pdf({} {} sec): {}".format(new_id, duration, result["status"])
-    log(msg)
+    conversion_log(msg)
     LOG.info(msg)
 
     output = result["output"]
