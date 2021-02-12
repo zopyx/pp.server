@@ -61,6 +61,7 @@ LOG.info("QUEUE:" + queue_dir)
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
+    """ Produce & Publish web view """
     version = pkg_resources.require("pp.server")[0].version
     params = {
         "request": request,
@@ -108,8 +109,10 @@ async def convert(converter: str = "", file: bytes = File(...)):
     cleanup_queue()
 
     zip_data = file
-    converter = "typesetsh"
+    converter = "speeda"
     cmd_options = ""
+
+    LOG.error(f"Hardcoded converter: {converter}")
 
     new_id = new_converter_id(converter)
     work_dir = os.path.join(queue_dir, new_id)
@@ -124,10 +127,10 @@ async def convert(converter: str = "", file: bytes = File(...)):
     conversion_log = functools.partial(converter_log, work_dir)
 
     ts = time.time()
-    msg = "START: pdf({}, {}, {})".format(new_id, work_file, converter)
+    msg = "START: pdf(ID {}, workfile {}, converter {}, cmd_options {})".format(new_id, work_file, converter, cmd_options)
     conversion_log(msg)
     LOG.info(msg)
-    result = convert_pdf(work_dir, work_file, converter, log, cmd_options)
+    result = convert_pdf(work_dir, work_file, converter, conversion_log, cmd_options)
 
     duration = time.time() - ts
     msg = "END : pdf({} {} sec): {}".format(new_id, duration, result["status"])
@@ -140,6 +143,7 @@ async def convert(converter: str = "", file: bytes = File(...)):
         pdf_data = base64.encodebytes(pdf_data).decode("ascii")
         return dict(status="OK", data=pdf_data, output=output)
     else:  # error
+        LOG.error(f"Conversion failed: {output}")
         return dict(status="ERROR", output=output)
 
 

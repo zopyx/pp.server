@@ -56,7 +56,7 @@ CONVERTERS = {
     "calibre": {
         "cmd": "ebook-convert",
         "version": "ebook-convert --version",
-        "convert": '{ebook-convert} "{source_html}" "{target_filename}" {cmd_options}',
+        "convert": 'ebook-convert "{source_html}" "{target_filename}" {cmd_options}',
     },
     "vivliostyle": {
         "cmd": "vivliostyle-formatter",
