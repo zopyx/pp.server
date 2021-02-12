@@ -32,6 +32,12 @@ class PDFTests(unittest.TestCase):
     def test_prince(self):
         self._convert_pdf("prince")
 
+    def test_weasyprint(self):
+        self._convert_pdf("weasyprint")
+
+    def test_antennahouse(self):
+        self._convert_pdf("antennahouse")
+
     def _convert_pdf(self, converter, expected='OK'):
 
         # Generate ZIP file with sample data first
