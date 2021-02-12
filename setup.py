@@ -11,13 +11,16 @@ README = open(os.path.join(here, 'docs', 'source', 'README.rst')).read()
 CHANGES = open(os.path.join(here, 'docs', 'source', 'CHANGES.rst')).read()
 
 requires = [
-    'pyramid',
-    'pyramid_chameleon',
-    'easyprocess',
-    'gunicorn',
-    'circus',
-    'plac',
-    ]
+    "fastapi",
+    "easyprocess",
+    "python-multipart",
+    "plac",
+    "aiofiles",
+    "jinja2",
+    "click",
+    "uvicorn",
+    "circus"
+]
 
 tests_require = [
     'webtest',
