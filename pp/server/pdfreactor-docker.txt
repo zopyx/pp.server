@@ -1,0 +1,14 @@
+docker pull realobjects/pdfreactor
+docker kill pdfreactor
+docker rm pdfreactor
+docker rmi pdfreactor
+docker run \
+        --restart=always \
+        --cpuset-cpus="0-3" \
+        --name pdfreactor \
+        -d  \
+        -p 9423:9423 \
+        -v /tmp/ro/config/:/ro/config \
+        -v /tmp/ro/docs:/docs \
+        -e JAVA_OPTIONS="-Dcom.realobjects.pdfreactor.webservice.securitySettings.defaults.allowFileSystemAccess=true" \
+        realobjects/pdfreactor
