@@ -60,13 +60,19 @@ LOG.info("QUEUE:" + queue_dir)
 
 
 @app.get("/", response_class=HTMLResponse)
-async def index(request: Request):
+async def index(request: Request, show_versions: bool = False):
     """ Produce & Publish web view """
+
     version = pkg_resources.require("pp.server")[0].version
+    converter_versions = {}
+    if show_versions:
+        converter_versions = registry.converter_versions()
+
     params = {
         "request": request,
         "converters": registry.available_converters(),
-        "converter_versions": registry.converter_versions(),
+        "show_versions": show_versions,
+        "converter_versions": converter_versions,
         "version": version,
         "python_version": sys.version,
     }

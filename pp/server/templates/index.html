@@ -15,20 +15,26 @@
       <h3>Python version: {{python_version}} </h3>
       <h3>Converters: {{converters}} </h3>
 
-      <table border="1">
-          <thead>
-              <th>Converter</th>
-              <th>Version</th>
-          </thead>
-          <tbody>
-              {% for k in converters %}
-                <tr>
-                    <td>{{k}}</td>
-                    <td class="pre">{{ converter_versions[k] }}</td>
-                </tr>
-              {%endfor %}
-          </tbody>
-      </table>
+      {% if not show_versions %}
+          <a href="?show_versions=1">Show converter version</a>
+      {% endif %}
+
+      {% if show_versions %}
+          <table border="1">
+              <thead>
+                  <th>Converter</th>
+                  <th>Version</th>
+              </thead>
+              <tbody>
+                  {% for k in converters %}
+                    <tr>
+                        <td>{{k}}</td>
+                        <td class="pre">{{ converter_versions[k] }}</td>
+                    </tr>
+                  {%endfor %}
+              </tbody>
+          </table>
+      {% endif %}
 
   </div>
   <br/>
