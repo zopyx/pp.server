@@ -71,7 +71,7 @@ CONVERTERS = {
 }
 
 
-def convert_pdf(
+async def convert_pdf(
     work_dir, work_file, converter, logger, cmd_options, source_filename="index.html"
 ):
     """Converter a given ZIP file
@@ -125,10 +125,11 @@ def convert_pdf(
         )
 
     logger("CMD: {}".format(cmd))
+    result = await util.run(cmd)
+    status = result['status']
+    output = result['stdout'] + result['stderr']
 
-    status, output = util.runcmd(cmd)
-
-    logger("STATUS: {}".format(status))
+    logger("STATUS: {}".format(result["status"]))
     logger("OUTPUT")
     logger(output)
 

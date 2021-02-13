@@ -7,6 +7,7 @@
 
 import os
 import sys
+import shutil
 import base64
 import time
 import datetime
@@ -66,7 +67,7 @@ async def index(request: Request, show_versions: bool = False):
     version = pkg_resources.require("pp.server")[0].version
     converter_versions = {}
     if show_versions:
-        converter_versions = registry.converter_versions()
+        converter_versions = await registry.converter_versions()
 
     params = {
         "request": request,
@@ -132,7 +133,7 @@ async def convert(converter: str = Form(...), cmd_options: str = Form(...), data
     msg = "START: pdf(ID {}, workfile {}, converter {}, cmd_options {})".format(new_id, work_file, converter, cmd_options)
     conversion_log(msg)
     LOG.info(msg)
-    result = convert_pdf(work_dir, work_file, converter, conversion_log, cmd_options)
+    result = await convert_pdf(work_dir, work_file, converter, conversion_log, cmd_options)
 
     duration = time.time() - ts
     msg = "END : pdf({} {} sec): {}".format(new_id, duration, result["status"])

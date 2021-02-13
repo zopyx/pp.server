@@ -5,27 +5,11 @@
 
 import os
 import sys
-import easyprocess
+import asyncio
+
 from pp.server.logger import LOG
 
 win32 = sys.platform == "win32"
-
-
-def runcmd(cmd):
-    """ Execute a command using the easyprocess module """
-
-    LOG.info(cmd)
-    handle = easyprocess.EasyProcess(cmd)
-    handle.call()
-    stderr = handle.stderr
-    stdout = handle.stdout
-    status = handle.return_code
-
-    if stdout:
-        LOG.info(f"Output:\n{stdout}")
-    if stderr:
-        LOG.info(f"Output:\n{stderr}")
-    return status, (stdout + stderr)
 
 
 def checkEnvironment(envname: str) -> bool:
@@ -59,3 +43,36 @@ def which(command: str) -> bool:
         if os.path.exists(fullname):
             return True
     return False
+
+
+
+async def run(cmd):
+    """ Run `cmd` asnychronously.
+        Returns: dict(status, stdout, stderr)
+    """
+
+    LOG.info(cmd)
+    proc = await asyncio.create_subprocess_shell(
+        cmd,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE)
+
+    stdout, stderr = await proc.communicate()
+    
+    stdout = stdout.decode()
+    stderr = stderr.decode()
+    status = proc.returncode
+
+    if stdout:
+        LOG.info(f"Output:\n{stdout}")
+    if stderr:
+        LOG.info(f"Output:\n{stderr}")
+
+    return dict(stdout=stdout, stderr=stderr, status= status)
+
+    print(f'[{cmd!r} exited with {proc.returncode}]')
+    if stdout:
+        print(f'[stdout]\n{stdout.decode()}')
+    if stderr:
+        print(f'[stderr]\n{stderr.decode()}')
+

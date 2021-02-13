@@ -9,7 +9,7 @@ import os
 from pdb import Pdb
 
 from pp.server.util import which
-from pp.server.util import runcmd
+from pp.server.util import run
 from pp.server.logger import LOG
 from pp.server.converters import CONVERTERS
 
@@ -52,16 +52,18 @@ def get_converter_registry():
     return REGISTRY
 
 
-def converter_versions():
+async def converter_versions():
 
-    result = dict()
+    versions = dict()
 
     for converter in available_converters():
         converter_config = CONVERTERS[converter]
-        status, output = runcmd(converter_config["version"])
-        result[converter] = output if status == 0 else "n/a"
+        result = await run(converter_config["version"])
+        status = result['status']
+        output = result['stdout'] + result['stderr']
+        versions[converter] = output if status == 0 else "n/a"
 
-    return result
+    return versions
 
 
 def main():
