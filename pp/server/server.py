@@ -107,11 +107,13 @@ async def version():
 @app.get("/cleanup")
 async def cleanup():
     cleanup_queue()
-    return dict(status='OK')
+    return dict(status="OK")
 
 
 @app.post("/convert")
-async def convert(converter: str = Form(...), cmd_options: str = Form(...), data: str = Form(...)):
+async def convert(
+    converter: str = Form(...), cmd_options: str = Form(...), data: str = Form(...)
+):
 
     cleanup_queue()
 
@@ -130,10 +132,14 @@ async def convert(converter: str = Form(...), cmd_options: str = Form(...), data
     conversion_log = functools.partial(converter_log, work_dir)
 
     ts = time.time()
-    msg = "START: pdf(ID {}, workfile {}, converter {}, cmd_options {})".format(new_id, work_file, converter, cmd_options)
+    msg = "START: pdf(ID {}, workfile {}, converter {}, cmd_options {})".format(
+        new_id, work_file, converter, cmd_options
+    )
     conversion_log(msg)
     LOG.info(msg)
-    result = await convert_pdf(work_dir, work_file, converter, conversion_log, cmd_options)
+    result = await convert_pdf(
+        work_dir, work_file, converter, conversion_log, cmd_options
+    )
 
     duration = time.time() - ts
     msg = "END : pdf({} {} sec): {}".format(new_id, duration, result["status"])

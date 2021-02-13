@@ -126,8 +126,8 @@ async def convert_pdf(
 
     logger("CMD: {}".format(cmd))
     result = await util.run(cmd)
-    status = result['status']
-    output = result['stdout'] + result['stderr']
+    status = result["status"]
+    output = result["stdout"] + result["stderr"]
 
     logger("STATUS: {}".format(result["status"]))
     logger("OUTPUT")

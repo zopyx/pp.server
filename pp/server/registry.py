@@ -59,8 +59,8 @@ async def converter_versions():
     for converter in available_converters():
         converter_config = CONVERTERS[converter]
         result = await run(converter_config["version"])
-        status = result['status']
-        output = result['stdout'] + result['stderr']
+        status = result["status"]
+        output = result["stdout"] + result["stderr"]
         versions[converter] = output if status == 0 else "n/a"
 
     return versions
