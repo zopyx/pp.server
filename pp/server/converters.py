@@ -127,8 +127,6 @@ def convert_pdf(
     logger("CMD: {}".format(cmd))
 
     status, output = util.runcmd(cmd)
-    if converter == "publisher":
-        status = 0
 
     logger("STATUS: {}".format(status))
     logger("OUTPUT")
