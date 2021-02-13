@@ -6,7 +6,6 @@
 ################################################################
 
 import os
-from pdb import Pdb
 
 from pp.server.util import which
 from pp.server.util import run

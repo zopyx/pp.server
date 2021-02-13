@@ -16,7 +16,7 @@
       <h3>Converters: {{converters}} </h3>
 
       {% if not show_versions %}
-          <a href="?show_versions=1">Show converter version</a>
+          <a id="show-versions" href="?show_versions=1">Show converter versions</a>
       {% endif %}
 
       {% if show_versions %}
@@ -26,7 +26,7 @@
                   <th>Version</th>
               </thead>
               <tbody>
-                  {% for k in converters %}
+                  {% for k in converter_versions %}
                     <tr>
                         <td>{{k}}</td>
                         <td class="pre">{{ converter_versions[k] }}</td>

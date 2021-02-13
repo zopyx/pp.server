@@ -37,3 +37,7 @@ table th {
     white-space: pre;
     font-family: monospace;
 }
+
+#show-versions {
+    text-decoration: underline;
+}

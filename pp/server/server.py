@@ -71,7 +71,7 @@ async def index(request: Request, show_versions: bool = False):
 
     params = {
         "request": request,
-        "converters": registry.available_converters(),
+        "converters": ", ".join(registry.available_converters()),
         "show_versions": show_versions,
         "converter_versions": converter_versions,
         "version": version,
