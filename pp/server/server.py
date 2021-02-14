@@ -39,7 +39,10 @@ LAST_CLEANUP = time.time() - 3600 * 24 * 10
 registry._register_converters()
 
 # Bootstrap: FastAPI App
-app = FastAPI()
+app = FastAPI(
+        title="Produce & Publish Server",
+        description="This server provides a REST interface for most common PrintCSS converters"
+        )
 
 # Bootstrap: register resources for HTML view
 dirname = os.path.dirname(__file__)
@@ -107,6 +110,7 @@ async def version():
 
 @app.get("/cleanup")
 async def cleanup():
+    """ Cleanup up the internal queue """
     cleanup_queue()
     return dict(status="OK")
 
@@ -115,6 +119,17 @@ async def cleanup():
 async def convert(
     converter: str = Form(...), cmd_options: str = Form(...), data: str = Form(...)
 ):
+    """ The /convert endpoint implements the PrinceCSS to PDF conversion 
+
+        The "converter" parameter must be the name of a registered/installed PrinceCSS
+        tool (see /converters endpoint)
+
+        The "cmd_options" parameter can be used to specify converter specific 
+        command line parameters.
+
+        The "data" parameter is a base64 encoded ZIP archive that contains the index.html
+        together with all other assets required to perform the conversion.
+    """
 
     cleanup_queue()
 
