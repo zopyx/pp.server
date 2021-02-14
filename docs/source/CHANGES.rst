@@ -1,3 +1,13 @@
+3.0.0 (2020/02/14)
+------------------
+
+- complete rewrite using FastAPI as REST backend
+- better logging
+- changed API names
+- dropped support for PhantomJS and Unoconv
+- better error handling
+- simplified configuration for further converter support
+
 2.1.0 (2020/08/12)
 ------------------
 - support for `pagedjs-cli` and `typeset.sh` added

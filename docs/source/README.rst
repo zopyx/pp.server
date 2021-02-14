@@ -1,6 +1,13 @@
 pp.server - Produce & Publish Server
 ====================================
 
+
+.. note:: 
+
+   This new version 3 of the Produce & Publish server is a complete rewrite
+   with an incompatible REST API. Version 3 also requires version 3
+   of the `pp.client-python` bindings.
+
 ``pp.server`` is a FastAPI based server implementation and implements the
 server side functionality of the Produce & Publish platform.  It is known as
 the ``Produce & Publish Server``.
@@ -146,7 +153,7 @@ You have to ``POST`` the data to the
 with the following parameters:
 
 
-- ``file`` - the ZIP archive (multi/part encoding)
+- ``data`` - the ZIP archive (as base64 encoded string)
 
 - ``converter`` - a string that determines the the PDF
   converter to be used (either ``princexml``, ``pdfreactor``, ``phantomjs``, ``vivliostyle``, ``versatype``, 
@@ -177,7 +184,7 @@ Produce & Publish server version:
 
 returns:
 
-    {"version": "0.3.2", "module": "pp.server"}
+    {"version": "3.0.0", "module": "pp.server"}
    
 Installed/available converters:
 
@@ -185,7 +192,7 @@ Installed/available converters:
 
 returns:
 
-    {"unoconv": true, "pdfreactor": true, "phantomjs": false, "calibre": true, "princexml": true}
+    {"pdfreactor": true, "phantomjs": false, "calibre": true, "prince": true}
 
 
 Versions of installed converter:
@@ -194,7 +201,7 @@ Versions of installed converter:
 
 returns:
 
-    {'princexml': 'Version x.y', 'pdfreactor: 'Version a.b.c', ...}
+    {'prince': 'Version x.y', 'pdfreactor: 'Version a.b.c', ...}
 
 
 Other API methods
@@ -208,21 +215,6 @@ returns:
 
     {"directories_removed": 22}
 
-
-Advanced installation issues
-----------------------------
-
-Installation of PDFreactor using zc.buildout
-++++++++++++++++++++++++++++++++++++++++++++
-
-- https://bitbucket.org/ajung/pp.server/raw/master/pdfreactor.cfg
-
-Installation of PrinceXML using zc.buildout
-+++++++++++++++++++++++++++++++++++++++++++
-
-- https://bitbucket.org/ajung/pp.server/raw/master/princexml.cfg
-
-- https://bitbucket.org/ajung/pp.server/raw/master/circus-app.ini
 
 Source code
 -----------
