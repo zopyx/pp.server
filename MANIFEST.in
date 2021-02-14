@@ -1,7 +1,7 @@
 include *.txt *.ini *.cfg *.rst
 include docs/source/*rst
-include pp/server/static
-include pp/server/templates
-include pp/server/_templates
+include pp/server/static/*
+include pp/server/templates/*
+include pp/server/_templates/*
 recursive-include-dir docs
 recursive-include *.ico *.png *.css *.gif *.jpg *.pt *.txt *.mak *.mako *.js *.html *.xml
