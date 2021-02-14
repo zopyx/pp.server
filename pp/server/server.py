@@ -124,11 +124,14 @@ async def convert(
         The "converter" parameter must be the name of a registered/installed PrinceCSS
         tool (see /converters endpoint)
 
-        The "cmd_options" parameter can be used to specify converter specific 
-        command line parameters.
+        The "cmd_options" parameter can be used to specify converter specific
+        command line parameters. "cmd_options" can not be omitted. If you want
+        to omit the parameter, please specify a string with one whitespace
+        (known bug :-)).
 
-        The "data" parameter is a base64 encoded ZIP archive that contains the index.html
-        together with all other assets required to perform the conversion.
+        The "data" parameter is a base64 encoded ZIP archive that contains the
+        index.html together with all other assets required to perform the
+        conversion.
     """
 
     cleanup_queue()
