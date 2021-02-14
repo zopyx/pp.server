@@ -89,7 +89,8 @@ async def converters():
 @app.get("/converter-versions")
 async def converter_versions():
     """ Return names of all converters """
-    return dict(converters=registry.converter_versions())
+    versions = await registry.converter_versions()
+    return dict(converters=versions)
 
 
 @app.get("/converter")
