@@ -57,82 +57,16 @@ Installation
 
     bin/pip install pp.server
 
-- create a ``server.ini`` configuration file (and change it according to your needs)::
+- run the Produce & Publish server::
 
-    [DEFAULT]
-    debug = true
+    bin/uvicorn pp.server.server:app
 
-    [app:main]
-    use = egg:pp.server
-    reload_templates = true
-    debug_authorization = false
-    debug_notfound = false
-
-    [server:main]
-    use = egg:gunicorn#main
-    host = 0.0.0.0
-    port = 6543
-
-
-
-    [loggers]
-    keys = root, myproject
-
-    [handlers]
-    keys = console, logfile
-
-    [formatters]
-    keys = generic, form01
-
-    [formatter_form01]
-    format = %(asctime)s %(levelname)-5.5s [%(name)s:%(lineno)s][%(threadName)s] %(message)s
-    datefmt=
-    class=logging.Formatter
-
-    [logger_root]
-    level = INFO
-    handlers = console, logfile
-
-    [logger_myproject]
-    level = DEBUG
-    handlers =
-    qualname = myproject
-
-
-    [handler_console]
-    class = StreamHandler
-    args = (sys.stderr,)
-    level = NOTSET
-    formatter = form01
-
-    [handler_logfile]
-    class = FileHandler
-    level = INFO
-    formatter = form01
-    args=('var/gunicorn.log', 'w')
-
-    [formatter_generic]
-    format = %(asctime)s %(levelname)-5.5s [%(name)s:%(lineno)s][%(threadName)s] %(message)s
-
-- create a ``circusd.ini`` configuration file (and change it according to your needs)::
-
-    [watcher:gunicorn]
-    cmd = bin/gunicorn --paste server.ini
-
-    [env:gunicorn]
-    PATH = $PATH
-    TZ = $TZ
-
- 
-- both configuration files can be created automatically using the helper script::
+- For running the Produce & Publisher server under control of the process manager
+  `circus`, generate the `circusd.ini` file using::
 
     bin/pp-server-templates
 
-- start the server (in foreground)::
-
-    bin/gunicorn --paste server.ini 
-
-- or start it in background::
+- and start it in background::
 
     bin/circusd circusd.ini  --daemon
 
@@ -176,7 +110,7 @@ following API URL endpoint::
 
 With the default server configuration this translates to::
 
-    http://localhost:6543/convert
+    http://localhost:8000/convert
 
 REST API Introspection
 ----------------------
@@ -184,7 +118,7 @@ REST API Introspection
 `pp.server` is implemented based on the FastAPI framework for Python.
 You can access the REST API  documentation directly through
     
-    http://localhost:6543/docs
+    http://localhost:8000/docs
 
 Environment variables
 +++++++++++++++++++++
