@@ -40,9 +40,9 @@ registry._register_converters()
 
 # Bootstrap: FastAPI App
 app = FastAPI(
-        title="Produce & Publish Server",
-        description="This server provides a REST interface for most common PrintCSS converters"
-        )
+    title="Produce & Publish Server",
+    description="This server provides a REST interface for most common PrintCSS converters",
+)
 
 # Bootstrap: register resources for HTML view
 dirname = os.path.dirname(__file__)
@@ -97,9 +97,9 @@ async def converter_versions():
 
 
 @app.get("/converter")
-async def has_converter(converter_name):
+async def has_converter(converter_name: str):
     """ Return names of all converters """
-    return dict(has_converter=registry.has_converter(converter_name))
+    return dict(has_converter=registry.has_converter(converter_name), converter=converter_name)
 
 
 @app.get("/version")
@@ -115,23 +115,40 @@ async def cleanup():
     return dict(status="OK")
 
 
+from fastapi import Query
+
+
 @app.post("/convert")
 async def convert(
-    converter: str = Form(...), cmd_options: str = Form(...), data: str = Form(...)
+    converter: str = Form(
+        "prince",
+        title="Converter name",
+        description="`converter` must be the name of a registered converter e.g. `prince` or `antennahouse`",
+    ),
+    cmd_options: str = Form(
+        " ",
+        title="Converter commandline options",
+        description="`cmd_options` can be used to specify converter specify commandline options. Bug: you need to specify a string of at lease one byte length (e.g. a whitespace)",
+    ),
+    data: str = Form(
+        None,
+        title="Content to be converted",
+        description="`data` must be a base64 encoded ZIP archive containing your index.html and all related assets like CSS, images etc.",
+    ),
 ):
-    """ The /convert endpoint implements the PrinceCSS to PDF conversion 
+    """The /convert endpoint implements the PrinceCSS to PDF conversion
 
-        The "converter" parameter must be the name of a registered/installed PrinceCSS
-        tool (see /converters endpoint)
+    The "converter" parameter must be the name of a registered/installed PrinceCSS
+    tool (see /converters endpoint)
 
-        The "cmd_options" parameter can be used to specify converter specific
-        command line parameters. "cmd_options" can not be omitted. If you want
-        to omit the parameter, please specify a string with one whitespace
-        (known bug :-)).
+    The "cmd_options" parameter can be used to specify converter specific
+    command line parameters. "cmd_options" can not be omitted. If you want
+    to omit the parameter, please specify a string with one whitespace
+    (known bug :-)).
 
-        The "data" parameter is a base64 encoded ZIP archive that contains the
-        index.html together with all other assets required to perform the
-        conversion.
+    The "data" parameter is a base64 encoded ZIP archive that contains the
+    index.html together with all other assets required to perform the
+    conversion.
     """
 
     cleanup_queue()
