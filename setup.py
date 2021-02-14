@@ -19,7 +19,8 @@ requires = [
     "jinja2",
     "click",
     "uvicorn",
-    "circus"
+    "circus",
+    "loguru"
 ]
 
 tests_require = [
@@ -27,7 +28,7 @@ tests_require = [
 ]
 
 setup(name='pp.server',
-      version='3.0.0.1',
+      version='3.0.0.2',
       description='pp.server - Produce & Publish Server',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
