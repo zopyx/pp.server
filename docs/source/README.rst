@@ -68,6 +68,11 @@ Installation
 
     bin/uvicorn pp.server.server:app
 
+- or under control of `gunicorn`::
+
+    bin/gunicorn pp.server.server:app -w 2 -k uvicorn.workers.UvicornWorker
+
+
 - For running the Produce & Publisher server under control of the process manager
   `circus`, generate the `circusd.ini` file using::
 
