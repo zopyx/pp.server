@@ -21,7 +21,7 @@ CONVERTERS = {
         "cmd": "pdfreactor.py",
         "version": "pdfreactor.py --version",
         "convert": 'pdfreactor.py {cmd_options} --addLinks --addBookmarks --logLevel debug -i "{source_html}" -o "{target_filename}"',
-        "converter_docker": 'pdfreactor.py {cmd_options} --addLinks --addBookmarks --logLevel debug -i "{source_docker_html}" -o "{target_filename}"',
+        "convert_docker": 'pdfreactor.py {cmd_options} --addLinks --addBookmarks --logLevel debug -i "{source_docker_html}" -o "{target_filename}"',
     },
     "antennahouse": {
         "cmd": "run.sh",
