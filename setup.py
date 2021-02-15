@@ -15,11 +15,11 @@ requires = [
     "easyprocess",
     "python-multipart",
     "plac",
+    "httptools",
     "aiofiles",
     "jinja2",
     "click",
     "uvicorn",
-    "circus",
     "loguru"
 ]
 
