@@ -59,9 +59,9 @@ CONVERTERS = {
         "convert": 'ebook-convert "{source_html}" "{target_filename}" {cmd_options}',
     },
     "vivliostyle": {
-        "cmd": "vivliostyle-formatter",
-        "version": "vivliostyle-formatter --version",
-        "convert": 'vivliostyle-formatter "{source_html}" --output "{target_filename}" "{cmd_options}"',
+        "cmd": "vivliostyle",
+        "version": "vivliostyle --version",
+        "convert": 'vivliostyle build --output "{target_filename}" "{cmd_options}" "{source_html}"',
     },
     "versatype": {
         "cmd": "versatype-formatter",
