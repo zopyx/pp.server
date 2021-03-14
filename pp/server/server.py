@@ -60,7 +60,9 @@ if not os.path.exists(queue_dir):
     except FileExistsError:
         pass
 
-LOG.info("QUEUE:" + queue_dir)
+version = pkg_resources.require("pp.server")[0].version
+LOG.info(f"QUEUE: {queue_dir}")
+LOG.info(f"pp.server V {version}")
 
 
 @app.get("/", response_class=HTMLResponse)
