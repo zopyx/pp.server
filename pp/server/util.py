@@ -23,10 +23,8 @@ def checkEnvironment(envname: str) -> bool:
         return False
 
     if not os.path.exists(dirname):
-        LOG.debug(
-            "The directory referenced through the environment "
-            "variable ${} does not exit ({})".format(envname, dirname)
-        )
+        LOG.debug("The directory referenced through the environment "
+                  "variable ${} does not exit ({})".format(envname, dirname))
         return False
     return True
 
@@ -51,9 +49,7 @@ async def run(cmd):
     """
 
     LOG.info(cmd)
-    proc = await asyncio.create_subprocess_shell(
-        cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-    )
+    proc = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
 
     stdout, stderr = await proc.communicate()
 

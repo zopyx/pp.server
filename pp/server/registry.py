@@ -6,6 +6,7 @@
 ################################################################
 
 import os
+import asyncio
 
 from pp.server.util import which
 from pp.server.util import run
@@ -52,14 +53,31 @@ def get_converter_registry():
 
 
 async def converter_versions():
+    """ Run the --version command for every registered converter """
 
-    versions = dict()
+    async def execute_cmd(converter, cmd, future):
+        result = await run(cmd)
+        future.set_result(dict(result=result, converter=converter))
 
+    loop = asyncio.get_event_loop()
+
+    tasks = []
+    futures = []
     for converter in available_converters():
         converter_config = CONVERTERS[converter]
-        result = await run(converter_config["version"])
-        status = result["status"]
-        output = result["stdout"] + result["stderr"]
+        future = asyncio.Future()
+        futures.append(future)
+        task = loop.create_task(execute_cmd(converter, converter_config["version"], future))
+        tasks.append(task)
+
+    await asyncio.wait(tasks, return_when=asyncio.ALL_COMPLETED)
+
+    versions = dict()
+    for f in futures:
+        result = f.result()
+        converter = result["converter"]
+        status = result["result"]["status"]
+        output = result["result"]["stdout"] + result["result"]["stderr"]
         versions[converter] = output if status == 0 else "n/a"
 
     return versions

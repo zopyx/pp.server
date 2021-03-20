@@ -80,8 +80,7 @@ async def index(request: Request, show_versions: bool = False):
         "show_versions": show_versions,
         "converter_versions": converter_versions,
         "version": version,
-        "python_version": sys.version,
-    }
+        "python_version": sys.version,}
     return templates.TemplateResponse("index.html", params)
 
 
@@ -130,12 +129,14 @@ async def convert(
     cmd_options: str = Form(
         " ",
         title="Converter commandline options",
-        description="`cmd_options` can be used to specify converter specify commandline options. Bug: you need to specify a string of at lease one byte length (e.g. a whitespace)",
+        description=
+        "`cmd_options` can be used to specify converter specify commandline options. Bug: you need to specify a string of at lease one byte length (e.g. a whitespace)",
     ),
     data: str = Form(
         None,
         title="Content to be converted",
-        description="`data` must be a base64 encoded ZIP archive containing your index.html and all related assets like CSS, images etc.",
+        description=
+        "`data` must be a base64 encoded ZIP archive containing your index.html and all related assets like CSS, images etc.",
     ),
 ):
     """The /convert endpoint implements the PrinceCSS to PDF conversion
@@ -170,14 +171,11 @@ async def convert(
     conversion_log = functools.partial(converter_log, work_dir)
 
     ts = time.time()
-    msg = "START: pdf(ID {}, workfile {}, converter {}, cmd_options {})".format(
-        new_id, work_file, converter, cmd_options
-    )
+    msg = "START: pdf(ID {}, workfile {}, converter {}, cmd_options {})".format(new_id, work_file, converter,
+                                                                                cmd_options)
     conversion_log(msg)
     LOG.info(msg)
-    result = await convert_pdf(
-        work_dir, work_file, converter, conversion_log, cmd_options
-    )
+    result = await convert_pdf(work_dir, work_file, converter, conversion_log, cmd_options)
 
     duration = time.time() - ts
     msg = "END : pdf({} {} sec): {}".format(new_id, duration, result["status"])
