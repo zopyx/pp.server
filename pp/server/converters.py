@@ -4,9 +4,7 @@
 ################################################################
 
 import os
-import json
 import zipfile
-import pkg_resources
 
 from pp.server import util
 
