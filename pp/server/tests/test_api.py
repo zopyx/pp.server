@@ -29,10 +29,10 @@ class PDFTests(unittest.TestCase):
         assert result.status_code == 200
         assert result.json() == dict(has_converter=True)
 
-    def test_has_converter(self2):
+    def test_has_converter(self):
         result = client.get('/converter?converter_name=dummy')
         assert result.status_code == 200
-        assert result.json() == dict(has_converter=False)
+        assert result.json() == {'has_converter': False, 'converter': 'dummy'}
 
     def test_prince(self):
         self._convert_pdf("prince")
