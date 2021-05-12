@@ -8,5 +8,4 @@ pydantic
 python-multipart
 six
 starlette
-uvicorn
 loguru
