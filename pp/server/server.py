@@ -129,7 +129,11 @@ async def converter_selftest(converter: str):
     if not converter in available_converters:
         raise HTTPException(status_code=404, detail=f"Converter {converter} is not available or not installed")
 
-    pdf_data = await selftest(converter) 
+    try:
+        pdf_data = await selftest(converter) 
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Self-test for {converter} failed: {e}")
+
     if converter == 'calibre':
         return Response(content=pdf_data, media_type="application/epub+zip", 
                 headers={"content-disposition": "attachment; filename=selftest-calibre.epub"})
