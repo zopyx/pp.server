@@ -19,7 +19,7 @@ requires = [
     "aiofiles",
     "jinja2",
     "click",
-    "uvicorn",
+    "hypercorn",
     "loguru"
 ]
 
@@ -28,7 +28,7 @@ tests_require = [
 ]
 
 setup(name='pp.server',
-      version='3.2.0.1',
+      version='3.2.0.2',
       description='pp.server - Produce & Publish Server',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
