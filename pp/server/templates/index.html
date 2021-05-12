@@ -24,12 +24,17 @@
               <thead>
                   <th>Converter</th>
                   <th>Version</th>
+                  <th>Self-Test</th>
               </thead>
               <tbody>
                   {% for k in converter_versions %}
                     <tr>
                         <td>{{k}}</td>
                         <td class="pre">{{ converter_versions[k] }}</td>
+
+                        <td>
+                            <a href="selftest?converter={{k}}">[PDF]</a>
+                        </td>
                     </tr>
                   {%endfor %}
               </tbody>
