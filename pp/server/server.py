@@ -16,17 +16,21 @@ import pkg_resources
 from typing import Optional
 
 from fastapi import FastAPI
+from fastapi import HTTPException
 from fastapi import Form
 from fastapi import Body
 from fastapi import File
 from fastapi import UploadFile
 from fastapi import Request
+from fastapi import Query
 from fastapi.responses import HTMLResponse
+from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from pp.server import registry
 from pp.server.converters import convert_pdf
+from pp.server.converters import selftest
 from pp.server.logger import LOG
 
 # How often to cleanup the queue directory?
@@ -105,6 +109,7 @@ async def has_converter(converter_name: str):
 
 @app.get("/version")
 async def version():
+    """ Return the version of the pp.server module """
     version = pkg_resources.require("pp.server")[0].version
     return dict(version=version, module="pp.server")
 
@@ -116,7 +121,22 @@ async def cleanup():
     return dict(status="OK")
 
 
-from fastapi import Query
+@app.get("/selftest")
+async def converter_selftest(converter: str): 
+    """ Perform a PDF selftest for a given `converter`"""
+
+    available_converters = registry.available_converters()
+    if not converter in available_converters:
+        raise HTTPException(status_code=404, detail=f"Converter {converter} is not available or not installed")
+
+    pdf_data = await selftest(converter) 
+    if converter == 'calibre':
+        return Response(content=pdf_data, media_type="application/epub+zip", 
+                headers={"content-disposition": "attachment; filename=selftest-calibre.epub"})
+
+    else:
+        return Response(content=pdf_data, media_type="application/pdf", 
+                headers={"content-disposition": f"attachment; filename=selftest-{converter}.pdf"})
 
 
 @app.post("/convert")

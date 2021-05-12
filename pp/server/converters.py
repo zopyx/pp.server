@@ -4,9 +4,15 @@
 ################################################################
 
 import os
+import shutil
+import tempfile
 import zipfile
+from pathlib import Path
+import pkg_resources
 
 from pp.server import util
+from pp.server.logger import LOG
+
 
 CONVERTERS = {
     "prince": {
@@ -59,7 +65,7 @@ CONVERTERS = {
     "vivliostyle": {
         "cmd": "vivliostyle",
         "version": "vivliostyle --version",
-        "convert": 'vivliostyle build --output "{target_filename}" "{cmd_options}" "{source_html}"',},
+        "convert": 'vivliostyle build --output "{target_filename}" "{source_html}"',},
     "versatype": {
         "cmd": "versatype-formatter",
         "version": "versatype-formatter --version",
@@ -127,3 +133,48 @@ async def convert_pdf(work_dir, work_file, converter, logger, cmd_options, sourc
     logger(output)
 
     return dict(status=status, output=output, filename=target_filename)
+
+
+async def selftest(converter: str) -> bytes:
+    """ Converter self test """
+
+    # created work directory
+    work_dir = tempfile.mktemp()
+
+    # copy HTML sample from test_data directory
+    resource_dir = pkg_resources.resource_filename("pp.server.test_data", "__init__.py")
+    resource_dir = Path(resource_dir).parent / "html"
+    shutil.copytree(resource_dir, work_dir)
+
+    source_html = str(Path(work_dir) / "index.html")
+
+    if converter == "calibre":
+        target_filename = os.path.join(work_dir, "out.epub")
+    else:
+        target_filename = os.path.join(work_dir, "out.pdf")
+
+    converter_config = CONVERTERS[converter]
+
+    cmd = converter_config["convert"]
+    cmd = cmd.format(
+        cmd_options="",
+        work_dir=work_dir,
+        target_filename=target_filename,
+        source_html=source_html,
+    )
+
+    LOG.info("CMD: {}".format(cmd))
+    result = await util.run(cmd)
+    status = result["status"]
+    output = result["stdout"] + result["stderr"]
+
+    LOG.info("STATUS: {}".format(result["status"]))
+    LOG.info("OUTPUT")
+    LOG.info(output)
+
+    # return PDF data as bytes 
+    with open(target_filename, "rb") as fp:
+        pdf_data = fp.read()
+
+    shutil.rmtree(work_dir)
+    return pdf_data
