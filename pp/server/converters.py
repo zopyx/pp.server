@@ -142,16 +142,19 @@ async def selftest(converter: str) -> bytes:
     work_dir = tempfile.mktemp()
 
     # copy HTML sample from test_data directory
-    resource_dir = pkg_resources.resource_filename("pp.server.test_data", "__init__.py")
-    resource_dir = Path(resource_dir).parent / "html"
-    shutil.copytree(resource_dir, work_dir)
+    resource_root = pkg_resources.resource_filename("pp.server.test_data", "__init__.py")
 
+    resource_dir = Path(resource_root).parent / "html"
     source_html = str(Path(work_dir) / "index.html")
+    target_filename = os.path.join(work_dir, "out.pdf")
 
     if converter == "calibre":
         target_filename = os.path.join(work_dir, "out.epub")
-    else:
-        target_filename = os.path.join(work_dir, "out.pdf")
+    elif converter == "speedata":
+        source_html = str(Path(work_dir) / "index.xml")
+        resource_dir = Path(resource_root).parent / "speedata"
+
+    shutil.copytree(resource_dir, work_dir)
 
     converter_config = CONVERTERS[converter]
 
