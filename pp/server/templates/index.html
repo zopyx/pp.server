@@ -15,9 +15,17 @@
       <h3>Python version: {{python_version}} </h3>
       <h3>Converters: {{converters}} </h3>
 
-      {% if not show_versions %}
-          <a id="show-versions" href="?show_versions=1">Show converter versions</a>
-      {% endif %}
+      <ul id="actions">
+          <li>
+            <a id="show-openapi" href="/openapi.json">OpenAPI (JSON)</a>
+          </li>
+          <li>
+            <a id="show-docs" href="/docs">Interactive API docs</a>
+          </li>
+          <li>
+            <a id="show-versions" href="?show_versions=1">Converter versions</a>
+          </li>
+      </ul>
 
       {% if show_versions %}
           <table border="1">
