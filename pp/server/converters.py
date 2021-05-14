@@ -19,10 +19,6 @@ CONVERTERS = {
         "cmd": "prince",
         "version": "prince --version",
         "convert": 'prince {cmd_options} -v "{source_html}" -o "{target_filename}"',},
-    "pdfreactor.sh": {
-        "cmd": "pdfreactor.sh",
-        "version": "pdfreactor.sh --version",
-        "convert": 'pdfreactor.sh  "{source_html}"  "{target_filename}"',},
     "pdfreactor": {
         "cmd":
         "pdfreactor.py",
