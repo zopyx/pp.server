@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ################################################################
 # pp.server - Produce & Publish Server
 # (C) 2021, ZOPYX,  Tuebingen, Germany
@@ -231,7 +229,7 @@ def cleanup_queue():
         fullname = os.path.join(queue_dir, dirname)
         mtime = os.path.getmtime(fullname)
         if now - mtime > QUEUE_CLEANUP_TIME:
-            LOG.debug("Cleanup: {}".format(fullname))
+            LOG.debug(f"Cleanup: {fullname}")
             if os.path.isdir(fullname):
                 shutil.rmtree(fullname)
             elif os.path.isfile(fullname):

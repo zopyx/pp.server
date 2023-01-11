@@ -94,7 +94,7 @@ async def convert_pdf(work_dir, work_file, converter, logger, cmd_options, sourc
         target_filename = os.path.join(work_dir, "out", "out.pdf")
 
     if not has_converter(converter):
-        return dict(status=9999, output=u'Unknown converter "{}"'.format(converter))
+        return dict(status=9999, output=f'Unknown converter "{converter}"')
 
     converter_config = CONVERTERS[converter]
 
@@ -104,7 +104,7 @@ async def convert_pdf(work_dir, work_file, converter, logger, cmd_options, sourc
         # filesystem.
         cmd = converter_config["convert_docker"]
         parts = work_dir.split("/")
-        source_docker_html = "file:///docs/{}/index.html".format(parts[-1])
+        source_docker_html = f"file:///docs/{parts[-1]}/index.html"
         cmd = cmd.format(
             cmd_options=cmd_options,
             target_filename=target_filename,
@@ -119,7 +119,7 @@ async def convert_pdf(work_dir, work_file, converter, logger, cmd_options, sourc
             source_html=source_html,
         )
 
-    logger("CMD: {}".format(cmd))
+    logger(f"CMD: {cmd}")
     result = await util.run(cmd)
     status = result["status"]
     output = result["stdout"] + result["stderr"]
@@ -162,7 +162,7 @@ async def selftest(converter: str) -> bytes:
         source_html=source_html,
     )
 
-    LOG.info("CMD: {}".format(cmd))
+    LOG.info(f"CMD: {cmd}")
     result = await util.run(cmd)
     status = result["status"]
     output = result["stdout"] + result["stderr"]
