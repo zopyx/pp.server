@@ -3,32 +3,23 @@
 # (C) 2021, ZOPYX,  Tuebingen, Germany
 ################################################################
 
-import os
-import sys
-import shutil
 import base64
-import time
 import datetime
 import functools
-import pkg_resources
-from typing import Optional
+import os
+import shutil
+import sys
+import time
 
-from fastapi import FastAPI
-from fastapi import HTTPException
-from fastapi import Form
-from fastapi import Body
-from fastapi import File
-from fastapi import UploadFile
-from fastapi import Request
-from fastapi import Query
-from fastapi.responses import HTMLResponse
-from fastapi.responses import Response
+import pkg_resources
+from fastapi import (Body, FastAPI, File, Form, HTTPException, Query, Request,
+                     UploadFile)
+from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from pp.server import registry
-from pp.server.converters import convert_pdf
-from pp.server.converters import selftest
+from pp.server.converters import convert_pdf, selftest
 from pp.server.logger import LOG
 
 # How often to cleanup the queue directory?
@@ -69,7 +60,7 @@ LOG.info(f"pp.server V {version}")
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request, show_versions: bool = False):
-    """ Produce & Publish web view """
+    """Produce & Publish web view"""
 
     version = pkg_resources.require("pp.server")[0].version
     converter_versions = {}
@@ -82,63 +73,81 @@ async def index(request: Request, show_versions: bool = False):
         "show_versions": show_versions,
         "converter_versions": converter_versions,
         "version": version,
-        "python_version": sys.version,}
+        "python_version": sys.version,
+    }
     return templates.TemplateResponse("index.html", params)
 
 
 @app.get("/converters")
 async def converters():
-    """ Return names of all converters """
+    """Return names of all converters"""
     return dict(converters=registry.available_converters())
 
 
 @app.get("/converter-versions")
 async def converter_versions():
-    """ Return names of all converters """
+    """Return names of all converters"""
     versions = await registry.converter_versions()
     return dict(converters=versions)
 
 
 @app.get("/converter")
 async def has_converter(converter_name: str):
-    """ Return names of all converters """
-    return dict(has_converter=registry.has_converter(converter_name), converter=converter_name)
+    """Return names of all converters"""
+    return dict(
+        has_converter=registry.has_converter(converter_name), converter=converter_name
+    )
 
 
 @app.get("/version")
 async def version():
-    """ Return the version of the pp.server module """
+    """Return the version of the pp.server module"""
     version = pkg_resources.require("pp.server")[0].version
     return dict(version=version, module="pp.server")
 
 
 @app.get("/cleanup")
 async def cleanup():
-    """ Cleanup up the internal queue """
+    """Cleanup up the internal queue"""
     cleanup_queue()
     return dict(status="OK")
 
 
 @app.get("/selftest")
-async def converter_selftest(converter: str): 
-    """ Perform a PDF selftest for a given `converter`"""
+async def converter_selftest(converter: str):
+    """Perform a PDF selftest for a given `converter`"""
 
     available_converters = registry.available_converters()
     if not converter in available_converters:
-        raise HTTPException(status_code=404, detail=f"Converter {converter} is not available or not installed")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Converter {converter} is not available or not installed",
+        )
 
     try:
-        pdf_data = await selftest(converter) 
+        pdf_data = await selftest(converter)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Self-test for {converter} failed: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Self-test for {converter} failed: {e}"
+        )
 
-    if converter == 'calibre':
-        return Response(content=pdf_data, media_type="application/epub+zip", 
-                headers={"content-disposition": "attachment; filename=selftest-calibre.epub"})
+    if converter == "calibre":
+        return Response(
+            content=pdf_data,
+            media_type="application/epub+zip",
+            headers={
+                "content-disposition": "attachment; filename=selftest-calibre.epub"
+            },
+        )
 
     else:
-        return Response(content=pdf_data, media_type="application/pdf", 
-                headers={"content-disposition": f"attachment; filename=selftest-{converter}.pdf"})
+        return Response(
+            content=pdf_data,
+            media_type="application/pdf",
+            headers={
+                "content-disposition": f"attachment; filename=selftest-{converter}.pdf"
+            },
+        )
 
 
 @app.post("/convert")
@@ -151,14 +160,12 @@ async def convert(
     cmd_options: str = Form(
         " ",
         title="Converter commandline options",
-        description=
-        "`cmd_options` can be used to specify converter specify commandline options. Bug: you need to specify a string of at lease one byte length (e.g. a whitespace)",
+        description="`cmd_options` can be used to specify converter specify commandline options. Bug: you need to specify a string of at lease one byte length (e.g. a whitespace)",
     ),
     data: str = Form(
         None,
         title="Content to be converted",
-        description=
-        "`data` must be a base64 encoded ZIP archive containing your index.html and all related assets like CSS, images etc.",
+        description="`data` must be a base64 encoded ZIP archive containing your index.html and all related assets like CSS, images etc.",
     ),
 ):
     """The /convert endpoint implements the PrinceCSS to PDF conversion
@@ -193,11 +200,14 @@ async def convert(
     conversion_log = functools.partial(converter_log, work_dir)
 
     ts = time.time()
-    msg = "START: pdf(ID {}, workfile {}, converter {}, cmd_options {})".format(new_id, work_file, converter,
-                                                                                cmd_options)
+    msg = "START: pdf(ID {}, workfile {}, converter {}, cmd_options {})".format(
+        new_id, work_file, converter, cmd_options
+    )
     conversion_log(msg)
     LOG.info(msg)
-    result = await convert_pdf(work_dir, work_file, converter, conversion_log, cmd_options)
+    result = await convert_pdf(
+        work_dir, work_file, converter, conversion_log, cmd_options
+    )
 
     duration = time.time() - ts
     msg = f"END : pdf({new_id} {duration} sec): {result['status']}"
@@ -215,7 +225,6 @@ async def convert(
 
 
 def cleanup_queue():
-
     global LAST_CLEANUP
 
     if not os.path.exists(queue_dir):
@@ -241,12 +250,12 @@ def cleanup_queue():
 
 
 def new_converter_id(converter):
-    """ New converter id based on timestamp + converter name """
+    """New converter id based on timestamp + converter name"""
     return datetime.datetime.now().strftime("%Y%m%dT%H%M%S.%f") + "-" + converter
 
 
 def converter_log(work_dir, msg):
-    """ Logging per conversion (by work dir) """
+    """Logging per conversion (by work dir)"""
     converter_logfile = os.path.join(work_dir, "converter.log")
     msg = datetime.datetime.now().strftime("%Y%m%dT%H%M%S") + " " + msg
     with open(converter_logfile, "a") as fp:

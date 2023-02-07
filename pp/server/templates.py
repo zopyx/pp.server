@@ -5,11 +5,12 @@
 """ Entry poing for generating circusd template ini """
 
 import os
+
 import pkg_resources
 
 
 def main():
-    """ Generate circusd.ini and server.ini """
+    """Generate circusd.ini and server.ini"""
 
     for filename in ("circusd.ini", "server.ini"):
         data = pkg_resources.resource_string("pp.server._templates", filename)

@@ -3,19 +3,17 @@
 # (C) 2021, ZOPYX,  Tuebingen, Germany
 ################################################################
 
-import os
 import asyncio
 
-from pp.server.util import which
-from pp.server.util import run
-from pp.server.logger import LOG
 from pp.server.converters import CONVERTERS
+from pp.server.logger import LOG
+from pp.server.util import run, which
 
 REGISTRY = dict()
 
 
 def _register_converters():
-    """ Register all known converters """
+    """Register all known converters"""
 
     for converter, converter_config in CONVERTERS.items():
         register_converter(converter, converter_config["cmd"])
@@ -36,22 +34,22 @@ def register_converter(converter_name: str, converter_cmd: str):
 
 
 def available_converters() -> [str]:
-    """ Return list of available converter names """
+    """Return list of available converter names"""
     return sorted(list([c for c in REGISTRY if REGISTRY[c]]))
 
 
 def has_converter(converter_name: str) -> bool:
-    """ Check if a given converter name is registered """
+    """Check if a given converter name is registered"""
     return converter_name in available_converters()
 
 
 def get_converter_registry():
-    """ Return the converter registry """
+    """Return the converter registry"""
     return REGISTRY
 
 
 async def converter_versions():
-    """ Run the --version command for every registered converter """
+    """Run the --version command for every registered converter"""
 
     async def execute_cmd(converter, cmd, future):
         result = await run(cmd)
@@ -65,7 +63,9 @@ async def converter_versions():
         converter_config = CONVERTERS[converter]
         future = asyncio.Future()
         futures.append(future)
-        task = loop.create_task(execute_cmd(converter, converter_config["version"], future))
+        task = loop.create_task(
+            execute_cmd(converter, converter_config["version"], future)
+        )
         tasks.append(task)
 
     await asyncio.wait(tasks, return_when=asyncio.ALL_COMPLETED)

@@ -8,67 +8,75 @@ import shutil
 import tempfile
 import zipfile
 from pathlib import Path
+
 import pkg_resources
 
 from pp.server import util
 from pp.server.logger import LOG
 
-
 CONVERTERS = {
     "prince": {
         "cmd": "prince",
         "version": "prince --version",
-        "convert": 'prince {cmd_options} -v "{source_html}" -o "{target_filename}"',},
+        "convert": 'prince {cmd_options} -v "{source_html}" -o "{target_filename}"',
+    },
     "pdfreactor": {
-        "cmd":
-        "pdfreactor.py",
-        "version":
-        "pdfreactor.py --version",
-        "convert":
-        'pdfreactor.py {cmd_options} --addLinks --addBookmarks --logLevel debug -i "{source_html}" -o "{target_filename}"',
-        "convert_docker":
-        'pdfreactor.py {cmd_options} --addLinks --addBookmarks --logLevel debug -i "{source_docker_html}" -o "{target_filename}"',
+        "cmd": "pdfreactor.py",
+        "version": "pdfreactor.py --version",
+        "convert": 'pdfreactor.py {cmd_options} --addLinks --addBookmarks --logLevel debug -i "{source_html}" -o "{target_filename}"',
+        "convert_docker": 'pdfreactor.py {cmd_options} --addLinks --addBookmarks --logLevel debug -i "{source_docker_html}" -o "{target_filename}"',
     },
     "antennahouse": {
         "cmd": "run.sh",
         "version": "run.sh -v",
-        "convert": 'run.sh {cmd_options} -d "{source_html}" -o "{target_filename}"',},
+        "convert": 'run.sh {cmd_options} -d "{source_html}" -o "{target_filename}"',
+    },
     "weasyprint": {
         "cmd": "weasyprint",
         "version": "weasyprint --version",
-        "convert": 'weasyprint {cmd_options} "{source_html}" "{target_filename}"',},
+        "convert": 'weasyprint {cmd_options} "{source_html}" "{target_filename}"',
+    },
     "typesetsh": {
         "cmd": "typeset.sh.phar",
         "version": "typeset.sh.phar --version",
-        "convert": 'typeset.sh.phar -vv render:html --allow-local / -rx "{source_html}" "{target_filename}"',},
+        "convert": 'typeset.sh.phar -vv render:html --allow-local / -rx "{source_html}" "{target_filename}"',
+    },
     "pagedjs": {
         "cmd": "pagedjs-cli",
         "version": "pagedjs-cli --version",
-        "convert": 'pagedjs-cli -t 10000 "{source_html}" -o "{target_filename}"',},
+        "convert": 'pagedjs-cli -t 10000 "{source_html}" -o "{target_filename}"',
+    },
     "wkhtmltopdf": {
         "cmd": "wkhtmltopdf",
         "version": "wkhtmltopdf --version",
-        "convert": 'wkhtmltopdf {cmd_options} "{source_html}" "{target_filename}"',},
+        "convert": 'wkhtmltopdf {cmd_options} "{source_html}" "{target_filename}"',
+    },
     "speedata": {
         "cmd": "sp",
         "version": "sp --version",
-        "convert":
-        'sp --jobname out --timeout 30 --runs 2 --wd "{work_dir}" --outputdir "{work_dir}/out" {cmd_options}',},
+        "convert": 'sp --jobname out --timeout 30 --runs 2 --wd "{work_dir}" --outputdir "{work_dir}/out" {cmd_options}',
+    },
     "calibre": {
         "cmd": "ebook-convert",
         "version": "ebook-convert --version",
-        "convert": 'ebook-convert "{source_html}" "{target_filename}" {cmd_options}',},
+        "convert": 'ebook-convert "{source_html}" "{target_filename}" {cmd_options}',
+    },
     "vivliostyle": {
         "cmd": "vivliostyle",
         "version": "vivliostyle --version",
-        "convert": 'vivliostyle build --output "{target_filename}" "{source_html}"',},
+        "convert": 'vivliostyle build --output "{target_filename}" "{source_html}"',
+    },
     "versatype": {
         "cmd": "versatype-formatter",
         "version": "versatype-formatter --version",
-        "convert": 'versatype-formatter "{source_html}" --output "{target_filename}" "{cmd_options}"',},}
+        "convert": 'versatype-formatter "{source_html}" --output "{target_filename}" "{cmd_options}"',
+    },
+}
 
 
-async def convert_pdf(work_dir, work_file, converter, logger, cmd_options, source_filename="index.html"):
+async def convert_pdf(
+    work_dir, work_file, converter, logger, cmd_options, source_filename="index.html"
+):
     """Converter a given ZIP file
     containing input files (HTML + XML) and asset files
     to PDF.
@@ -132,13 +140,15 @@ async def convert_pdf(work_dir, work_file, converter, logger, cmd_options, sourc
 
 
 async def selftest(converter: str) -> bytes:
-    """ Converter self test """
+    """Converter self test"""
 
     # created work directory
     work_dir = tempfile.mktemp()
 
     # copy HTML sample from test_data directory
-    resource_root = pkg_resources.resource_filename("pp.server.test_data", "__init__.py")
+    resource_root = pkg_resources.resource_filename(
+        "pp.server.test_data", "__init__.py"
+    )
 
     resource_dir = Path(resource_root).parent / "html"
     source_html = str(Path(work_dir) / "index.html")
@@ -171,7 +181,7 @@ async def selftest(converter: str) -> bytes:
     LOG.info("OUTPUT")
     LOG.info(output)
 
-    # return PDF data as bytes 
+    # return PDF data as bytes
     with open(target_filename, "rb") as fp:
         pdf_data = fp.read()
 
