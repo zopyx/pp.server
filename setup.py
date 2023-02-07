@@ -3,7 +3,7 @@ import sys
 
 if sys.version_info[0] != 3:
     raise RuntimeError('pp.server requires Python 3.9 or higher')
-if sys.version_info[1] < 9
+if sys.version_info[1] < 9:
     raise RuntimeError('pp.server requires Python 3.9 or higher')
 
 from setuptools import setup, find_packages
