@@ -1,3 +1,9 @@
+3.3.0 (2023/02/07)
+------------------
+- modernized codebase
+- Python 3.9 or higher is now required
+- no features added
+
 3.2.0 (2020/05/12)
 ------------------
 - added selftest endpoint 

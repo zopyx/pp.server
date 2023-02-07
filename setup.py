@@ -1,8 +1,10 @@
 import os
 import sys
 
-if sys.version_info[:2] not in ((3,7), (3,8), (3,9), (3, 10)):
-    raise RuntimeError('pp.server requires Python 3.7 or higher')
+if sys.version_info[0] != 3:
+    raise RuntimeError('pp.server requires Python 3.9 or higher')
+if sys.version_info[1] < 9
+    raise RuntimeError('pp.server requires Python 3.9 or higher')
 
 from setuptools import setup, find_packages
 
@@ -28,7 +30,7 @@ tests_require = [
 ]
 
 setup(name='pp.server',
-      version='3.2.0.6',
+      version='3.3.0',
       description='pp.server - Produce & Publish Server',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
