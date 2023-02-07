@@ -200,7 +200,7 @@ async def convert(
     result = await convert_pdf(work_dir, work_file, converter, conversion_log, cmd_options)
 
     duration = time.time() - ts
-    msg = "END : pdf({} {} sec): {}".format(new_id, duration, result["status"])
+    msg = f"END : pdf({new_id} {duration} sec): {result['status']}"
     conversion_log(msg)
     LOG.info(msg)
 

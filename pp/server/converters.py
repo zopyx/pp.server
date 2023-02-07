@@ -124,7 +124,7 @@ async def convert_pdf(work_dir, work_file, converter, logger, cmd_options, sourc
     status = result["status"]
     output = result["stdout"] + result["stderr"]
 
-    logger("STATUS: {}".format(result["status"]))
+    logger(f"STATUS: {result['status']}")
     logger("OUTPUT")
     logger(output)
 
@@ -167,7 +167,7 @@ async def selftest(converter: str) -> bytes:
     status = result["status"]
     output = result["stdout"] + result["stderr"]
 
-    LOG.info("STATUS: {}".format(result["status"]))
+    LOG.info(f"STATUS: {result['status']}")
     LOG.info("OUTPUT")
     LOG.info(output)
 
