@@ -12,8 +12,7 @@ import sys
 import time
 
 import pkg_resources
-from fastapi import (Body, FastAPI, File, Form, HTTPException, Query, Request,
-                     UploadFile)
+from fastapi import (FastAPI, Form, HTTPException, Request)
 from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -118,7 +117,7 @@ async def converter_selftest(converter: str):
     """Perform a PDF selftest for a given `converter`"""
 
     available_converters = registry.available_converters()
-    if not converter in available_converters:
+    if converter not in available_converters:
         raise HTTPException(
             status_code=404,
             detail=f"Converter {converter} is not available or not installed",

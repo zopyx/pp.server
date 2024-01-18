@@ -174,7 +174,6 @@ async def selftest(converter: str) -> bytes:
 
     LOG.info(f"CMD: {cmd}")
     result = await util.run(cmd)
-    status = result["status"]
     output = result["stdout"] + result["stderr"]
 
     LOG.info(f"STATUS: {result['status']}")
