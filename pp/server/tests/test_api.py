@@ -5,11 +5,9 @@
 
 import os
 import base64
-import json
 import unittest
 import zipfile
 import tempfile
-import zipfile
 
 from fastapi.testclient import TestClient
 
@@ -29,7 +27,7 @@ class PDFTests(unittest.TestCase):
         assert result.status_code == 200
         assert result.json() == dict(has_converter=True)
 
-    def test_has_converter(self):
+    def test_has_converter2(self):
         result = client.get('/converter?converter_name=dummy')
         assert result.status_code == 200
         assert result.json() == {'has_converter': False, 'converter': 'dummy'}
@@ -56,7 +54,6 @@ class PDFTests(unittest.TestCase):
         os.unlink(zip_name)
 
         params = dict(converter=converter, cmd_options=" ", data=base64.encodebytes(zip_data))
-        upload_files = [('file', 'in.zip', zip_data)]
         result = client.post('/convert', params)
         params = result.json()
 

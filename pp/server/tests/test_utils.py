@@ -3,7 +3,6 @@
 # (C) 2013, ZOPYX,  Tuebingen, Germany
 ################################################################
 
-import os
 from pp.server import util
 
 
