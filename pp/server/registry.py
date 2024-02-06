@@ -76,6 +76,7 @@ async def converter_versions():
         converter = result["converter"]
         status = result["result"]["status"]
         output = result["result"]["stdout"] + result["result"]["stderr"]
+        output = output.strip()
         versions[converter] = output if status == 0 else "n/a"
 
     return versions
