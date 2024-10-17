@@ -34,7 +34,7 @@ The web service provides only synchronous operation.
 Requirements
 ------------
 
-- Python 3.8 or higher, no support for Python 2.x
+- Python 3.9 or higher, no support for Python 2.x
 
 - the external binaries 
 
