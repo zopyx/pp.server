@@ -25,7 +25,8 @@ class PDFTests(unittest.TestCase):
     def test_has_converter(self):
         result = client.get("/converter?converter_name=prince")
         assert result.status_code == 200
-        assert result.json() == dict(has_converter=True)
+        body = result.json()
+        assert body["has_converter"] == True
 
     def test_has_converter2(self):
         result = client.get("/converter?converter_name=dummy")
@@ -55,7 +56,7 @@ class PDFTests(unittest.TestCase):
         params = dict(
             converter=converter, cmd_options=" ", data=base64.encodebytes(zip_data)
         )
-        result = client.post("/convert", params)
+        result = client.post("/convert", data=params)
         params = result.json()
 
         if expected == "OK":

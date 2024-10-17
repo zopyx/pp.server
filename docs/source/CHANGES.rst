@@ -1,3 +1,7 @@
+3.4.0 (unreleased)
+------------------
+- updated for Python 3.13
+
 3.3.0 (2023/02/07)
 ------------------
 - modernized codebase
