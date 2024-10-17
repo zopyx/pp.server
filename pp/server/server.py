@@ -11,8 +11,9 @@ import shutil
 import sys
 import time
 
-import pkg_resources
-from fastapi import (FastAPI, Form, HTTPException, Request)
+from importlib.metadata import version
+
+from fastapi import FastAPI, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -52,16 +53,15 @@ if not os.path.exists(queue_dir):
     except FileExistsError:
         pass
 
-version = pkg_resources.require("pp.server")[0].version
+VERSION = version("pp.server")
 LOG.info(f"QUEUE: {queue_dir}")
-LOG.info(f"pp.server V {version}")
+LOG.info(f"pp.server V {VERSION}")
 
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request, show_versions: bool = False):
     """Produce & Publish web view"""
 
-    version = pkg_resources.require("pp.server")[0].version
     converter_versions = {}
     if show_versions:
         converter_versions = await registry.converter_versions()
@@ -71,7 +71,7 @@ async def index(request: Request, show_versions: bool = False):
         "converters": ", ".join(registry.available_converters()),
         "show_versions": show_versions,
         "converter_versions": converter_versions,
-        "version": version,
+        "version": VERSION,
         "python_version": sys.version,
     }
     return templates.TemplateResponse("index.html", params)
@@ -101,8 +101,7 @@ async def has_converter(converter_name: str):
 @app.get("/version")
 async def version():
     """Return the version of the pp.server module"""
-    version = pkg_resources.require("pp.server")[0].version
-    return dict(version=version, module="pp.server")
+    return dict(version=VERSION, module="pp.server")
 
 
 @app.get("/cleanup")

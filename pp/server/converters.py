@@ -8,8 +8,9 @@ import shutil
 import tempfile
 import zipfile
 from pathlib import Path
+import importlib.util
+import pkgutil
 
-import pkg_resources
 
 from pp.server import util
 from pp.server.logger import LOG
@@ -72,6 +73,11 @@ CONVERTERS = {
         "convert": 'versatype-formatter "{source_html}" --output "{target_filename}" "{cmd_options}"',
     },
 }
+
+
+def load_resource(package, resource_name):
+    data = pkgutil.get_data(package, resource_name)
+    return data
 
 
 async def convert_pdf(
@@ -146,10 +152,7 @@ async def selftest(converter: str) -> bytes:
     work_dir = tempfile.mktemp()
 
     # copy HTML sample from test_data directory
-    resource_root = pkg_resources.resource_filename(
-        "pp.server.test_data", "__init__.py"
-    )
-
+    resource_root = importlib.util.find_spec("pp.server.test_data").origin
     resource_dir = Path(resource_root).parent / "html"
     source_html = str(Path(work_dir) / "index.html")
     target_filename = os.path.join(work_dir, "out.pdf")
