@@ -2,9 +2,9 @@ import os
 import sys
 
 if sys.version_info[0] != 3:
-    raise RuntimeError('pp.server requires Python 3.9 or higher')
-if sys.version_info[1] < 9:
-    raise RuntimeError('pp.server requires Python 3.9 or higher')
+    raise RuntimeError('pp.server requires Python 3.11 or higher')
+if sys.version_info[1] < 12:
+    raise RuntimeError('pp.server requires Python 3.11 or higher')
 
 from setuptools import setup, find_packages
 
@@ -30,15 +30,14 @@ tests_require = [
 ]
 
 setup(name='pp.server',
-      version='3.4.0',
+      version='3.4.1",
       description='pp.server - Produce & Publish Server',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Framework :: Pyramid",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",

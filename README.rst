@@ -90,7 +90,9 @@ must be included in the ``$PATH`` of your server.
 
 - ``prince`` for PrinceXML
 
-- ``pdfreactor`` for PDFreactor 8 or higher
+- ``pdfreactor-legacy`` for PDFreactor <= 11 
+
+- ``pdfreactor`` for PDFreactor 12 or highter
 
 - ``wkhtmltopdf`` for WKHTMLToPDF
 

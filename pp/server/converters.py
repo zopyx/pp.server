@@ -21,11 +21,16 @@ CONVERTERS = {
         "version": "prince --version",
         "convert": 'prince {cmd_options} -v "{source_html}" -o "{target_filename}"',
     },
-    "pdfreactor": {
+    "pdfreactor-legacy": {
         "cmd": "pdfreactor.py",
         "version": "pdfreactor.py --version",
         "convert": 'pdfreactor.py {cmd_options} --addLinks --addBookmarks --logLevel debug -i "{source_html}" -o "{target_filename}"',
-        "convert_docker": 'pdfreactor.py {cmd_options} --addLinks --addBookmarks --logLevel debug -i "{source_docker_html}" -o "{target_filename}"',
+    },
+    "pdfreactor": {
+        "cmd": "pdfreactor.py",
+        "version": "pdfreactor.py --version",
+#        "convert": 'pdfreactor.py {cmd_options} --log-level DEBUG -v -i "{source_html}" -o "{target_filename}" --base-url "{base_url}"',
+        "convert": 'pdfreactor.py {cmd_options} --log-level DEBUG -v -i "{source_html}" -o "{target_filename}" --base-url "{base_url}"',
     },
     "antennahouse": {
         "cmd": "run.sh",
@@ -81,7 +86,7 @@ def load_resource(package, resource_name):
 
 
 async def convert_pdf(
-    work_dir, work_file, converter, logger, cmd_options, source_filename="index.html"
+    work_dir, work_file, converter, logger, cmd_options, source_filename="index.html",
 ):
     """Converter a given ZIP file
     containing input files (HTML + XML) and asset files
@@ -107,31 +112,22 @@ async def convert_pdf(
     else:
         target_filename = os.path.join(work_dir, "out", "out.pdf")
 
+    # required for PDFreactor 12+
+    base_url = f"file://{work_dir}/"
+
     if not has_converter(converter):
         return dict(status=9999, output=f'Unknown converter "{converter}"')
 
     converter_config = CONVERTERS[converter]
 
-    if converter == "pdfreactor" and "PP_PDFREACTOR_DOCKER" in os.environ:
-        # PDFreactor running on Docker requires special trickery
-        # We assume that the /docs volume of the PDFreactor container is mounted into the local
-        # filesystem.
-        cmd = converter_config["convert_docker"]
-        parts = work_dir.split("/")
-        source_docker_html = f"file:///docs/{parts[-1]}/index.html"
-        cmd = cmd.format(
-            cmd_options=cmd_options,
-            target_filename=target_filename,
-            source_docker_html=source_docker_html,
-        )
-    else:
-        cmd = converter_config["convert"]
-        cmd = cmd.format(
-            cmd_options=cmd_options,
-            work_dir=work_dir,
-            target_filename=target_filename,
-            source_html=source_html,
-        )
+    cmd = converter_config["convert"]
+    cmd = cmd.format(
+        cmd_options=cmd_options,
+        work_dir=work_dir,
+        target_filename=target_filename,
+        source_html=source_html,
+        base_url=base_url,
+    )
 
     logger(f"CMD: {cmd}")
     result = await util.run(cmd)
@@ -156,6 +152,8 @@ async def selftest(converter: str) -> bytes:
     resource_dir = Path(resource_root).parent / "html"
     source_html = str(Path(work_dir) / "index.html")
     target_filename = os.path.join(work_dir, "out.pdf")
+    # required for PDFreactor 12+
+    base_url = f"file://{work_dir}/"
 
     if converter == "calibre":
         target_filename = os.path.join(work_dir, "out.epub")
@@ -173,6 +171,7 @@ async def selftest(converter: str) -> bytes:
         work_dir=work_dir,
         target_filename=target_filename,
         source_html=source_html,
+        base_url=base_url,
     )
 
     LOG.info(f"CMD: {cmd}")
