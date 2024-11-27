@@ -2,7 +2,8 @@
 ------------------
 - support for PDFreactor 12 + "pdfreactor"
 - moved support for PDFreactor < 12 to "pdfreactor-legacy"
- 
+- Python 3.11+ required
+
 3.4.0 (2024/11/26)
 ------------------
 - updated for Python 3.13
