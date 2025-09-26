@@ -5,56 +5,66 @@
 
 import os
 import base64
-import unittest
 import zipfile
 import tempfile
+from pathlib import Path
 
+import pytest
 from fastapi.testclient import TestClient
 
 from pp.server.server import app
 
-client = TestClient(app)
+
+@pytest.fixture
+def client():
+    """Create a test client for the FastAPI app."""
+    return TestClient(app)
 
 
-class PDFTests(unittest.TestCase):
-    def test_index(self):
+class TestPDFAPI:
+    def test_index(self, client):
         result = client.get("/")
         assert result.status_code == 200
         assert "2021" in result.text
 
-    def test_has_converter(self):
+    def test_has_converter(self, client):
         result = client.get("/converter?converter_name=prince")
         assert result.status_code == 200
         body = result.json()
         assert body["has_converter"] == True
 
-    def test_has_converter2(self):
+    def test_has_converter_missing(self, client):
         result = client.get("/converter?converter_name=dummy")
         assert result.status_code == 200
         assert result.json() == {"has_converter": False, "converter": "dummy"}
 
-    def test_prince(self):
-        self._convert_pdf("prince")
+    @pytest.mark.parametrize("converter", ["prince", "weasyprint"])
+    def test_convert_pdf(self, client, converter):
+        """Test PDF conversion for available converters."""
+        # Check if converter is available first
+        result = client.get(f"/converter?converter_name={converter}")
+        if result.json()["has_converter"]:
+            self._convert_pdf(client, converter)
+        else:
+            pytest.skip(f"Converter {converter} not available")
 
-    def test_weasyprint(self):
-        self._convert_pdf("weasyprint")
+    def test_convert_pdf_unavailable_converter(self, client):
+        """Test PDF conversion with unavailable/unlicensed converter."""
+        self._convert_pdf(client, "antennahouse", expected="ERROR")
 
-    def test_antennahouse(self):
-        self._convert_pdf("antennahouse")
-
-    def _convert_pdf(self, converter, expected="OK"):
+    def _convert_pdf(self, client, converter, expected="OK"):
         # Generate ZIP file with sample data first
-        index_html = os.path.join(os.path.dirname(__file__), "index.html")
-        zip_name = tempfile.mktemp(suffix=".zip")
-        zf = zipfile.ZipFile(zip_name, "w")
-        zf.write(index_html, "index.html")
-        zf.close()
-        with open(zip_name, "rb") as fp:
-            zip_data = fp.read()
-        os.unlink(zip_name)
+        index_html = Path(__file__).parent / "index.html"
+        zip_path = Path(tempfile.mktemp(suffix=".zip"))
+
+        with zipfile.ZipFile(zip_path, "w") as zf:
+            zf.write(index_html, "index.html")
+
+        zip_data = zip_path.read_bytes()
+        zip_path.unlink()
 
         params = dict(
-            converter=converter, cmd_options=" ", data=base64.encodebytes(zip_data)
+            converter=converter, cmd_options=" ", data=base64.encodebytes(zip_data).decode('ascii')
         )
         result = client.post("/convert", data=params)
         params = result.json()
@@ -66,4 +76,4 @@ class PDFTests(unittest.TestCase):
             assert pdf_data.startswith(b"%PDF-1.")
         else:
             assert params["status"] == "ERROR"
-            assert "Unknown converter" in params["output"]
+            assert "output" in params

@@ -6,6 +6,8 @@
 import asyncio
 import os
 import sys
+from pathlib import Path
+from typing import Dict, Union
 
 from pp.server.logger import LOG
 
@@ -22,10 +24,11 @@ def checkEnvironment(envname: str) -> bool:
         LOG.debug(f"Environment variable ${envname} is unset")
         return False
 
-    if not os.path.exists(dirname):
+    path = Path(dirname)
+    if not path.exists():
         LOG.debug(
-            "The directory referenced through the environment "
-            "variable ${} does not exit ({})".format(envname, dirname)
+            f"The directory referenced through the environment "
+            f"variable ${envname} does not exit ({dirname})"
         )
         return False
     return True
@@ -38,14 +41,14 @@ def which(command: str) -> bool:
     True or False.
     """
     path_env = os.environ.get("PATH", "")  # also on win32?
-    for path in path_env.split(":"):
-        fullname = os.path.join(path, command)
-        if os.path.exists(fullname):
+    for path_str in path_env.split(":"):
+        fullname = Path(path_str) / command
+        if fullname.exists():
             return True
     return False
 
 
-async def run(cmd):
+async def run(cmd: str) -> Dict[str, Union[str, int]]:
     """Run `cmd` asnychronously.
     Returns: dict(status, stdout, stderr)
     """

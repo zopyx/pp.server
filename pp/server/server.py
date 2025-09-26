@@ -10,6 +10,8 @@ import os
 import shutil
 import sys
 import time
+from pathlib import Path
+from typing import Dict, Any
 
 from importlib.metadata import version
 
@@ -38,20 +40,16 @@ app = FastAPI(
 )
 
 # Bootstrap: register resources for HTML view
-dirname = os.path.dirname(__file__)
-static_dir = os.path.join(dirname, "static")
-templates_dir = os.path.join(dirname, "templates")
+dirname = Path(__file__).parent
+static_dir = dirname / "static"
+templates_dir = dirname / "templates"
 templates = Jinja2Templates(directory=templates_dir)
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 # Bootstrap: spool directory
-queue_dir = os.path.join(os.getcwd(), "var", "queue")
-queue_dir = os.environ.get("PP_SPOOL_DIRECTORY", queue_dir)
-if not os.path.exists(queue_dir):
-    try:
-        os.makedirs(queue_dir)
-    except FileExistsError:
-        pass
+queue_dir = Path.cwd() / "var" / "queue"
+queue_dir = Path(os.environ.get("PP_SPOOL_DIRECTORY", str(queue_dir)))
+queue_dir.mkdir(parents=True, exist_ok=True)
 
 VERSION = version("pp.server")
 LOG.info(f"QUEUE: {queue_dir}")
@@ -74,24 +72,24 @@ async def index(request: Request, show_versions: bool = False):
         "version": VERSION,
         "python_version": sys.version,
     }
-    return templates.TemplateResponse("index.html", params)
+    return templates.TemplateResponse(request, "index.html", params)
 
 
 @app.get("/converters")
-async def converters():
+async def converters() -> Dict[str, Any]:
     """Return names of all converters"""
     return dict(converters=registry.available_converters())
 
 
 @app.get("/converter-versions")
-async def converter_versions():
+async def converter_versions() -> Dict[str, Any]:
     """Return names of all converters"""
     versions = await registry.converter_versions()
     return dict(converters=versions)
 
 
 @app.get("/converter")
-async def has_converter(converter_name: str):
+async def has_converter(converter_name: str) -> Dict[str, Any]:
     """Return names of all converters"""
     return dict(
         has_converter=registry.has_converter(converter_name), converter=converter_name
@@ -99,13 +97,13 @@ async def has_converter(converter_name: str):
 
 
 @app.get("/version")
-async def version():
+async def version() -> Dict[str, Any]:
     """Return the version of the pp.server module"""
     return dict(version=VERSION, module="pp.server")
 
 
 @app.get("/cleanup")
-async def cleanup():
+async def cleanup() -> Dict[str, Any]:
     """Cleanup up the internal queue"""
     cleanup_queue()
     return dict(status="OK")
@@ -124,6 +122,14 @@ async def converter_selftest(converter: str):
 
     try:
         pdf_data = await selftest(converter)
+    except FileNotFoundError as e:
+        raise HTTPException(
+            status_code=500, detail=f"Self-test for {converter} failed - file not found: {e}"
+        )
+    except OSError as e:
+        raise HTTPException(
+            status_code=500, detail=f"Self-test for {converter} failed - OS error: {e}"
+        )
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Self-test for {converter} failed: {e}"
@@ -186,25 +192,21 @@ async def convert(
     zip_data = base64.decodebytes(data.encode("ascii"))
 
     new_id = new_converter_id(converter)
-    work_dir = os.path.join(queue_dir, new_id)
-    out_dir = os.path.join(work_dir, "out")
-    if not os.path.exists(out_dir):
-        os.makedirs(out_dir)
+    work_dir = queue_dir / new_id
+    out_dir = work_dir / "out"
+    out_dir.mkdir(parents=True, exist_ok=True)
 
-    work_file = os.path.join(work_dir, "in.zip")
-    with open(work_file, "wb") as fp:
-        fp.write(zip_data)
+    work_file = work_dir / "in.zip"
+    work_file.write_bytes(zip_data)
 
-    conversion_log = functools.partial(converter_log, work_dir)
+    conversion_log = functools.partial(converter_log, str(work_dir))
 
     ts = time.time()
-    msg = "START: pdf(ID {}, workfile {}, converter {}, cmd_options {})".format(
-        new_id, work_file, converter, cmd_options
-    )
+    msg = f"START: pdf(ID {new_id}, workfile {work_file}, converter {converter}, cmd_options {cmd_options})"
     conversion_log(msg)
     LOG.info(msg)
     result = await convert_pdf(
-        work_dir, work_file, converter, conversion_log, cmd_options
+        str(work_dir), str(work_file), converter, conversion_log, cmd_options
     )
 
     duration = time.time() - ts
@@ -214,7 +216,7 @@ async def convert(
 
     output = result["output"]
     if result["status"] == 0:  # OK
-        pdf_data = open(result["filename"], "rb").read()
+        pdf_data = Path(result["filename"]).read_bytes()
         pdf_data = base64.encodebytes(pdf_data).decode("ascii")
         return dict(status="OK", data=pdf_data, output=output)
     else:  # error
@@ -222,42 +224,44 @@ async def convert(
         return dict(status="ERROR", output=output)
 
 
-def cleanup_queue():
+def cleanup_queue() -> Dict[str, int]:
     global LAST_CLEANUP
 
-    if not os.path.exists(queue_dir):
-        os.makedirs(queue_dir)
+    queue_dir.mkdir(parents=True, exist_ok=True)
 
     now = time.time()
     if now - LAST_CLEANUP < QUEUE_CLEANUP_TIME:
         return
     removed = 0
-    for dirname in os.listdir(queue_dir):
-        fullname = os.path.join(queue_dir, dirname)
-        mtime = os.path.getmtime(fullname)
+    for item in queue_dir.iterdir():
+        mtime = item.stat().st_mtime
         if now - mtime > QUEUE_CLEANUP_TIME:
-            LOG.debug(f"Cleanup: {fullname}")
-            if os.path.isdir(fullname):
-                shutil.rmtree(fullname)
-            elif os.path.isfile(fullname):
-                os.unlink(fullname)
+            LOG.debug(f"Cleanup: {item}")
+            if item.is_dir():
+                shutil.rmtree(item)
+            elif item.is_file():
+                item.unlink()
             removed += 1
 
     LAST_CLEANUP = time.time()
     return dict(directories_removed=removed)
 
 
-def new_converter_id(converter):
+def new_converter_id(converter: str) -> str:
     """New converter id based on timestamp + converter name"""
     return datetime.datetime.now().strftime("%Y%m%dT%H%M%S.%f") + "-" + converter
 
 
-def converter_log(work_dir, msg):
+def converter_log(work_dir: str, msg: str) -> None:
     """Logging per conversion (by work dir)"""
-    converter_logfile = os.path.join(work_dir, "converter.log")
+    converter_logfile = Path(work_dir) / "converter.log"
     msg = datetime.datetime.now().strftime("%Y%m%dT%H%M%S") + " " + msg
     with open(converter_logfile, "a") as fp:
         try:
             fp.write(msg + "\n")
-        except UnicodeError:
+        except UnicodeEncodeError:
+            # Handle specific Unicode encoding errors
+            fp.write(msg.encode("ascii", "replace").decode("ascii", "replace") + "\n")
+        except UnicodeDecodeError:
+            # Handle specific Unicode decoding errors
             fp.write(msg.encode("ascii", "replace").decode("ascii", "replace") + "\n")

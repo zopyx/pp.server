@@ -4,6 +4,7 @@
 ################################################################
 
 import asyncio
+from typing import Dict, List, Any
 
 from pp.server.converters import CONVERTERS
 from pp.server.logger import LOG
@@ -12,14 +13,14 @@ from pp.server.util import run, which
 REGISTRY = dict()
 
 
-def _register_converters():
+def _register_converters() -> None:
     """Register all known converters"""
 
     for converter, converter_config in CONVERTERS.items():
         register_converter(converter, converter_config["cmd"])
 
 
-def register_converter(converter_name: str, converter_cmd: str):
+def register_converter(converter_name: str, converter_cmd: str) -> None:
     """Check if particular converter can be find through its `converter_cmd`
     directly in the $PATH or some `bin/` path.
     """
@@ -33,7 +34,7 @@ def register_converter(converter_name: str, converter_cmd: str):
         LOG.info(f"Converter {converter_name} registered")
 
 
-def available_converters() -> [str]:
+def available_converters() -> List[str]:
     """Return list of available converter names"""
     return sorted(list([c for c in REGISTRY if REGISTRY[c]]))
 
@@ -43,36 +44,33 @@ def has_converter(converter_name: str) -> bool:
     return converter_name in available_converters()
 
 
-def get_converter_registry():
+def get_converter_registry() -> Dict[str, bool]:
     """Return the converter registry"""
     return REGISTRY
 
 
-async def converter_versions():
+async def converter_versions() -> Dict[str, str]:
     """Run the --version command for every registered converter"""
 
-    async def execute_cmd(converter, cmd, future):
+    async def execute_cmd(converter: str, cmd: str) -> Dict[str, Any]:
         result = await run(cmd)
-        future.set_result(dict(result=result, converter=converter))
+        return dict(result=result, converter=converter)
 
-    loop = asyncio.get_event_loop()
-
+    # Create tasks for all converters
     tasks = []
-    futures = []
     for converter in available_converters():
         converter_config = CONVERTERS[converter]
-        future = asyncio.Future()
-        futures.append(future)
-        task = loop.create_task(
-            execute_cmd(converter, converter_config["version"], future)
-        )
+        task = execute_cmd(converter, converter_config["version"])
         tasks.append(task)
 
-    await asyncio.wait(tasks, return_when=asyncio.ALL_COMPLETED)
+    # Run all tasks concurrently
+    results = await asyncio.gather(*tasks, return_exceptions=True)
 
     versions = dict()
-    for f in futures:
-        result = f.result()
+    for result in results:
+        if isinstance(result, Exception):
+            continue  # Skip failed converters
+
         converter = result["converter"]
         status = result["result"]["status"]
         output = result["result"]["stdout"] + result["result"]["stderr"]
@@ -82,7 +80,7 @@ async def converter_versions():
     return versions
 
 
-def main():
+def main() -> None:
     _register_converters()
     print(available_converters())
 
