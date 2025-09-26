@@ -27,6 +27,7 @@ dependencies = [
     "fastapi>=0.115.6",
     "httptools>=0.6.4",
     "hypercorn>=0.17.3",
+    "uvicorn>=0.20.0",
     "jinja2>=3.1.4",
     "loguru>=0.7.2",
     "plac>=1.4.3",
@@ -56,6 +57,7 @@ dev = [
 unoconv = "pp.server.unoconv:main"
 pdfreactor8 = "pp.server.pdfreactor8:main"
 pp-server-templates = "pp.server.templates:main"
+pp-server = "pp.server.cli:main"
 
 [project.urls]
 Homepage = "http://pypi.python.org/pypi/pp.server"

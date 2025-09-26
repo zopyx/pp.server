@@ -1,3 +1,8 @@
+3.5.6 (unreleased)
+------------------
+
+- some changes
+
 3.4.1 (2024/11/27)
 ------------------
 - support for PDFreactor 12 + "pdfreactor"
