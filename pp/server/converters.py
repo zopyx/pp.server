@@ -87,7 +87,12 @@ def load_resource(package, resource_name):
 
 
 async def convert_pdf(
-    work_dir, work_file, converter, logger, cmd_options, source_filename="index.html",
+    work_dir,
+    work_file,
+    converter,
+    logger,
+    cmd_options,
+    source_filename="index.html",
 ):
     """Converter a given ZIP file
     containing input files (HTML + XML) and asset files
