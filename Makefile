@@ -100,6 +100,9 @@ release-test: build ## Upload to test PyPI
 release: build ## Upload to PyPI
 	$(UV) run twine upload $(BUILD_DIR)/*
 
+publish: ## Publish to PyPI using uv
+	$(UV) publish
+
 # Docker support (if needed)
 docker-build: ## Build Docker image
 	docker build -t $(PROJECT_NAME):latest .
