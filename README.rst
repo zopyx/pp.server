@@ -228,12 +228,12 @@ returns:
 Source code
 -----------
 
-https://bitbucket.org/ajung/pp.server
+https://github.com/zopyx/pp.server
 
 Bug tracker
 -----------
 
-https://bitbucket.org/ajung/pp.server/issues
+https://github.com/zopyx/pp.server/issues
 
 Support
 -------

@@ -119,9 +119,9 @@
 
 0.7.2 (2015/04/20)
 ------------------
-- merged https://bitbucket.org/ajung/pp.server/pull-request/1/
+- merged https://github.com/zopyx/pp.server/pull/1/
   (improper check for wkhtmltopdf)
-- merged https://bitbucket.org/ajung/pp.server/pull-request/2/
+- merged https://github.com/zopyx/pp.server/pull/2/
   (fix for async operations)
 
 0.7.1 (2015/03/13)
