@@ -56,31 +56,33 @@ Requirements
 Installation
 ------------
 
+This project uses `uv` as package and virtualenv manager.
+
 - create a Python 3  virtual environment using::
 
-    python3 -m venv pp.server
+    python3 -m venv .venv
 
-- install the Produce & Publish server::
+- install dependencies using ``uv``::
 
-    bin/pip install pp.server
+    .venv/bin/uv pip install -r requirements.txt
 
 - run the Produce & Publish server::
 
-    bin/uvicorn pp.server.server:app
+    .venv/bin/uvicorn pp.server.server:app
 
 - or under control of `gunicorn`::
 
-    bin/gunicorn pp.server.server:app -w 2 -k uvicorn.workers.UvicornWorker
+    .venv/bin/gunicorn pp.server.server:app -w 2 -k uvicorn.workers.UvicornWorker
 
 
 - For running the Produce & Publisher server under control of the process manager
   `circus`, generate the `circusd.ini` file using::
 
-    bin/pp-server-templates
+    .venv/bin/pp-server-templates
 
 - and start it in background::
 
-    bin/circusd circusd.ini  --daemon
+    .venv/bin/circusd circusd.ini  --daemon
 
 Converter requirements
 ----------------------
