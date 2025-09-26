@@ -1,0 +1,109 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pp.server"
+version = "3.5.3"
+description = "pp.server - Produce & Publish Server"
+readme = "README.rst"
+requires-python = ">=3.12"
+authors = [{"name" = "Andreas Jung", "email" = "info@zopyx.com"}]
+keywords = [
+    "web", "fastapi", "pdf", "unoconv", "conversion", "princexml", "pdfreactor"
+]
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Framework :: FastAPI",
+    "Topic :: Internet :: WWW/HTTP",
+    
+]
+dependencies = [
+    "aiofiles>=24.1.0",
+    "click>=8.1.7",
+    "easyprocess>=1.1",
+    "fastapi>=0.115.6",
+    "httptools>=0.6.4",
+    "hypercorn>=0.17.3",
+    "jinja2>=3.1.4",
+    "loguru>=0.7.2",
+    "plac>=1.4.3",
+    "python-multipart>=0.0.19",
+    "webtest>=3.0.2",
+    "tomli>=2.0.0; python_version<'3.11'",
+]
+
+[project.optional-dependencies]
+testing = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.0.0"
+]
+dev = [
+    "ruff>=0.1.0",
+    "mypy>=1.7.0",
+    "twine>=4.0.0",
+    "build>=1.0.0",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.0.0",
+    "httpx>=0.24.0"
+]
+
+[project.scripts]
+unoconv = "pp.server.unoconv:main"
+pdfreactor8 = "pp.server.pdfreactor8:main"
+pp-server-templates = "pp.server.templates:main"
+
+[project.urls]
+Homepage = "http://pypi.python.org/pypi/pp.server"
+
+[tool.setuptools.packages.find]
+include = ["pp*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.html", "*.css", "*.js", "*.rst", "*.xml", "*.toml"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long, handled by formatter
+    "B008",  # do not perform function calls in argument defaults
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[tool.pytest.ini_options]
+testpaths = ["pp/server/tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
