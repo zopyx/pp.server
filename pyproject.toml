@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pp.server"
-version = "3.5.5"
+version = "3.5.6"
 description = "pp.server - Produce & Publish Server"
 readme = "README.rst"
 requires-python = ">=3.12"
