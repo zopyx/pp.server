@@ -34,7 +34,7 @@ The web service provides only synchronous operation.
 Requirements
 ------------
 
-- Python 3.9 or higher, no support for Python 2.x
+- Python 3.12 or higher, no support for Python 2.x
 
 - the external binaries 
 
@@ -64,7 +64,7 @@ This project uses `uv` as package and virtualenv manager.
 
 - install dependencies using ``uv``::
 
-    .venv/bin/uv pip install -r requirements.txt
+    .venv/bin/uv pip install -e .
 
 - run the Produce & Publish server::
 
