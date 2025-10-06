@@ -54,8 +54,6 @@ dev = [
 ]
 
 [project.scripts]
-unoconv = "pp.server.unoconv:main"
-pdfreactor8 = "pp.server.pdfreactor8:main"
 pp-server-templates = "pp.server.templates:main"
 pp-server = "pp.server.cli:main"
 
