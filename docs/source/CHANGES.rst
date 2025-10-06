@@ -1,6 +1,7 @@
 3.5.6 (unreleased)
 ------------------
 
+- ``pp-server`` script now is the documented and recommended way for running the server
 - some changes
 
 3.4.1 (2024/11/27)
