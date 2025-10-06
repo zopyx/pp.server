@@ -3,14 +3,15 @@
 # (C) 2021, ZOPYX,  Tuebingen, Germany
 ################################################################
 
+import importlib.util
 import os
+import pkgutil
 import shutil
 import tempfile
 import zipfile
+from collections.abc import Callable
 from pathlib import Path
-import importlib.util
-import pkgutil
-from typing import Dict, Any, Callable
+from typing import Any
 
 try:
     import tomllib  # Python 3.11+
@@ -21,7 +22,7 @@ from pp.server import util
 from pp.server.logger import LOG
 
 
-def load_config() -> Dict[str, Any]:
+def load_config() -> dict[str, Any]:
     """Load configuration from config.toml file."""
     config_path = Path(__file__).parent / "config.toml"
     try:
@@ -52,7 +53,7 @@ async def convert_pdf(
     logger: Callable[[str], None],
     cmd_options: str,
     source_filename: str = "index.html",
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Converter a given ZIP file
     containing input files (HTML + XML) and asset files
     to PDF.

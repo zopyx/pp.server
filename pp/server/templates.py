@@ -5,7 +5,6 @@
 """Entry poing for generating circusd template ini"""
 
 import os
-
 import pkgutil
 
 

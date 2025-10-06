@@ -54,6 +54,8 @@ dev = [
 ]
 
 [project.scripts]
+#unoconv = "pp.server.unoconv:main"
+#pdfreactor8 = "pp.server.pdfreactor8:main"
 pp-server-templates = "pp.server.templates:main"
 pp-server = "pp.server.cli:main"
 
@@ -81,6 +83,9 @@ lint.select = [
 lint.ignore = [
     "E501",  # line too long, handled by formatter
     "B008",  # do not perform function calls in argument defaults
+    "C408",
+    "B904",
+    "E712",
 ]
 
 [tool.ruff.format]

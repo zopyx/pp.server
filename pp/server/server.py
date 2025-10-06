@@ -10,10 +10,9 @@ import os
 import shutil
 import sys
 import time
-from pathlib import Path
-from typing import Dict, Any
-
 from importlib.metadata import version
+from pathlib import Path
+from typing import Any
 
 from fastapi import FastAPI, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, Response
@@ -76,20 +75,20 @@ async def index(request: Request, show_versions: bool = False):
 
 
 @app.get("/converters")
-async def converters() -> Dict[str, Any]:
+async def converters() -> dict[str, Any]:
     """Return names of all converters"""
     return dict(converters=registry.available_converters())
 
 
 @app.get("/converter-versions")
-async def converter_versions() -> Dict[str, Any]:
+async def converter_versions() -> dict[str, Any]:
     """Return names of all converters"""
     versions = await registry.converter_versions()
     return dict(converters=versions)
 
 
 @app.get("/converter")
-async def has_converter(converter_name: str) -> Dict[str, Any]:
+async def has_converter(converter_name: str) -> dict[str, Any]:
     """Return names of all converters"""
     return dict(
         has_converter=registry.has_converter(converter_name), converter=converter_name
@@ -97,13 +96,13 @@ async def has_converter(converter_name: str) -> Dict[str, Any]:
 
 
 @app.get("/version")
-async def version() -> Dict[str, Any]:
+async def version() -> dict[str, Any]:
     """Return the version of the pp.server module"""
     return dict(version=VERSION, module="pp.server")
 
 
 @app.get("/cleanup")
-async def cleanup() -> Dict[str, Any]:
+async def cleanup() -> dict[str, Any]:
     """Cleanup up the internal queue"""
     cleanup_queue()
     return dict(status="OK")
@@ -225,7 +224,7 @@ async def convert(
         return dict(status="ERROR", output=output)
 
 
-def cleanup_queue() -> Dict[str, int]:
+def cleanup_queue() -> dict[str, int]:
     global LAST_CLEANUP
 
     queue_dir.mkdir(parents=True, exist_ok=True)

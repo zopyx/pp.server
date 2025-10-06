@@ -4,7 +4,7 @@
 ################################################################
 
 import asyncio
-from typing import Dict, List, Any
+from typing import Any
 
 from pp.server.converters import CONVERTERS
 from pp.server.logger import LOG
@@ -34,9 +34,9 @@ def register_converter(converter_name: str, converter_cmd: str) -> None:
         LOG.info(f"Converter {converter_name} registered")
 
 
-def available_converters() -> List[str]:
+def available_converters() -> list[str]:
     """Return list of available converter names"""
-    return sorted(list([c for c in REGISTRY if REGISTRY[c]]))
+    return sorted([c for c in REGISTRY if REGISTRY[c]])
 
 
 def has_converter(converter_name: str) -> bool:
@@ -44,15 +44,15 @@ def has_converter(converter_name: str) -> bool:
     return converter_name in available_converters()
 
 
-def get_converter_registry() -> Dict[str, bool]:
+def get_converter_registry() -> dict[str, bool]:
     """Return the converter registry"""
     return REGISTRY
 
 
-async def converter_versions() -> Dict[str, str]:
+async def converter_versions() -> dict[str, str]:
     """Run the --version command for every registered converter"""
 
-    async def execute_cmd(converter: str, cmd: str) -> Dict[str, Any]:
+    async def execute_cmd(converter: str, cmd: str) -> dict[str, Any]:
         result = await run(cmd)
         return dict(result=result, converter=converter)
 

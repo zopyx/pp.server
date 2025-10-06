@@ -3,10 +3,9 @@
 # (C) 2013, ZOPYX,  Tuebingen, Germany
 ################################################################
 
-import os
 import base64
-import zipfile
 import tempfile
+import zipfile
 from pathlib import Path
 
 import pytest

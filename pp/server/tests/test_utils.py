@@ -3,8 +3,8 @@
 # (C) 2013, ZOPYX,  Tuebingen, Germany
 ################################################################
 
-import pytest
 from pathlib import Path
+
 from pp.server import util
 
 

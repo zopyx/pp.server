@@ -7,7 +7,6 @@ import asyncio
 import os
 import sys
 from pathlib import Path
-from typing import Dict, Union
 
 from pp.server.logger import LOG
 
@@ -48,7 +47,7 @@ def which(command: str) -> bool:
     return False
 
 
-async def run(cmd: str) -> Dict[str, Union[str, int]]:
+async def run(cmd: str) -> dict[str, str | int]:
     """Run `cmd` asnychronously.
     Returns: dict(status, stdout, stderr)
     """
