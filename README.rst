@@ -66,11 +66,9 @@ This project uses `uv` as package and virtualenv manager.
 
     .venv/bin/uv pip install -e .
 
-- run the Produce & Publish server using the ``pp-server`` script::
+- run the Produce & Publish server::
 
-    .venv/bin/pp-server --host 0.0.0.0 --port 8000
-
-  The ``pp-server`` script provides options for setting the host and port, and for enabling auto-reloading of the server on code changes.
+    .venv/bin/uvicorn pp.server.server:app
 
 - or under control of `gunicorn`::
 
