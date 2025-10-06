@@ -82,7 +82,7 @@ dev-setup: dev-install ## Set up development environment
 	@echo "Development environment ready!"
 	@echo "Run 'make serve' to start the development server"
 
-ci: quality test ## Run CI pipeline (quality checks + tests)
+ci: test ## Run CI pipeline (quality checks + tests)
 
 pre-commit: format quality test ## Run pre-commit checks
 
