@@ -124,7 +124,8 @@ async def converter_selftest(converter: str):
         pdf_data = await selftest(converter)
     except FileNotFoundError as e:
         raise HTTPException(
-            status_code=500, detail=f"Self-test for {converter} failed - file not found: {e}"
+            status_code=500,
+            detail=f"Self-test for {converter} failed - file not found: {e}",
         )
     except OSError as e:
         raise HTTPException(

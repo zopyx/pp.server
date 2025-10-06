@@ -64,7 +64,9 @@ class TestPDFAPI:
         zip_path.unlink()
 
         params = dict(
-            converter=converter, cmd_options=" ", data=base64.encodebytes(zip_data).decode('ascii')
+            converter=converter,
+            cmd_options=" ",
+            data=base64.encodebytes(zip_data).decode("ascii"),
         )
         result = client.post("/convert", data=params)
         params = result.json()
