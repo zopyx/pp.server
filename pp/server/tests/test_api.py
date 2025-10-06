@@ -24,7 +24,7 @@ class TestPDFAPI:
     def test_index(self, client):
         result = client.get("/")
         assert result.status_code == 200
-        assert "2021" in result.text
+        assert "2025" in result.text
 
     def test_has_converter(self, client):
         result = client.get("/converter?converter_name=prince")
