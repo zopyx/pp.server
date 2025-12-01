@@ -255,4 +255,3 @@ Contact
 | D-72074 Tuebingen, Germany
 | info@zopyx.com
 | www.zopyx.com
-| www.produce-and-publish.info
