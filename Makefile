@@ -38,9 +38,14 @@ format: ## Format code
 	$(UV) run ruff check --fix .
 
 type-check: ## Run type checking
-	$(UV) run mypy pp/server
+	$(UV) run ty check
 
-quality: lint type-check ## Run all quality checks
+quality: lint type-check test ## Run all quality checks
+
+sast: ## Run security scans
+	$(UV) run bandit -c pyproject.toml -r pp/server 2>&1 || true
+
+ci: lint type-check sast test ## Run CI pipeline (quality checks + security + tests)
 
 clean: ## Clean build artifacts
 	rm -rf $(BUILD_DIR)/
@@ -82,9 +87,7 @@ dev-setup: dev-install ## Set up development environment
 	@echo "Development environment ready!"
 	@echo "Run 'make serve' to start the development server"
 
-ci: lint type-check test ## Run CI pipeline (quality checks + tests)
-
-pre-commit: format quality test ## Run pre-commit checks
+pre-commit-check: format quality test ## Run pre-commit checks
 
 # Release management
 check-release: ## Check if ready for release

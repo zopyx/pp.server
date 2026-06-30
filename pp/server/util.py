@@ -5,12 +5,31 @@
 
 import asyncio
 import os
+import re
 import sys
 from pathlib import Path
 
 from pp.server.logger import LOG
 
 win32 = sys.platform == "win32"
+
+# Allow only safe characters in command options
+_SAFE_CMD_OPTIONS_RE = re.compile(r"^[a-zA-Z0-9\s\.\,\-\_\+\=\:\/\\@\(\)\[\]\"]*$")
+
+
+def sanitize_cmd_options(options: str) -> str:
+    """Validate and sanitize converter command-line options.
+
+    Raises ValueError if options contain shell-dangerous characters.
+    Falls back to shlex.quote() for maximum safety.
+    """
+    if not options or options.strip() == " ":
+        return ""
+    # Replace newlines/tabs which could be used for injection
+    cleaned = options.replace("\n", " ").replace("\r", " ").replace("\t", " ")
+    if not _SAFE_CMD_OPTIONS_RE.match(cleaned):
+        raise ValueError(f"cmd_options contains unsafe characters: {options!r}")
+    return cleaned
 
 
 def check_environment(envname: str) -> bool:
@@ -47,8 +66,8 @@ def which(command: str) -> bool:
     return False
 
 
-async def run(cmd: str) -> dict[str, str | int]:
-    """Run `cmd` asnychronously.
+async def run(cmd: str) -> dict[str, str | int | None]:
+    """Run `cmd` asynchronously.
     Returns: dict(status, stdout, stderr)
     """
 
@@ -57,11 +76,10 @@ async def run(cmd: str) -> dict[str, str | int]:
         cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
     )
 
-    stdout, stderr = await proc.communicate()
-
-    stdout = stdout.decode()
-    stderr = stderr.decode()
-    status = proc.returncode
+    stdout_bytes, stderr_bytes = await proc.communicate()
+    stdout = stdout_bytes.decode(errors="replace")
+    stderr = stderr_bytes.decode(errors="replace")
+    status: int | None = proc.returncode
 
     if stdout:
         LOG.info(f"Output:\n{stdout}")

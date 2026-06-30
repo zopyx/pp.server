@@ -16,10 +16,11 @@ from typing import Any
 try:
     import tomllib  # Python 3.11+
 except ImportError:
-    import tomli as tomllib  # fallback for older Python versions
+    import tomli as tomllib  # type: ignore[import-not-found, no-redef]  # ty: ignore
 
 from pp.server import util
 from pp.server.logger import LOG
+from pp.server.util import sanitize_cmd_options
 
 
 def load_config() -> dict[str, Any]:
@@ -41,8 +42,27 @@ config = load_config()
 CONVERTERS = config.get("converters", {})
 
 
+def _extract_safely(zf: zipfile.ZipFile, work_dir: Path) -> None:
+    """Extract ZIP entries safely, preventing directory traversal."""
+    work_dir_resolved = work_dir.resolve()
+    for name in zf.namelist():
+        target = (work_dir / name).resolve()
+        if (
+            not str(target).startswith(str(work_dir_resolved) + "/")
+            and target != work_dir_resolved
+        ):
+            LOG.warning(f"Skipping ZIP entry with path traversal: {name}")
+            continue
+        if name.endswith("/"):
+            target.mkdir(parents=True, exist_ok=True)
+        else:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(zf.read(name))
+
+
 def load_resource(package: str, resource_name: str) -> bytes:
     data = pkgutil.get_data(package, resource_name)
+    assert data is not None, f"Resource {package}/{resource_name} not found"
     return data
 
 
@@ -62,13 +82,13 @@ async def convert_pdf(
     # avoid circular import
     from pp.server.registry import has_converter
 
-    # unzip archive first
+    # Sanitize cmd_options against shell injection
+    safe_options = sanitize_cmd_options(cmd_options)
+
+    # unzip archive first — with path traversal protection
     work_dir_path = Path(work_dir)
     zf = zipfile.ZipFile(work_file)
-    for name in zf.namelist():
-        filename = work_dir_path / name
-        filename.parent.mkdir(parents=True, exist_ok=True)
-        filename.write_bytes(zf.read(name))
+    _extract_safely(zf, work_dir_path)
 
     source_html = work_dir_path / source_filename
 
@@ -93,14 +113,14 @@ async def convert_pdf(
         parts = work_dir.split("/")
         source_docker_html = f"file:///docs/{parts[-1]}/index.html"
         cmd = cmd.format(
-            cmd_options=cmd_options,
+            cmd_options=safe_options,
             target_filename=str(target_filename),
             source_docker_html=source_docker_html,
         )
     else:
         cmd = converter_config["convert"]
         cmd = cmd.format(
-            cmd_options=cmd_options,
+            cmd_options=safe_options,
             work_dir=str(work_dir_path),
             target_filename=str(target_filename),
             source_html=str(source_html),
@@ -110,7 +130,7 @@ async def convert_pdf(
     logger(f"CMD: {cmd}")
     result = await util.run(cmd)
     status = result["status"]
-    output = result["stdout"] + result["stderr"]
+    output = str(result.get("stdout", "") or "") + str(result.get("stderr", "") or "")
 
     logger(f"STATUS: {result['status']}")
     logger("OUTPUT")
@@ -122,46 +142,51 @@ async def convert_pdf(
 async def selftest(converter: str) -> bytes:
     """Converter self test"""
 
-    # created work directory
-    work_dir = Path(tempfile.mktemp())
+    work_dir = Path(tempfile.mkdtemp(prefix="pp-server-selftest-"))
+    try:
+        # copy HTML sample from test_data directory
+        resource_root = importlib.util.find_spec("pp.server.test_data")
+        assert resource_root is not None and resource_root.origin is not None, (
+            "pp.server.test_data spec not found"
+        )
+        resource_dir = Path(resource_root.origin).parent / "html"
+        source_html = work_dir / "index.html"
+        target_filename = work_dir / "out.pdf"
+        # required for PDFreactor 12+
+        base_url = f"file://{work_dir}/"
 
-    # copy HTML sample from test_data directory
-    resource_root = importlib.util.find_spec("pp.server.test_data").origin
-    resource_dir = Path(resource_root).parent / "html"
-    source_html = work_dir / "index.html"
-    target_filename = work_dir / "out.pdf"
-    # required for PDFreactor 12+
-    base_url = f"file://{work_dir}/"
+        if converter == "calibre":
+            target_filename = work_dir / "out.epub"
+        elif converter == "speedata":
+            source_html = work_dir / "index.xml"
+            resource_dir = Path(resource_root.origin).parent / "speedata"
 
-    if converter == "calibre":
-        target_filename = work_dir / "out.epub"
-    elif converter == "speedata":
-        source_html = work_dir / "index.xml"
-        resource_dir = Path(resource_root).parent / "speedata"
+        shutil.copytree(str(resource_dir), str(work_dir))
 
-    shutil.copytree(str(resource_dir), str(work_dir))
+        converter_config = CONVERTERS[converter]
 
-    converter_config = CONVERTERS[converter]
+        cmd = converter_config["convert"]
+        cmd = cmd.format(
+            cmd_options="",
+            work_dir=str(work_dir),
+            target_filename=str(target_filename),
+            source_html=str(source_html),
+            base_url=base_url,
+        )
 
-    cmd = converter_config["convert"]
-    cmd = cmd.format(
-        cmd_options="",
-        work_dir=str(work_dir),
-        target_filename=str(target_filename),
-        source_html=str(source_html),
-        base_url=base_url,
-    )
+        LOG.info(f"CMD: {cmd}")
+        result = await util.run(cmd)
+        output = str(result.get("stdout", "") or "") + str(
+            result.get("stderr", "") or ""
+        )
 
-    LOG.info(f"CMD: {cmd}")
-    result = await util.run(cmd)
-    output = result["stdout"] + result["stderr"]
+        LOG.info(f"STATUS: {result['status']}")
+        LOG.info("OUTPUT")
+        LOG.info(output)
 
-    LOG.info(f"STATUS: {result['status']}")
-    LOG.info("OUTPUT")
-    LOG.info(output)
-
-    # return PDF data as bytes
-    pdf_data = Path(target_filename).read_bytes()
-
-    shutil.rmtree(str(work_dir))
-    return pdf_data
+        # return PDF data as bytes
+        pdf_data = Path(target_filename).read_bytes()
+        return pdf_data
+    finally:
+        # Cleanup temp directory on success or failure
+        shutil.rmtree(str(work_dir), ignore_errors=True)

@@ -64,16 +64,18 @@ async def converter_versions() -> dict[str, str]:
     # Run all tasks concurrently
     results = await asyncio.gather(*tasks, return_exceptions=True)
 
-    versions = dict()
-    for result in results:
-        if isinstance(result, Exception):
+    versions: dict[str, str] = {}
+    for conv_result in results:
+        if isinstance(conv_result, BaseException):
+            LOG.warning(f"Converter version check failed: {conv_result}")
             continue  # Skip failed converters
 
-        converter = result["converter"]
-        status = result["result"]["status"]
-        output = result["result"]["stdout"] + result["result"]["stderr"]
-        output = output.strip()
-        versions[converter] = output if status == 0 else "n/a"
+        conv_name: str = conv_result["converter"]
+        status_val: int | None = conv_result["result"]["status"]
+        stdout_val = str(conv_result["result"].get("stdout", "") or "")
+        stderr_val = str(conv_result["result"].get("stderr", "") or "")
+        output = (stdout_val + stderr_val).strip()
+        versions[conv_name] = output if status_val == 0 else "n/a"
 
     return versions
 

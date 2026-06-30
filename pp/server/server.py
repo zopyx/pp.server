@@ -10,7 +10,7 @@ import os
 import shutil
 import sys
 import time
-from importlib.metadata import version
+from importlib.metadata import version as _pkg_version
 from pathlib import Path
 from typing import Any
 
@@ -50,13 +50,13 @@ queue_dir = Path.cwd() / "var" / "queue"
 queue_dir = Path(os.environ.get("PP_SPOOL_DIRECTORY", str(queue_dir)))
 queue_dir.mkdir(parents=True, exist_ok=True)
 
-VERSION = version("pp.server")
+VERSION = _pkg_version("pp.server")
 LOG.info(f"QUEUE: {queue_dir}")
 LOG.info(f"pp.server V {VERSION}")
 
 
 @app.get("/", response_class=HTMLResponse)
-async def index(request: Request, show_versions: bool = False):
+async def index(request: Request, show_versions: bool = False) -> HTMLResponse:
     """Produce & Publish web view"""
 
     converter_versions = {}
@@ -96,7 +96,7 @@ async def has_converter(converter_name: str) -> dict[str, Any]:
 
 
 @app.get("/version")
-async def version() -> dict[str, Any]:
+async def get_version() -> dict[str, str]:
     """Return the version of the pp.server module"""
     return dict(version=VERSION, module="pp.server")
 
@@ -109,7 +109,7 @@ async def cleanup() -> dict[str, Any]:
 
 
 @app.get("/selftest")
-async def converter_selftest(converter: str):
+async def converter_selftest(converter: str) -> Response:
     """Perform a PDF selftest for a given `converter`"""
 
     available_converters = registry.available_converters()
@@ -155,7 +155,7 @@ async def converter_selftest(converter: str):
 
 
 @app.post("/convert")
-async def convert(
+async def convert(  # type: ignore[no-untyped-def]
     converter: str = Form(
         "prince",
         title="Converter name",
@@ -216,22 +216,22 @@ async def convert(
 
     output = result["output"]
     if result["status"] == 0:  # OK
-        pdf_data = Path(result["filename"]).read_bytes()
-        pdf_data = base64.encodebytes(pdf_data).decode("ascii")
-        return dict(status="OK", data=pdf_data, output=output)
+        pdf_bytes = Path(result["filename"]).read_bytes()
+        pdf_b64 = base64.encodebytes(pdf_bytes).decode("ascii")
+        return dict(status="OK", data=pdf_b64, output=output)
     else:  # error
         LOG.error(f"Conversion failed: {output}")
         return dict(status="ERROR", output=output)
 
 
-def cleanup_queue() -> dict[str, int]:
+def cleanup_queue() -> dict[str, int] | None:
     global LAST_CLEANUP
 
     queue_dir.mkdir(parents=True, exist_ok=True)
 
     now = time.time()
     if now - LAST_CLEANUP < QUEUE_CLEANUP_TIME:
-        return
+        return None
     removed = 0
     for item in queue_dir.iterdir():
         mtime = item.stat().st_mtime

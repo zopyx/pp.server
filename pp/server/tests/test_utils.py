@@ -8,23 +8,23 @@ from pathlib import Path
 from pp.server import util
 
 
-def test_which_existing_command():
+def test_which_existing_command() -> None:
     """Test that which() finds existing commands."""
     # Use 'ls' as it's available on most Unix systems
     assert util.which("ls") or util.which("dir")  # dir for Windows
 
 
-def test_which_nonexistent_command():
+def test_which_nonexistent_command() -> None:
     """Test that which() returns False for non-existent commands."""
     assert not util.which("this_command_does_not_exist_12345")
 
 
-def test_check_environment_missing_var():
+def test_check_environment_missing_var() -> None:
     """Test check_environment with missing environment variable."""
     assert not util.check_environment("THIS_VAR_DOES_NOT_EXIST")
 
 
-def test_check_environment_existing_var(tmp_path: Path):
+def test_check_environment_existing_var(tmp_path: Path) -> None:
     """Test check_environment with existing environment variable pointing to existing directory."""
     import os
 

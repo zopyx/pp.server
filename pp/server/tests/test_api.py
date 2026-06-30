@@ -1,8 +1,3 @@
-################################################################
-# pp.server - Produce & Publish Server
-# (C) 2013, ZOPYX,  Tuebingen, Germany
-################################################################
-
 import base64
 import tempfile
 import zipfile
@@ -15,46 +10,43 @@ from pp.server.server import app
 
 
 @pytest.fixture
-def client():
+def client() -> TestClient:
     """Create a test client for the FastAPI app."""
     return TestClient(app)
 
 
 class TestPDFAPI:
-    def test_index(self, client):
+    def test_index(self, client: TestClient) -> None:
         result = client.get("/")
         assert result.status_code == 200
-        assert "2025" in result.text
+        assert "Produce & Publish Server" in result.text
+        assert "Server version:" in result.text
 
-    #    def test_has_converter(self, client):
-    #        result = client.get("/converter?converter_name=prince")
-    #        assert result.status_code == 200
-    #        body = result.json()
-    #        assert body["has_converter"] == True
-
-    def test_has_converter_missing(self, client):
+    def test_has_converter_missing(self, client: TestClient) -> None:
         result = client.get("/converter?converter_name=dummy")
         assert result.status_code == 200
         assert result.json() == {"has_converter": False, "converter": "dummy"}
 
     @pytest.mark.parametrize("converter", ["prince", "weasyprint"])
-    def test_convert_pdf(self, client, converter):
+    def test_convert_pdf(self, client: TestClient, converter: str) -> None:
         """Test PDF conversion for available converters."""
         # Check if converter is available first
         result = client.get(f"/converter?converter_name={converter}")
         if result.json()["has_converter"]:
             self._convert_pdf(client, converter)
         else:
-            pytest.skip(f"Converter {converter} not available")
+            pytest.skip(f"Converter {converter} not available")  # ty: ignore
 
-    def test_convert_pdf_unavailable_converter(self, client):
+    def test_convert_pdf_unavailable_converter(self, client: TestClient) -> None:
         """Test PDF conversion with unavailable/unlicensed converter."""
         self._convert_pdf(client, "antennahouse", expected="ERROR")
 
-    def _convert_pdf(self, client, converter, expected="OK"):
+    def _convert_pdf(
+        self, client: TestClient, converter: str, expected: str = "OK"
+    ) -> None:
         # Generate ZIP file with sample data first
         index_html = Path(__file__).parent / "index.html"
-        zip_path = Path(tempfile.mktemp(suffix=".zip"))
+        zip_path = Path(tempfile.mkstemp(suffix=".zip")[1])
 
         with zipfile.ZipFile(zip_path, "w") as zf:
             zf.write(index_html, "index.html")

@@ -1,19 +1,16 @@
-################################################################
-# pp.server - Produce & Publish Server
-# (C) 2021, ZOPYX,  Tuebingen, Germany
-################################################################
 """Entry poing for generating circusd template ini"""
 
 import os
 import pkgutil
 
 
-def load_resource(package, resource_name):
+def load_resource(package: str, resource_name: str) -> bytes:
     data = pkgutil.get_data(package, resource_name)
+    assert data is not None, f"Resource {package}/{resource_name} not found"
     return data
 
 
-def main():
+def main() -> None:
     """Generate circusd.ini and server.ini"""
 
     for filename in ("circusd.ini", "server.ini"):
