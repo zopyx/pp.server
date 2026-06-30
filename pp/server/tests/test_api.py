@@ -205,7 +205,7 @@ class TestConvertEndpoint:
         if result.json()["has_converter"]:
             self._convert_pdf(client, converter)
         else:
-            pytest.skip(f"Converter {converter} not available")  # ty: ignore
+            pytest.skip(f"Converter {converter} not available")  # ty: ignore[too-many-positional-arguments]
 
     def test_convert_pdf_unavailable_converter(self, client: TestClient) -> None:
         """Test PDF conversion with unavailable/unlicensed converter."""
