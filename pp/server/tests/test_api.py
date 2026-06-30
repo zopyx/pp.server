@@ -29,7 +29,7 @@ class TestIndexEndpoint:
         result = client.get("/")
         assert result.status_code == 200
         assert "Produce &amp; Publish Server" in result.text
-        assert "v3.5.7" in result.text
+        assert "v4.0.0" in result.text
 
     def test_index_with_versions(self, client: TestClient, monkeypatch) -> None:
         """Index with show_versions=true calls converter_versions."""
