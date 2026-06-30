@@ -1,7 +1,14 @@
-################################################################
-# pp.server - Produce & Publish Server
-# (C) 2021, ZOPYX,  Tuebingen, Germany
-################################################################
+"""FastAPI application and HTTP route handlers.
+
+The main entry point for the Produce & Publish Server. Defines the
+FastAPI application, all REST API endpoints, and internal helper
+functions for queue management and conversion logging.
+
+Module-level bootstrap:
+    1. Registers all available converters (via ``registry._register_converters``)
+    2. Creates the FastAPI app, mounts static files, and configures Jinja2
+    3. Initializes the spool directory from ``PP_SPOOL_DIRECTORY`` (or default)
+"""
 
 import base64
 import datetime
@@ -64,8 +71,16 @@ LOG.info(f"pp.server V {VERSION}")
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request, show_versions: bool = False) -> HTMLResponse:
-    """Produce & Publish web view"""
+    """Render the server status web page.
 
+    Args:
+        request: FastAPI request object (required by Jinja2Templates).
+        show_versions: When True, fetches and displays version info
+            for each converter alongside the availability status.
+
+    Returns:
+        Rendered HTML page with converter cards and API documentation links.
+    """
     converter_versions = {}
     if show_versions:
         converter_versions = await registry.converter_versions()
@@ -83,20 +98,34 @@ async def index(request: Request, show_versions: bool = False) -> HTMLResponse:
 
 @app.get("/converters", response_model=ConvertersResponse)
 async def converters() -> ConvertersResponse:
-    """Return names of all converters"""
+    """List all available converter names.
+
+    Returns converters whose binaries were found in the system PATH.
+    """
     return ConvertersResponse(converters=registry.available_converters())
 
 
 @app.get("/converter-versions")
 async def converter_versions() -> dict[str, Any]:
-    """Return versions of all converters"""
+    """Return version strings for all available converters.
+
+    Runs ``--version`` for each converter in parallel and returns results.
+    Converters that fail to report a version are omitted.
+    """
     versions = await registry.converter_versions()
     return dict(converters=versions)
 
 
 @app.get("/converter", response_model=ConverterDetailResponse)
 async def has_converter(converter_name: str) -> ConverterDetailResponse:
-    """Check if a converter is available"""
+    """Check if a specific converter is available.
+
+    Args:
+        converter_name: Name of the converter to check.
+
+    Returns:
+        Availability status for the requested converter.
+    """
     return ConverterDetailResponse(
         has_converter=registry.has_converter(converter_name), converter=converter_name
     )
@@ -104,27 +133,45 @@ async def has_converter(converter_name: str) -> ConverterDetailResponse:
 
 @app.get("/version", response_model=VersionResponse)
 async def get_version() -> VersionResponse:
-    """Return the version of the pp.server module"""
+    """Return the server version and module name."""
     return VersionResponse(version=VERSION, module="pp.server")
 
 
 @app.get("/health", response_model=HealthResponse)
 async def health() -> HealthResponse:
-    """Health check for load balancers and orchestrators"""
+    """Health check endpoint for load balancers and orchestrators.
+
+    Returns a simple status response. Does not verify converter health.
+    """
     return HealthResponse(status="healthy", version=VERSION)
 
 
 @app.get("/cleanup")
 async def cleanup() -> dict[str, Any]:
-    """Cleanup up the internal queue"""
+    """Remove stale conversion queue data older than one day.
+
+    Triggers :func:`cleanup_queue` and returns the result.
+    """
     cleanup_queue()
     return dict(status="OK")
 
 
 @app.get("/selftest")
 async def converter_selftest(converter: str) -> Response:
-    """Perform a PDF selftest for a given `converter`"""
+    """Run a self-test for a specific converter.
 
+    Downloads a generated PDF (or EPUB for Calibre) as a file attachment.
+
+    Args:
+        converter: Name of the converter to test.
+
+    Returns:
+        PDF or EPUB file as a downloadable response.
+
+    Raises:
+        HTTPException 404: Converter not found or not available.
+        HTTPException 500: Self-test execution failed.
+    """
     available_converters = registry.available_converters()
     if converter not in available_converters:
         raise HTTPException(
@@ -185,21 +232,21 @@ async def convert(
         description="`data` must be a base64 encoded ZIP archive containing your index.html and all related assets like CSS, images etc.",
     ),
 ):
-    """The /convert endpoint implements the PrinceCSS to PDF conversion
+    """Convert a ZIP archive to PDF using the specified converter.
 
-    The "converter" parameter must be the name of a registered/installed PrinceCSS
-    tool (see /converters endpoint)
+    Accepts a base64-encoded ZIP file containing an ``index.html``
+    together with all required assets (CSS, images, fonts).
 
-    The "cmd_options" parameter can be used to specify converter specific
-    command line parameters. "cmd_options" can not be omitted. If you want
-    to omit the parameter, please specify a string with one whitespace
-    (known bug :-)).
+    Args:
+        converter: Name of the registered converter to use.
+        cmd_options: Additional command-line flags for the converter.
+            Must be at least one character (use a space as placeholder).
+        data: Base64-encoded ZIP archive with the document and assets.
 
-    The "data" parameter is a base64 encoded ZIP archive that contains the
-    index.html together with all other assets required to perform the
-    conversion.
+    Returns:
+        JSON with ``status`` (``OK`` or ``ERROR``), ``data`` (base64 PDF
+        on success), and ``output`` (conversion transcript).
     """
-
     cleanup_queue()
 
     zip_data = base64.decodebytes(data.encode("ascii"))
@@ -238,6 +285,15 @@ async def convert(
 
 
 def cleanup_queue() -> dict[str, int] | None:
+    """Remove expired entries from the conversion queue directory.
+
+    Cleans up subdirectories and files older than ``QUEUE_CLEANUP_TIME``
+    (24 hours). Runs at most once per interval (tracked by ``LAST_CLEANUP``).
+
+    Returns:
+        Dictionary with ``directories_removed`` count, or ``None`` if
+        the cleanup interval has not elapsed since the last run.
+    """
     global LAST_CLEANUP
 
     queue_dir.mkdir(parents=True, exist_ok=True)
@@ -261,17 +317,30 @@ def cleanup_queue() -> dict[str, int] | None:
 
 
 def new_converter_id(converter: str) -> str:
-    """New converter id based on timestamp + converter name"""
+    """Generate a unique conversion job ID.
+
+    Format: ``YYYYMMDDTHHMMSS.ffffff-<converter_name>``
+
+    Args:
+        converter: Converter name to include in the ID.
+
+    Returns:
+        Unique job identifier string.
+    """
     return datetime.datetime.now().strftime("%Y%m%dT%H%M%S.%f") + "-" + converter
 
 
 def converter_log(work_dir: str, msg: str) -> None:
-    """Logging per conversion (by work dir)"""
+    """Write a timestamped log entry for a conversion job.
+
+    Args:
+        work_dir: Working directory of the conversion job.
+        msg: Log message to write.
+    """
     converter_logfile = Path(work_dir) / "converter.log"
     msg = datetime.datetime.now().strftime("%Y%m%dT%H%M%S") + " " + msg
     with open(converter_logfile, "a") as fp:
         try:
             fp.write(msg + "\n")
         except (UnicodeEncodeError, UnicodeDecodeError):
-            # Handle Unicode encoding/decoding errors
             fp.write(msg.encode("ascii", "replace").decode("ascii", "replace") + "\n")

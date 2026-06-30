@@ -1,7 +1,8 @@
-###############################################################
-# pp.server - Produce & Publish Server
-# (C) 2021, ZOPYX,  Tuebingen, Germany
-################################################################
+"""System utilities for command execution and environment inspection.
+
+Provides shell command execution (async), PATH-based binary detection,
+environment variable validation, and shell-injection-safe option sanitization.
+"""
 
 import asyncio
 import os
@@ -20,8 +21,19 @@ _SAFE_CMD_OPTIONS_RE = re.compile(r"^[a-zA-Z0-9\s\.\,\-\_\+\=\:\/\\@\(\)\[\]\"]*
 def sanitize_cmd_options(options: str) -> str:
     """Validate and sanitize converter command-line options.
 
-    Raises ValueError if options contain shell-dangerous characters.
-    Falls back to shlex.quote() for maximum safety.
+    Strips whitespace-only inputs, replaces control characters (newline,
+    carriage return, tab) with spaces, and rejects any options containing
+    shell-dangerous characters (semicolons, pipes, backticks, etc.).
+
+    Args:
+        options: Raw command-line option string from the API request.
+
+    Returns:
+        Sanitized option string safe for shell interpolation.
+
+    Raises:
+        ValueError: If options contain characters that could enable
+            shell injection.
     """
     if not options or options.strip() == " ":
         return ""
@@ -33,10 +45,14 @@ def sanitize_cmd_options(options: str) -> str:
 
 
 def check_environment(envname: str) -> bool:
-    """Check if the given name of an environment variable exists and
-    if it points to an existing directory.
-    """
+    """Check if an environment variable is set and points to an existing directory.
 
+    Args:
+        envname: Name of the environment variable to check.
+
+    Returns:
+        True if the variable is set and references a valid directory.
+    """
     dirname = os.environ.get(envname)
     if dirname is None:
         LOG.debug(f"Environment variable ${envname} is unset")
@@ -53,10 +69,15 @@ def check_environment(envname: str) -> bool:
 
 
 def which(command: str) -> bool:
-    """Implements a functionality similar to the UNIX
-    ``which`` command. The method checks if ``command``
-    is available somewhere within the $PATH and returns
-    True or False.
+    """Check if a command is available in the system PATH.
+
+    Similar to the UNIX ``which`` command, but returns a boolean.
+
+    Args:
+        command: Name of the executable to locate (e.g. ``prince``).
+
+    Returns:
+        True if the command exists in at least one PATH directory.
     """
     path_env = os.environ.get("PATH", "")  # also on win32?
     for path_str in path_env.split(":"):
@@ -67,10 +88,20 @@ def which(command: str) -> bool:
 
 
 async def run(cmd: str) -> dict[str, str | int | None]:
-    """Run `cmd` asynchronously.
-    Returns: dict(status, stdout, stderr)
-    """
+    """Run a shell command asynchronously and capture its output.
 
+    Uses ``asyncio.create_subprocess_shell`` — the command string is
+    interpreted by the system shell. For user-supplied input, ensure
+    options are sanitized via :func:`sanitize_cmd_options` first.
+
+    Args:
+        cmd: Shell command string to execute.
+
+    Returns:
+        Dictionary with keys ``stdout``, ``stderr`` (decoded strings),
+        and ``status`` (exit code or ``None`` if the process was
+        terminated by a signal).
+    """
     LOG.info(cmd)
     proc = await asyncio.create_subprocess_shell(
         cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE

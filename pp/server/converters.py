@@ -1,7 +1,9 @@
-################################################################
-# pp.server - Produce & Publish Server
-# (C) 2021, ZOPYX,  Tuebingen, Germany
-################################################################
+"""PDF/EPUB conversion orchestration and converter configuration.
+
+Loads converter definitions from ``config.toml``, manages ZIP extraction
+with path traversal protection, and provides the core ``convert_pdf``
+and ``selftest`` async functions used by the API routes.
+"""
 
 import importlib.util
 import os
@@ -24,7 +26,12 @@ from pp.server.util import sanitize_cmd_options
 
 
 def load_config() -> dict[str, Any]:
-    """Load configuration from config.toml file."""
+    """Load converter configuration from ``config.toml``.
+
+    Returns:
+        Dictionary with a ``converters`` key mapping converter names
+        to their command definitions. Returns an empty dict on error.
+    """
     config_path = Path(__file__).parent / "config.toml"
     try:
         with open(config_path, "rb") as f:
@@ -43,7 +50,15 @@ CONVERTERS = config.get("converters", {})
 
 
 def _extract_safely(zf: zipfile.ZipFile, work_dir: Path) -> None:
-    """Extract ZIP entries safely, preventing directory traversal."""
+    """Extract ZIP entries safely, preventing directory traversal.
+
+    Rejects entries whose resolved path falls outside the target
+    ``work_dir``, blocking attacks like ``../../etc/passwd``.
+
+    Args:
+        zf: Opened ZIP file handle.
+        work_dir: Directory to extract into.
+    """
     work_dir_resolved = work_dir.resolve()
     for name in zf.namelist():
         target = (work_dir / name).resolve()
@@ -61,6 +76,10 @@ def _extract_safely(zf: zipfile.ZipFile, work_dir: Path) -> None:
 
 
 def load_resource(package: str, resource_name: str) -> bytes:
+    """Load a package resource as bytes.
+
+    See :func:`pp.server.templates.load_resource` for details.
+    """
     data = pkgutil.get_data(package, resource_name)
     assert data is not None, f"Resource {package}/{resource_name} not found"
     return data
@@ -74,11 +93,23 @@ async def convert_pdf(
     cmd_options: str,
     source_filename: str = "index.html",
 ) -> dict[str, Any]:
-    """Converter a given ZIP file
-    containing input files (HTML + XML) and asset files
-    to PDF.
-    """
+    """Convert a ZIP archive to PDF/EPUB using the specified converter.
 
+    Unpacks the ZIP into a working directory, runs the converter command,
+    and returns the result.
+
+    Args:
+        work_dir: Temporary working directory path.
+        work_file: Path to the uploaded ZIP file.
+        converter: Name of the converter to use (must be in CONVERTERS).
+        logger: Callback for per-conversion log messages.
+        cmd_options: Additional command-line options (sanitized internally).
+        source_filename: Entry point HTML (or XML) file in the ZIP.
+
+    Returns:
+        Dictionary with ``status`` (exit code or 9999 for unknown converter),
+        ``output`` (combined stdout+stderr), and ``filename`` (output path).
+    """
     # avoid circular import
     from pp.server.registry import has_converter
 
@@ -107,8 +138,8 @@ async def convert_pdf(
 
     if converter == "pdfreactor" and "PP_PDFREACTOR_DOCKER" in os.environ:
         # PDFreactor running on Docker requires special trickery
-        # We assume that the /docs volume of the PDFreactor container is mounted into the local
-        # filesystem.
+        # We assume that the /docs volume of the PDFreactor container
+        # is mounted into the local filesystem.
         cmd = converter_config["convert_docker"]
         parts = work_dir.split("/")
         source_docker_html = f"file:///docs/{parts[-1]}/index.html"
@@ -140,8 +171,23 @@ async def convert_pdf(
 
 
 async def selftest(converter: str) -> bytes:
-    """Converter self test"""
+    """Run a self-test for the given converter.
 
+    Creates a temporary directory, copies sample HTML content,
+    runs the converter, and returns the generated PDF (or EPUB
+    for Calibre) as bytes.
+
+    Args:
+        converter: Name of the converter to test.
+
+    Returns:
+        Raw PDF or EPUB bytes.
+
+    Raises:
+        AssertionError: If test data resources are not found.
+        FileNotFoundError: If the converter binary or output is missing.
+        OSError: On filesystem-level errors during the test.
+    """
     work_dir = Path(tempfile.mkdtemp(prefix="pp-server-selftest-"))
     try:
         # copy HTML sample from test_data directory

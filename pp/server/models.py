@@ -1,4 +1,7 @@
-"""Pydantic models for typed API responses."""
+"""pp.server — Produce & Publish Server.
+
+Conversion REST API for HTML/XML to PDF using external PrintCSS converters.
+"""
 
 from pydantic import BaseModel
 
