@@ -62,6 +62,11 @@ clean: ## Clean build artifacts
 build: clean ## Build distribution packages
 	$(UV) build
 
+coverage: ## Run tests with HTML coverage report
+	$(UV) run pytest --cov=pp.server --cov-report=html --cov-report=term-missing
+	@echo "HTML report: file://$(PWD)/htmlcov/index.html"
+	@open htmlcov/index.html 2>/dev/null || true
+
 docs: ## Build documentation
 	@if [ -d "$(DOCS_DIR)" ]; then \
 		cd $(DOCS_DIR) && make html; \
