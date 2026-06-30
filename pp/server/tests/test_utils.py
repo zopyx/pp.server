@@ -1,6 +1,5 @@
 """Tests for pp.server.util module."""
 
-import asyncio
 import os
 from pathlib import Path
 
