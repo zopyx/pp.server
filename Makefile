@@ -40,12 +40,15 @@ format: ## Format code
 type-check: ## Run type checking
 	$(UV) run ty check
 
-quality: lint type-check test ## Run all quality checks
+quality: lint type-check audit test ## Run all quality checks
 
 sast: ## Run security scans
 	$(UV) run bandit -c pyproject.toml -r pp/server 2>&1 || true
 
-ci: lint type-check sast test ## Run CI pipeline (quality checks + security + tests)
+audit: ## Audit dependencies for known vulnerabilities
+	$(UV) audit
+
+ci: lint type-check sast audit test ## Run CI pipeline (quality + security + audit + tests)
 
 clean: ## Clean build artifacts
 	rm -rf $(BUILD_DIR)/

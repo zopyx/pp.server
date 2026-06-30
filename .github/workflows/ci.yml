@@ -25,5 +25,7 @@ jobs:
         echo "$HOME/.cargo/bin" >> $GITHUB_PATH
     - name: Install dependencies
       run: make dev-install
+    - name: Audit dependencies
+      run: make audit
     - name: Run CI
       run: make quality
