@@ -45,6 +45,7 @@ testing = [
 dev = [
     "ruff>=0.1.0",
     "ty>=0.0.55",
+    "bandit>=1.7.0",
     "twine>=4.0.0",
     "build>=1.0.0",
     "pytest>=8.0.0",
@@ -109,5 +110,6 @@ addopts = "-v --tb=short"
 
 [dependency-groups]
 dev = [
+    "bandit>=1.7.0",
     "ty>=0.0.55",
 ]
