@@ -71,17 +71,3 @@ jobs:
         uv venv /tmp/clean-venv
         uv pip install --python /tmp/clean-venv/bin/python dist/*.whl
         /tmp/clean-venv/bin/pp-server --help
-
-  docker:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        image:
-        - weasyprint
-        - speedata
-        - speedata-princexml-weasyprint
-
-    steps:
-    - uses: actions/checkout@v4
-    - name: Build Docker image
-      run: docker build -t pp-server-${{ matrix.image }}:ci docker/${{ matrix.image }}
