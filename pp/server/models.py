@@ -1,9 +1,9 @@
 """pp.server — Produce & Publish Server.
 
-Conversion REST API for HTML/XML to PDF using external PrintCSS converters.
+Pydantic models for request/response schemas and structured error handling.
 """
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ConvertResponse(BaseModel):
@@ -41,7 +41,24 @@ class HealthResponse(BaseModel):
     version: str
 
 
-class CleanupResponse(BaseModel):
-    """Cleanup operation result."""
+class ReadyResponse(BaseModel):
+    """Readiness check response."""
 
-    status: str = "OK"
+    status: str
+    spool_writable: bool
+
+
+class ErrorDetail(BaseModel):
+    """Single structured error detail."""
+
+    code: str = Field(description="Stable error code for programmatic handling")
+    message: str = Field(description="Human-readable error description")
+    details: str | None = Field(None, description="Additional context or debug info")
+    request_id: str | None = Field(None, description="Correlation ID for the request")
+    job_id: str | None = Field(None, description="Conversion job ID if applicable")
+
+
+class ErrorResponse(BaseModel):
+    """Standard error response body."""
+
+    detail: ErrorDetail

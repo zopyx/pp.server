@@ -76,10 +76,11 @@ class TestConverterVersions:
         # Register a converter for testing
         register_converter("test_version_cmd", "echo")
 
-        async def mock_run(cmd: str) -> dict:
+        async def mock_run(cmd: list[str], **kwargs) -> dict:
+            assert cmd == ["echo", "--version"]
             return dict(status=0, stdout="1.2.3", stderr="")
 
-        monkeypatch.setattr("pp.server.registry.run", mock_run)
+        monkeypatch.setattr("pp.server.registry.util.run", mock_run)
 
         # Mock available_converters to return only our test converter
         monkeypatch.setattr(
@@ -95,6 +96,13 @@ class TestConverterVersions:
                     "cmd": "echo",
                     "version": "echo --version",
                     "convert": "echo {cmd_options} {source_html} -o {target_filename}",
+                    "convert_args": [
+                        "echo",
+                        "{cmd_options}",
+                        "{source_html}",
+                        "-o",
+                        "{target_filename}",
+                    ],
                 },
             },
         )
@@ -109,10 +117,10 @@ class TestConverterVersions:
         """Converters with non-zero status get 'n/a' version."""
         register_converter("test_bad_cmd", "false")
 
-        async def mock_run(cmd: str) -> dict:
+        async def mock_run(cmd: list[str], **kwargs) -> dict:
             return dict(status=1, stdout="", stderr="error")
 
-        monkeypatch.setattr("pp.server.registry.run", mock_run)
+        monkeypatch.setattr("pp.server.registry.util.run", mock_run)
 
         monkeypatch.setattr(
             "pp.server.registry.available_converters",
@@ -126,6 +134,13 @@ class TestConverterVersions:
                     "cmd": "false",
                     "version": "false --version",
                     "convert": "false {cmd_options} {source_html} -o {target_filename}",
+                    "convert_args": [
+                        "false",
+                        "{cmd_options}",
+                        "{source_html}",
+                        "-o",
+                        "{target_filename}",
+                    ],
                 },
             },
         )
@@ -138,11 +153,11 @@ class TestConverterVersions:
         """Exceptions in version checks are caught and skipped."""
         register_converter("test_exc_cmd", "echo")
 
-        async def mock_run(cmd: str) -> dict:
+        async def mock_run(cmd: list[str], **kwargs) -> dict:
             msg = "mock error"
             raise RuntimeError(msg)
 
-        monkeypatch.setattr("pp.server.registry.run", mock_run)
+        monkeypatch.setattr("pp.server.registry.util.run", mock_run)
 
         monkeypatch.setattr(
             "pp.server.registry.available_converters",

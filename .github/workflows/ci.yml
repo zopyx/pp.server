@@ -7,11 +7,11 @@ on:
     branches: [ master]
 
 jobs:
-  build:
+  lint-type-audit:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.12", "3.13", "3.14"]
+        python-version: ["3.12", "3.13"]
 
     steps:
     - uses: actions/checkout@v4
@@ -20,12 +20,68 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install uv
-      run: |
-        curl -LsSf https://astral.sh/uv/install.sh | sh
-        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      uses: astral-sh/setup-uv@v5
     - name: Install dependencies
       run: make dev-install
-    - name: Audit dependencies
+    - name: Lint and type check
+      run: make lint type-check
+    - name: Security audit
+      run: make sast
+    - name: Dependency audit
       run: make audit
-    - name: Run CI
-      run: make quality
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12", "3.13"]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+    - name: Cache uv dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/uv
+        key: ${{ runner.os }}-uv-${{ hashFiles('uv.lock') }}
+    - name: Install dependencies
+      run: make dev-install
+    - name: Run tests with coverage
+      run: uv run pytest --cov=pp.server --cov-report=term-missing --cov-fail-under=95
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.13"
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+    - name: Build distribution
+      run: make build
+    - name: Verify wheel installs
+      run: |
+        uv venv /tmp/clean-venv
+        uv pip install --python /tmp/clean-venv/bin/python dist/*.whl
+        /tmp/clean-venv/bin/pp-server --help
+
+  docker:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image:
+        - weasyprint
+        - speedata
+        - speedata-princexml-weasyprint
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build Docker image
+      run: docker build -t pp-server-${{ matrix.image }}:ci docker/${{ matrix.image }}

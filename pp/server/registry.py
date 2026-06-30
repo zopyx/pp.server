@@ -6,11 +6,12 @@ version detection for all registered converters.
 """
 
 import asyncio
+import shlex
 from typing import Any
 
+from pp.server import util
 from pp.server.converters import CONVERTERS
 from pp.server.logger import LOG
-from pp.server.util import run, which
 
 REGISTRY: dict[str, bool] = {}
 
@@ -36,7 +37,7 @@ def register_converter(converter_name: str, converter_cmd: str) -> None:
         converter_cmd: Binary name to search for (e.g. ``prince``).
     """
     REGISTRY[converter_name] = False
-    if which(converter_cmd) or which(f"bin/{converter_name}"):
+    if util.which(converter_cmd) or util.which(f"bin/{converter_name}"):
         REGISTRY[converter_name] = True
     if REGISTRY[converter_name]:
         LOG.info(f"Converter {converter_name} registered")
@@ -84,7 +85,7 @@ async def converter_versions() -> dict[str, str]:
     """
 
     async def execute_cmd(converter: str, cmd: str) -> dict[str, Any]:
-        result = await run(cmd)
+        result = await util.run(shlex.split(cmd))
         return dict(result=result, converter=converter)
 
     # Create tasks for all converters

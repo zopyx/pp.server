@@ -1,6 +1,7 @@
 """Tests for pp.server.util module."""
 
 import os
+import sys
 from pathlib import Path
 
 import pytest
@@ -47,7 +48,7 @@ def test_check_environment_existing_var_nonexistent_path(tmp_path: Path) -> None
 @pytest.mark.asyncio
 async def test_run_with_stdout() -> None:
     """run() handles stdout from a command."""
-    result = await util.run("echo hello")
+    result = await util.run(["echo", "hello"])
     assert result["status"] == 0
     assert "hello" in str(result.get("stdout", ""))
 
@@ -55,11 +56,39 @@ async def test_run_with_stdout() -> None:
 @pytest.mark.asyncio
 async def test_run_with_stderr() -> None:
     """run() handles stderr from a command."""
-    result = await util.run("echo stderr output >&2")
+    result = await util.run(["sh", "-c", "echo stderr output >&2"])
     assert result["status"] == 0 or result["status"] is not None
     # stderr should contain the output
     combined = str(result.get("stdout", "") or "") + str(result.get("stderr", "") or "")
     assert "stderr" in combined
+
+
+@pytest.mark.asyncio
+async def test_run_empty_command_raises() -> None:
+    """run() rejects empty argv lists."""
+    with pytest.raises(ValueError, match="must not be empty"):
+        await util.run([])
+
+
+@pytest.mark.asyncio
+async def test_run_timeout_terminates_process() -> None:
+    """run() raises TimeoutError when a process exceeds the timeout."""
+    with pytest.raises(TimeoutError):
+        await util.run(
+            [sys.executable, "-c", "import time; time.sleep(10)"],
+            timeout=0.01,
+        )
+
+
+def test_build_subprocess_env_allowlist_and_extra(monkeypatch) -> None:
+    """Subprocess env includes only allowlisted vars plus explicit extras."""
+    monkeypatch.setenv("KEEP_THIS", "1")
+    monkeypatch.setenv("DROP_THIS", "2")
+    env = util._build_subprocess_env(
+        extra_vars={"EXTRA": "3"},
+        allowlist={"KEEP_THIS"},
+    )
+    assert env == {"KEEP_THIS": "1", "EXTRA": "3"}
 
 
 class TestSanitizeCmdOptions:

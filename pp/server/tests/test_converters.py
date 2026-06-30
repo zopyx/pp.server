@@ -8,7 +8,10 @@ from unittest.mock import MagicMock
 import pytest
 
 from pp.server.converters import (
+    ZipLimitError,
+    ZipValidationError,
     _extract_safely,
+    _validate_zip_resources,
     convert_pdf,
     load_config,
     load_resource,
@@ -35,9 +38,8 @@ class TestExtractSafely:
             zf.writestr("../../etc/passwd", "malicious")
             zf.writestr("index.html", "safe")
         zf = zipfile.ZipFile(buf)
-        _extract_safely(zf, tmp_path)
-        assert not (tmp_path / ".." / ".." / "etc" / "passwd").resolve().exists()
-        assert (tmp_path / "index.html").exists()
+        with pytest.raises(ZipValidationError):
+            _extract_safely(zf, tmp_path)
 
     def test_absolute_path_rejected(self, tmp_path: Path) -> None:
         """ZIP entries with absolute paths are rejected."""
@@ -47,8 +49,8 @@ class TestExtractSafely:
         with zipfile.ZipFile(buf, "r") as zf:
             work_dir = tmp_path / "out"
             work_dir.mkdir()
-            _extract_safely(zf, work_dir)
-            assert not (work_dir / "tmp" / "evil.txt").exists()
+            with pytest.raises(ZipValidationError):
+                _extract_safely(zf, work_dir)
 
     def test_directory_entry(self, tmp_path: Path) -> None:
         """ZIP directory entries create directories."""
@@ -59,6 +61,68 @@ class TestExtractSafely:
         zf = zipfile.ZipFile(buf)
         _extract_safely(zf, tmp_path)
         assert (tmp_path / "subdir" / "file.txt").exists()
+
+    def test_extraction_counts_actual_bytes(self, tmp_path: Path, monkeypatch) -> None:
+        """Extraction enforces byte limits while writing files."""
+        monkeypatch.setattr("pp.server.converters._MAX_ZIP_FILE_SIZE", 3)
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as zf:
+            zf.writestr("index.html", "content")
+        zf = zipfile.ZipFile(buf)
+        with pytest.raises(ZipLimitError, match="extracted size"):
+            _extract_safely(zf, tmp_path)
+
+
+class TestZipResourceLimits:
+    def test_payload_size_limit(self) -> None:
+        """Oversized ZIP payloads are rejected before extraction."""
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as zf:
+            zf.writestr("index.html", "<html></html>")
+        zf = zipfile.ZipFile(io.BytesIO(buf.getvalue()))
+        with pytest.raises(ZipLimitError):
+            _validate_zip_resources(zf, payload_size=10**12)
+
+    def test_entry_count_limit(self, monkeypatch) -> None:
+        """Archives with too many entries are rejected."""
+        monkeypatch.setattr("pp.server.converters._MAX_ZIP_ENTRIES", 1)
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as zf:
+            zf.writestr("index.html", "<html></html>")
+            zf.writestr("style.css", "body {}")
+        zf = zipfile.ZipFile(io.BytesIO(buf.getvalue()))
+        with pytest.raises(ZipLimitError, match="entries"):
+            _validate_zip_resources(zf, payload_size=len(buf.getvalue()))
+
+    def test_single_file_limit(self, monkeypatch) -> None:
+        """Entries larger than the single-file limit are rejected."""
+        monkeypatch.setattr("pp.server.converters._MAX_ZIP_FILE_SIZE", 1)
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as zf:
+            zf.writestr("index.html", "<html></html>")
+        zf = zipfile.ZipFile(io.BytesIO(buf.getvalue()))
+        with pytest.raises(ZipLimitError, match="uncompressed size"):
+            _validate_zip_resources(zf, payload_size=len(buf.getvalue()))
+
+    def test_total_uncompressed_limit(self, monkeypatch) -> None:
+        """Archives larger than the total uncompressed limit are rejected."""
+        monkeypatch.setattr("pp.server.converters._MAX_ZIP_TOTAL_UNCOMPRESSED", 1)
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as zf:
+            zf.writestr("index.html", "<html></html>")
+        zf = zipfile.ZipFile(io.BytesIO(buf.getvalue()))
+        with pytest.raises(ZipLimitError, match="total uncompressed"):
+            _validate_zip_resources(zf, payload_size=len(buf.getvalue()))
+
+    def test_path_length_limit(self, monkeypatch) -> None:
+        """Overlong ZIP paths are rejected."""
+        monkeypatch.setattr("pp.server.converters._MAX_ZIP_PATH_LENGTH", 3)
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as zf:
+            zf.writestr("index.html", "<html></html>")
+        zf = zipfile.ZipFile(io.BytesIO(buf.getvalue()))
+        with pytest.raises(ZipLimitError, match="path length"):
+            _validate_zip_resources(zf, payload_size=len(buf.getvalue()))
 
 
 class TestTomliFallback:
@@ -128,8 +192,6 @@ class TestConvertPDF:
         with zipfile.ZipFile(work_file, "w") as zf:
             zf.writestr("index.html", "<html></html>")
 
-        monkeypatch.setattr("pp.server.converters.sanitize_cmd_options", lambda x: x)
-
         result = await convert_pdf(
             str(tmp_path),
             str(work_file),
@@ -147,15 +209,13 @@ class TestConvertPDF:
         with zipfile.ZipFile(work_file, "w") as zf:
             zf.writestr("index.html", "<html></html>")
 
-        monkeypatch.setattr("pp.server.converters.sanitize_cmd_options", lambda x: x)
-
         # has_converter is imported inside convert_pdf from pp.server.registry
         monkeypatch.setattr(
             "pp.server.registry.has_converter",
             lambda name: name == "calibre",
         )
 
-        async def mock_run(cmd: str) -> dict:
+        async def mock_run(cmd: list[str], **kwargs) -> dict:
             return dict(status=0, stdout="success", stderr="")
 
         monkeypatch.setattr("pp.server.converters.util.run", mock_run)
@@ -182,16 +242,14 @@ class TestConvertPDF:
         with zipfile.ZipFile(work_file, "w") as zf:
             zf.writestr("index.html", "<html></html>")
 
-        monkeypatch.setattr("pp.server.converters.sanitize_cmd_options", lambda x: x)
-
         monkeypatch.setattr(
             "pp.server.registry.has_converter",
             lambda name: name == "pdfreactor",
         )
 
-        captured_cmds: list[str] = []
+        captured_cmds: list[list[str]] = []
 
-        async def mock_run(cmd: str) -> dict:
+        async def mock_run(cmd: list[str], **kwargs) -> dict:
             captured_cmds.append(cmd)
             return dict(status=0, stdout="success", stderr="")
 
@@ -212,7 +270,7 @@ class TestConvertPDF:
         )
         assert result["status"] == 0
         assert len(captured_cmds) > 0
-        assert "file:///docs/" in captured_cmds[0]
+        assert "file:///docs/" in " ".join(captured_cmds[0])
 
     @pytest.mark.asyncio
     async def test_convert_with_output(self, tmp_path: Path, monkeypatch) -> None:
@@ -221,14 +279,12 @@ class TestConvertPDF:
         with zipfile.ZipFile(work_file, "w") as zf:
             zf.writestr("index.html", "<html></html>")
 
-        monkeypatch.setattr("pp.server.converters.sanitize_cmd_options", lambda x: x)
-
         monkeypatch.setattr(
             "pp.server.registry.has_converter",
             lambda name: name == "prince",
         )
 
-        async def mock_run(cmd: str) -> dict:
+        async def mock_run(cmd: list[str], **kwargs) -> dict:
             return dict(status=0, stdout="info output", stderr="warning output")
 
         monkeypatch.setattr("pp.server.converters.util.run", mock_run)
@@ -247,6 +303,69 @@ class TestConvertPDF:
         assert result["status"] == 0
         assert "info output" in result["output"]
         assert "warning output" in result["output"]
+
+    @pytest.mark.asyncio
+    async def test_convert_rejects_traversal_zip(
+        self, tmp_path: Path, monkeypatch
+    ) -> None:
+        """convert_pdf returns a stable invalid-ZIP status for traversal entries."""
+        work_file = tmp_path / "in.zip"
+        with zipfile.ZipFile(work_file, "w") as zf:
+            zf.writestr("../../evil.txt", "bad")
+
+        monkeypatch.setattr(
+            "pp.server.registry.has_converter",
+            lambda name: name == "prince",
+        )
+
+        result = await convert_pdf(
+            str(tmp_path),
+            str(work_file),
+            "prince",
+            lambda msg: None,
+            "",
+        )
+        assert result["status"] == 9988
+        assert "escapes extraction" in result["output"]
+
+    @pytest.mark.asyncio
+    async def test_convert_passes_allowed_extra_env(
+        self, tmp_path: Path, monkeypatch
+    ) -> None:
+        """Configured extra environment variables are passed to converters."""
+        work_file = tmp_path / "in.zip"
+        with zipfile.ZipFile(work_file, "w") as zf:
+            zf.writestr("index.html", "<html></html>")
+
+        monkeypatch.setattr(
+            "pp.server.registry.has_converter",
+            lambda name: name == "prince",
+        )
+        monkeypatch.setattr(
+            "pp.server.converters._CONVERTER_EXTRA_ENV_SET", {"KEEP_ME"}
+        )
+        monkeypatch.setenv("KEEP_ME", "yes")
+        captured_extra_env = {}
+
+        async def mock_run(cmd: list[str], **kwargs) -> dict:
+            captured_extra_env.update(kwargs.get("extra_env") or {})
+            return dict(status=0, stdout="success", stderr="")
+
+        monkeypatch.setattr("pp.server.converters.util.run", mock_run)
+
+        out_dir = tmp_path / "out"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / "out.pdf").write_text("dummy pdf")
+
+        result = await convert_pdf(
+            str(tmp_path),
+            str(work_file),
+            "prince",
+            lambda msg: None,
+            "",
+        )
+        assert result["status"] == 0
+        assert captured_extra_env["KEEP_ME"] == "yes"
 
 
 class TestSelftest:
@@ -279,7 +398,7 @@ class TestSelftest:
 
         monkeypatch.setattr("pp.server.converters.shutil.rmtree", mock_rmtree)
 
-        async def mock_run(cmd: str) -> dict:
+        async def mock_run(cmd: list[str], **kwargs) -> dict:
             return dict(status=0, stdout="success", stderr="")
 
         monkeypatch.setattr("pp.server.converters.util.run", mock_run)
@@ -323,7 +442,7 @@ class TestSelftest:
 
         monkeypatch.setattr("pp.server.converters.shutil.rmtree", mock_rmtree)
 
-        async def mock_run(cmd: str) -> dict:
+        async def mock_run(cmd: list[str], **kwargs) -> dict:
             return dict(status=0, stdout="success", stderr="")
 
         monkeypatch.setattr("pp.server.converters.util.run", mock_run)
@@ -367,7 +486,7 @@ class TestSelftest:
 
         monkeypatch.setattr("pp.server.converters.shutil.rmtree", mock_rmtree)
 
-        async def mock_run(cmd: str) -> dict:
+        async def mock_run(cmd: list[str], **kwargs) -> dict:
             return dict(status=0, stdout="success", stderr="")
 
         monkeypatch.setattr("pp.server.converters.util.run", mock_run)

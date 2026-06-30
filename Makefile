@@ -43,12 +43,13 @@ type-check: ## Run type checking
 quality: lint type-check audit test ## Run all quality checks
 
 sast: ## Run security scans
-	$(UV) run bandit -c pyproject.toml -r pp/server 2>&1 || true
+	$(UV) run bandit -c pyproject.toml -r pp/server 2>&1
 
 audit: ## Audit dependencies for known vulnerabilities
 	$(UV) audit
 
-ci: lint type-check sast audit test ## Run CI pipeline (quality + security + audit + tests)
+ci: lint type-check sast audit ## Run CI pipeline (quality + security + audit + coverage)
+	$(UV) run pytest $(TEST_DIR) --cov=pp.server --cov-report=term-missing --cov-fail-under=95 -v
 
 clean: ## Clean build artifacts
 	rm -rf $(BUILD_DIR)/

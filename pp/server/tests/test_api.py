@@ -1,5 +1,4 @@
 import base64
-import datetime
 import os
 import tempfile
 import time
@@ -16,6 +15,16 @@ from pp.server.server import (
     converter_log,
     new_converter_id,
 )
+
+
+def _zip_payload() -> str:
+    """Return base64 ZIP payload containing a minimal index.html."""
+    zip_path = Path(tempfile.mkstemp(suffix=".zip")[1])
+    with zipfile.ZipFile(zip_path, "w") as zf:
+        zf.writestr("index.html", "<html></html>")
+    zip_data = zip_path.read_bytes()
+    zip_path.unlink()
+    return base64.encodebytes(zip_data).decode("ascii")
 
 
 @pytest.fixture
@@ -93,6 +102,49 @@ class TestVersionEndpoint:
         assert data["module"] == "pp.server"
 
 
+class TestHealthReadyMetricsEndpoints:
+    def test_health_endpoint(self, client: TestClient) -> None:
+        """Health endpoint returns lightweight process health."""
+        result = client.get("/health")
+        assert result.status_code == 200
+        assert result.json()["status"] == "healthy"
+
+    def test_ready_endpoint_ok(self, client: TestClient, monkeypatch) -> None:
+        """Readiness returns 200 when the spool is writable."""
+        monkeypatch.setattr("pp.server.server.os.access", lambda path, mode: True)
+        result = client.get("/ready")
+        assert result.status_code == 200
+        assert result.json() == {"status": "ready", "spool_writable": True}
+
+    def test_ready_endpoint_not_writable(self, client: TestClient, monkeypatch) -> None:
+        """Readiness returns 503 when the spool is not writable."""
+        monkeypatch.setattr("pp.server.server.os.access", lambda path, mode: False)
+        result = client.get("/ready")
+        assert result.status_code == 503
+        assert result.json() == {"status": "not_ready", "spool_writable": False}
+
+    def test_metrics_endpoint(self, client: TestClient) -> None:
+        """Metrics endpoint exposes conversion counters."""
+        result = client.get("/metrics")
+        assert result.status_code == 200
+        data = result.json()
+        assert "conversions" in data
+        assert "active_jobs" in data
+
+    def test_openapi_documents_convert_error_responses(
+        self, client: TestClient
+    ) -> None:
+        """OpenAPI includes the structured error response model for /convert."""
+        schema = client.get("/openapi.json").json()
+        responses = schema["paths"]["/convert"]["post"]["responses"]
+        assert "ErrorResponse" in schema["components"]["schemas"]
+        for status_code in ("400", "404", "413", "422", "500", "502", "504"):
+            ref = responses[status_code]["content"]["application/json"]["schema"][
+                "$ref"
+            ]
+            assert ref.endswith("/ErrorResponse")
+
+
 class TestCleanupEndpoint:
     def test_cleanup_endpoint(self, client: TestClient, monkeypatch) -> None:
         """Test the /cleanup endpoint."""
@@ -159,7 +211,7 @@ class TestSelftestEndpoint:
 
         result = client.get("/selftest?converter=test_selftest_bad")
         assert result.status_code == 500
-        assert "file not found" in result.json()["detail"].lower()
+        assert "file not found" in result.json()["detail"]["message"].lower()
 
     def test_selftest_oserror(self, client: TestClient, monkeypatch) -> None:
         """OSError during selftest returns 500."""
@@ -176,7 +228,7 @@ class TestSelftestEndpoint:
 
         result = client.get("/selftest?converter=test_selftest_os")
         assert result.status_code == 500
-        assert "OS error" in result.json()["detail"]
+        assert "OS error" in result.json()["detail"]["message"]
 
     def test_selftest_generic_exception(self, client: TestClient, monkeypatch) -> None:
         """Generic exception during selftest returns 500."""
@@ -193,7 +245,10 @@ class TestSelftestEndpoint:
 
         result = client.get("/selftest?converter=test_selftest_exc")
         assert result.status_code == 500
-        assert "Self-test for test_selftest_exc failed" in result.json()["detail"]
+        assert (
+            "Self-test for test_selftest_exc failed"
+            in result.json()["detail"]["message"]
+        )
 
 
 class TestConvertEndpoint:
@@ -208,8 +263,140 @@ class TestConvertEndpoint:
             pytest.skip(f"Converter {converter} not available")
 
     def test_convert_pdf_unavailable_converter(self, client: TestClient) -> None:
-        """Test PDF conversion with unavailable/unlicensed converter."""
-        self._convert_pdf(client, "antennahouse", expected="ERROR")
+        """Test PDF conversion with a converter that's not in PATH."""
+        # Use a name that definitely won't be found
+        index_html = Path(__file__).parent / "index.html"
+        zip_path = Path(tempfile.mkstemp(suffix=".zip")[1])
+        with zipfile.ZipFile(zip_path, "w") as zf:
+            zf.write(index_html, "index.html")
+        zip_data = zip_path.read_bytes()
+        zip_path.unlink()
+
+        params = dict(
+            converter="this_converter_does_not_exist_12345",
+            cmd_options=" ",
+            data=base64.encodebytes(zip_data).decode("ascii"),
+        )
+        result = client.post("/convert", data=params)
+        assert result.status_code == 404
+        assert result.json()["detail"]["code"] == "converter_not_available"
+
+    def test_convert_invalid_base64(self, client: TestClient, monkeypatch) -> None:
+        """Invalid base64 returns a structured 400 with request ID."""
+        monkeypatch.setattr(
+            "pp.server.server.registry.available_converters",
+            lambda: ["prince"],
+        )
+        result = client.post(
+            "/convert",
+            data={"converter": "prince", "cmd_options": " ", "data": "not valid %%%"},
+        )
+        assert result.status_code == 400
+        body = result.json()["detail"]
+        assert body["code"] == "invalid_base64"
+        assert body["request_id"] == result.headers["x-request-id"]
+
+    def test_convert_non_zip_payload(self, client: TestClient, monkeypatch) -> None:
+        """Base64 non-ZIP payload returns 400 invalid_zip."""
+        monkeypatch.setattr(
+            "pp.server.server.registry.available_converters",
+            lambda: ["prince"],
+        )
+        result = client.post(
+            "/convert",
+            data={
+                "converter": "prince",
+                "cmd_options": " ",
+                "data": base64.b64encode(b"plain text").decode("ascii"),
+            },
+        )
+        assert result.status_code == 400
+        assert result.json()["detail"]["code"] == "invalid_zip"
+
+    def test_convert_encoded_payload_too_large(
+        self, client: TestClient, monkeypatch
+    ) -> None:
+        """Oversized encoded request bodies are rejected before decoding."""
+        monkeypatch.setattr(
+            "pp.server.server.registry.available_converters",
+            lambda: ["prince"],
+        )
+        monkeypatch.setenv("PP_MAX_ENCODED_REQUEST_SIZE", "3")
+        result = client.post(
+            "/convert",
+            data={"converter": "prince", "cmd_options": " ", "data": _zip_payload()},
+        )
+        assert result.status_code == 413
+        assert result.json()["detail"]["code"] == "payload_too_large"
+
+    def test_convert_corrupt_zip_payload(self, client: TestClient, monkeypatch) -> None:
+        """Corrupt payloads with ZIP magic still return 400."""
+        monkeypatch.setattr(
+            "pp.server.server.registry.available_converters",
+            lambda: ["prince"],
+        )
+        result = client.post(
+            "/convert",
+            data={
+                "converter": "prince",
+                "cmd_options": " ",
+                "data": base64.b64encode(b"PK\x03\x04broken").decode("ascii"),
+            },
+        )
+        assert result.status_code == 400
+        assert result.json()["detail"]["code"] == "invalid_zip"
+
+    def test_convert_unsafe_cmd_options(self, client: TestClient, monkeypatch) -> None:
+        """Unsafe command options are rejected at the route layer."""
+        monkeypatch.setattr(
+            "pp.server.server.registry.available_converters",
+            lambda: ["prince"],
+        )
+        result = client.post(
+            "/convert",
+            data={
+                "converter": "prince",
+                "cmd_options": "--debug; id",
+                "data": _zip_payload(),
+            },
+        )
+        assert result.status_code == 400
+        assert result.json()["detail"]["code"] == "invalid_cmd_options"
+
+    @pytest.mark.parametrize(
+        ("status", "expected_http", "expected_code"),
+        [
+            (9997, 504, "conversion_timeout"),
+            (9989, 413, "zip_limit_exceeded"),
+            (9988, 400, "invalid_zip"),
+            (1, 502, "conversion_failed"),
+        ],
+    )
+    def test_convert_failure_status_mapping(
+        self,
+        client: TestClient,
+        monkeypatch,
+        status: int,
+        expected_http: int,
+        expected_code: str,
+    ) -> None:
+        """Conversion failures map to documented HTTP statuses."""
+        monkeypatch.setattr(
+            "pp.server.server.registry.available_converters",
+            lambda: ["prince"],
+        )
+
+        async def mock_convert_pdf(*args, **kwargs):
+            return {"status": status, "output": "failed", "filename": ""}
+
+        monkeypatch.setattr("pp.server.server.convert_pdf", mock_convert_pdf)
+
+        result = client.post(
+            "/convert",
+            data={"converter": "prince", "cmd_options": " ", "data": _zip_payload()},
+        )
+        assert result.status_code == expected_http
+        assert result.json()["detail"]["code"] == expected_code
 
     def _convert_pdf(
         self, client: TestClient, converter: str, expected: str = "OK"
@@ -286,6 +473,30 @@ class TestCleanupQueue:
         result = cleanup_queue()
         assert result is not None
         assert not old_file.exists()
+
+    def test_cleanup_queue_tolerates_race_like_missing_path(
+        self, tmp_path: Path, monkeypatch
+    ) -> None:
+        """Cleanup continues if a path disappears between iteration and stat."""
+        monkeypatch.setattr("pp.server.server.QUEUE_CLEANUP_TIME", 0)
+        monkeypatch.setattr("pp.server.server.LAST_CLEANUP", 0)
+        monkeypatch.setattr("pp.server.server.queue_dir", tmp_path)
+
+        old_file = tmp_path / "old_file.txt"
+        old_file.write_text("old data")
+
+        original_stat = Path.stat
+
+        def disappearing_stat(self_path: Path, *args, **kwargs):
+            if self_path == old_file:
+                old_file.unlink(missing_ok=True)
+            return original_stat(self_path, *args, **kwargs)
+
+        monkeypatch.setattr(Path, "stat", disappearing_stat)
+
+        result = cleanup_queue()
+        assert result is not None
+        assert result["directories_removed"] == 0
 
 
 class TestConverterLog:
@@ -388,9 +599,11 @@ class TestConverterLog:
 
 class TestNewConverterId:
     def test_new_converter_id_format(self) -> None:
-        """new_converter_id creates properly formatted IDs."""
+        """new_converter_id creates properly formatted UUID-based IDs."""
         result = new_converter_id("prince")
         assert "-prince" in result
         parts = result.split("-")
         assert len(parts) >= 2
-        datetime.datetime.strptime(parts[0], "%Y%m%dT%H%M%S.%f")
+        # First part should be a valid 32-char hex UUID
+        assert len(parts[0]) == 32
+        int(parts[0], 16)  # raises ValueError if not hex
