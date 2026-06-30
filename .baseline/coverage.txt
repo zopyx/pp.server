@@ -1,0 +1,41 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.12, pytest-8.4.2, pluggy-1.6.0 -- /Users/ajung/src/pp.server/.venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/ajung/src/pp.server
+configfile: pyproject.toml
+testpaths: pp/server/tests
+plugins: asyncio-1.2.0, anyio-4.11.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 9 items
+
+pp/server/tests/test_api.py::TestPDFAPI::test_index PASSED               [ 11%]
+pp/server/tests/test_api.py::TestPDFAPI::test_has_converter_missing PASSED [ 22%]
+pp/server/tests/test_api.py::TestPDFAPI::test_convert_pdf[prince] PASSED [ 33%]
+pp/server/tests/test_api.py::TestPDFAPI::test_convert_pdf[weasyprint] PASSED [ 44%]
+pp/server/tests/test_api.py::TestPDFAPI::test_convert_pdf_unavailable_converter PASSED [ 55%]
+pp/server/tests/test_utils.py::test_which_existing_command PASSED        [ 66%]
+pp/server/tests/test_utils.py::test_which_nonexistent_command PASSED     [ 77%]
+pp/server/tests/test_utils.py::test_check_environment_missing_var PASSED [ 88%]
+pp/server/tests/test_utils.py::test_check_environment_existing_var PASSED [100%]
+
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.12.12-final-0 _______________
+
+Name                               Stmts   Miss  Cover   Missing
+----------------------------------------------------------------
+pp/server/__init__.py                  0      0   100%
+pp/server/_templates/__init__.py       0      0   100%
+pp/server/cli.py                      14     14     0%   6-24
+pp/server/converters.py               87     40    54%   18-19, 31-36, 45-46, 76, 84, 92-95, 126-167
+pp/server/logger.py                    1      0   100%
+pp/server/registry.py                 48     24    50%   32, 49, 55-80, 84-85, 89
+pp/server/server.py                  128     31    76%   64, 80, 86-87, 101, 107-108, 115-148, 239-244, 262-267
+pp/server/templates.py                12     12     0%   7-25
+pp/server/test_data/__init__.py        0      0   100%
+pp/server/tests/__init__.py            0      0   100%
+pp/server/tests/test_api.py           44      1    98%   48
+pp/server/tests/test_utils.py         16      0   100%
+pp/server/util.py                     35      3    91%   28-32, 67
+----------------------------------------------------------------
+TOTAL                                385    125    68%
+============================== 9 passed in 5.60s ===============================

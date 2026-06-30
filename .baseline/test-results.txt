@@ -1,0 +1,13 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.12, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/ajung/src/pp.server
+configfile: pyproject.toml
+testpaths: pp/server/tests
+plugins: asyncio-1.2.0, anyio-4.11.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 9 items
+
+pp/server/tests/test_api.py .....                                        [ 55%]
+pp/server/tests/test_utils.py ....                                       [100%]
+
+============================== 9 passed in 2.85s ===============================
