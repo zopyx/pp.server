@@ -1,0 +1,443 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Produce & Publish Server",
+    "description": "This server provides a REST interface for most common PrintCSS converters",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Index",
+        "description": "Produce & Publish web view",
+        "operationId": "index__get",
+        "parameters": [
+          {
+            "name": "show_versions",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Show Versions"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/converters": {
+      "get": {
+        "summary": "Converters",
+        "description": "Return names of all converters",
+        "operationId": "converters_converters_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConvertersResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/converter-versions": {
+      "get": {
+        "summary": "Converter Versions",
+        "description": "Return versions of all converters",
+        "operationId": "converter_versions_converter_versions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Converter Versions Converter Versions Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/converter": {
+      "get": {
+        "summary": "Has Converter",
+        "description": "Check if a converter is available",
+        "operationId": "has_converter_converter_get",
+        "parameters": [
+          {
+            "name": "converter_name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Converter Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConverterDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/version": {
+      "get": {
+        "summary": "Get Version",
+        "description": "Return the version of the pp.server module",
+        "operationId": "get_version_version_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VersionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "description": "Health check for load balancers and orchestrators",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cleanup": {
+      "get": {
+        "summary": "Cleanup",
+        "description": "Cleanup up the internal queue",
+        "operationId": "cleanup_cleanup_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Cleanup Cleanup Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/selftest": {
+      "get": {
+        "summary": "Converter Selftest",
+        "description": "Perform a PDF selftest for a given `converter`",
+        "operationId": "converter_selftest_selftest_get",
+        "parameters": [
+          {
+            "name": "converter",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Converter"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/convert": {
+      "post": {
+        "summary": "Convert",
+        "description": "The /convert endpoint implements the PrinceCSS to PDF conversion\n\nThe \"converter\" parameter must be the name of a registered/installed PrinceCSS\ntool (see /converters endpoint)\n\nThe \"cmd_options\" parameter can be used to specify converter specific\ncommand line parameters. \"cmd_options\" can not be omitted. If you want\nto omit the parameter, please specify a string with one whitespace\n(known bug :-)).\n\nThe \"data\" parameter is a base64 encoded ZIP archive that contains the\nindex.html together with all other assets required to perform the\nconversion.",
+        "operationId": "convert_convert_post",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_convert_convert_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConvertResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Body_convert_convert_post": {
+        "properties": {
+          "converter": {
+            "type": "string",
+            "title": "Converter name",
+            "description": "`converter` must be the name of a registered converter e.g. `prince` or `antennahouse`",
+            "default": "prince"
+          },
+          "cmd_options": {
+            "type": "string",
+            "title": "Converter commandline options",
+            "description": "`cmd_options` can be used to specify converter specify commandline options. Bug: you need to specify a string of at lease one byte length (e.g. a whitespace)",
+            "default": " "
+          },
+          "data": {
+            "type": "string",
+            "title": "Content to be converted",
+            "description": "`data` must be a base64 encoded ZIP archive containing your index.html and all related assets like CSS, images etc."
+          }
+        },
+        "type": "object",
+        "title": "Body_convert_convert_post"
+      },
+      "ConvertResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data"
+          },
+          "output": {
+            "type": "string",
+            "title": "Output",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "ConvertResponse",
+        "description": "Response from the /convert endpoint."
+      },
+      "ConverterDetailResponse": {
+        "properties": {
+          "has_converter": {
+            "type": "boolean",
+            "title": "Has Converter"
+          },
+          "converter": {
+            "type": "string",
+            "title": "Converter"
+          }
+        },
+        "type": "object",
+        "required": [
+          "has_converter",
+          "converter"
+        ],
+        "title": "ConverterDetailResponse",
+        "description": "Availability of a single converter."
+      },
+      "ConvertersResponse": {
+        "properties": {
+          "converters": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Converters"
+          }
+        },
+        "type": "object",
+        "required": [
+          "converters"
+        ],
+        "title": "ConvertersResponse",
+        "description": "List of available converters."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "version"
+        ],
+        "title": "HealthResponse",
+        "description": "Health check response."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VersionResponse": {
+        "properties": {
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "module": {
+            "type": "string",
+            "title": "Module",
+            "default": "pp.server"
+          }
+        },
+        "type": "object",
+        "required": [
+          "version"
+        ],
+        "title": "VersionResponse",
+        "description": "Server version info."
+      }
+    }
+  }
+}

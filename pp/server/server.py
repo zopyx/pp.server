@@ -22,6 +22,13 @@ from fastapi.templating import Jinja2Templates
 from pp.server import registry
 from pp.server.converters import convert_pdf, selftest
 from pp.server.logger import LOG
+from pp.server.models import (
+    ConverterDetailResponse,
+    ConvertersResponse,
+    ConvertResponse,
+    HealthResponse,
+    VersionResponse,
+)
 
 # How often to cleanup the queue directory?
 QUEUE_CLEANUP_TIME = 24 * 60 * 60  # 1 day
@@ -74,37 +81,37 @@ async def index(request: Request, show_versions: bool = False) -> HTMLResponse:
     return templates.TemplateResponse(request, "index.html", params)
 
 
-@app.get("/converters")
-async def converters() -> dict[str, Any]:
+@app.get("/converters", response_model=ConvertersResponse)
+async def converters() -> ConvertersResponse:
     """Return names of all converters"""
-    return dict(converters=registry.available_converters())
+    return ConvertersResponse(converters=registry.available_converters())
 
 
 @app.get("/converter-versions")
 async def converter_versions() -> dict[str, Any]:
-    """Return names of all converters"""
+    """Return versions of all converters"""
     versions = await registry.converter_versions()
     return dict(converters=versions)
 
 
-@app.get("/converter")
-async def has_converter(converter_name: str) -> dict[str, Any]:
-    """Return names of all converters"""
-    return dict(
+@app.get("/converter", response_model=ConverterDetailResponse)
+async def has_converter(converter_name: str) -> ConverterDetailResponse:
+    """Check if a converter is available"""
+    return ConverterDetailResponse(
         has_converter=registry.has_converter(converter_name), converter=converter_name
     )
 
 
-@app.get("/version")
-async def get_version() -> dict[str, str]:
+@app.get("/version", response_model=VersionResponse)
+async def get_version() -> VersionResponse:
     """Return the version of the pp.server module"""
-    return dict(version=VERSION, module="pp.server")
+    return VersionResponse(version=VERSION, module="pp.server")
 
 
-@app.get("/health")
-async def health() -> dict[str, str]:
+@app.get("/health", response_model=HealthResponse)
+async def health() -> HealthResponse:
     """Health check for load balancers and orchestrators"""
-    return dict(status="healthy", version=VERSION)
+    return HealthResponse(status="healthy", version=VERSION)
 
 
 @app.get("/cleanup")
@@ -160,8 +167,8 @@ async def converter_selftest(converter: str) -> Response:
         )
 
 
-@app.post("/convert")
-async def convert(  # type: ignore[no-untyped-def]
+@app.post("/convert", response_model=ConvertResponse)
+async def convert(
     converter: str = Form(
         "prince",
         title="Converter name",
@@ -265,9 +272,6 @@ def converter_log(work_dir: str, msg: str) -> None:
     with open(converter_logfile, "a") as fp:
         try:
             fp.write(msg + "\n")
-        except UnicodeEncodeError:
-            # Handle specific Unicode encoding errors
-            fp.write(msg.encode("ascii", "replace").decode("ascii", "replace") + "\n")
-        except UnicodeDecodeError:
-            # Handle specific Unicode decoding errors
+        except (UnicodeEncodeError, UnicodeDecodeError):
+            # Handle Unicode encoding/decoding errors
             fp.write(msg.encode("ascii", "replace").decode("ascii", "replace") + "\n")

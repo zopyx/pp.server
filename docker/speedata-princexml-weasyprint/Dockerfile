@@ -1,22 +1,27 @@
-FROM fedora
-RUN dnf -y install unzip python3-devel gcc-c++ redhat-rpm-config wget curl cabextract xorg-x11-font-utils fontconfig
-RUN dnf install -y https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm
+FROM fedora:40
+RUN dnf -y install unzip python3-devel gcc-c++ redhat-rpm-config wget curl cabextract \
+    xorg-x11-font-utils fontconfig && \
+    dnf clean all
 
+# Speedata Publisher
 WORKDIR /
-RUN wget -q https://download.speedata.de/dl/speedata-publisher-linux-amd64-3.6.1.zip; \
-    unzip speedata-publisher-linux-amd64-3.6.1.zip
+RUN wget -q https://download.speedata.de/dl/speedata-publisher-linux-amd64-4.0.4.zip && \
+    unzip speedata-publisher-linux-amd64-4.0.4.zip && \
+    rm speedata-publisher-linux-amd64-4.0.4.zip
 
-RUN wget -q https://www.princexml.com/download/prince-12.4-1.centos7.x86_64.rpm
-RUN dnf install -y prince-12.4-1.centos7.x86_64.rpm
+# PrinceXML
+RUN wget -q https://www.princexml.com/download/prince-16.2-1.fc40.x86_64.rpm && \
+    dnf install -y prince-16.2-1.fc40.x86_64.rpm && \
+    rm prince-16.2-1.fc40.x86_64.rpm
 
-RUN mkdir /pp-server; python3 -m venv /pp-server
+RUN mkdir /pp-server && python3 -m venv /pp-server
 WORKDIR /pp-server
-RUN echo
-RUN bin/pip install --no-cache pp.server weasyprint; \
+RUN bin/pip install --no-cache pp.server weasyprint hypercorn && \
     bin/pp-server-templates
 
 RUN ln -sf /speedata-publisher/bin/sp /usr/bin/sp
-RUN ln -sf $PWD/bin/weasyprint /usr/bin/weasyprint
+RUN ln -sf "$PWD/bin/weasyprint" /usr/bin/weasyprint
 
 VOLUME ["/pp-server/var"]
-CMD bin/circusd circusd.ini
+EXPOSE 8000
+CMD ["bin/hypercorn", "pp.server.server:app", "--bind", "0.0.0.0:8000"]
