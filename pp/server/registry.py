@@ -82,6 +82,7 @@ async def converter_versions() -> dict[str, str]:
     Returns:
         Dictionary mapping converter name to version string or ``n/a``.
     """
+
     async def execute_cmd(converter: str, cmd: str) -> dict[str, Any]:
         result = await run(cmd)
         return dict(result=result, converter=converter)

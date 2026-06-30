@@ -11,8 +11,12 @@ import uvicorn
 @click.command()
 @click.option("--host", default="127.0.0.1", help="Host IP to bind to")
 @click.option("--port", default=8080, help="Port to bind to")
-@click.option("-b", "--bind", default=None, help="Bind to <host>:<port> (overrides --host/--port)")
-@click.option("--reload", is_flag=True, default=False, help="Enable auto-reload on code changes")
+@click.option(
+    "-b", "--bind", default=None, help="Bind to <host>:<port> (overrides --host/--port)"
+)
+@click.option(
+    "--reload", is_flag=True, default=False, help="Enable auto-reload on code changes"
+)
 def main(
     host: str = "127.0.0.1",
     port: int = 8080,
