@@ -1,8 +1,20 @@
-3.5.7 (unreleased)
+4.0.0 (2026/06/30)
 ------------------
 
-- ``pp-server`` script now is the documented and recommended way for running the server
-- some changes
+- Complete modernization: type safety (ty), linting (ruff), security hardening
+- New dark-theme web UI with responsive converter cards and favicon
+- 99% test coverage (up from 68%), 87 tests (up from 9)
+- Full CI pipeline: lint + type-check + SAST + test
+- Pre-commit hooks (ruff, ty, bandit) for every commit
+- Pydantic response models for typed API contracts
+- Health check endpoint (/health)
+- Self-test endpoint fixed (dirs_exist_ok)
+- Shell injection and ZIP path traversal protection
+- Auto-generated OpenAPI spec
+- Dockerfiles updated (fedora:40, hypercorn, modern tool versions)
+- Dead code removed (PhantomJS, PasteDeploy config, stale requirements.txt)
+- Build confirmed with uv build
+- Python >=3.12,<3.14 (pinned to working range)
 
 3.4.1 (2024/11/27)
 ------------------
