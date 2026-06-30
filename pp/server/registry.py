@@ -29,17 +29,16 @@ def _register_converters() -> None:
 def register_converter(converter_name: str, converter_cmd: str) -> None:
     """Check if a converter binary is available and register its status.
 
-    Looks for the binary in the system PATH, and as a fallback in a
-    ``bin/`` subdirectory named after the converter.
+    Only registers (adds to :data:`REGISTRY`) when the binary is actually
+    found in the system PATH, or as a fallback in a ``bin/`` subdirectory
+    named after the converter.
 
     Args:
         converter_name: Logical name (e.g. ``prince``, ``weasyprint``).
         converter_cmd: Binary name to search for (e.g. ``prince``).
     """
-    REGISTRY[converter_name] = False
     if util.which(converter_cmd) or util.which(f"bin/{converter_name}"):
         REGISTRY[converter_name] = True
-    if REGISTRY[converter_name]:
         LOG.info(f"Converter {converter_name} registered")
 
 

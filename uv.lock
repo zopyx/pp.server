@@ -784,12 +784,6 @@ testing = [
     { name = "pytest-cov" },
 ]
 
-[package.dev-dependencies]
-dev = [
-    { name = "bandit" },
-    { name = "ty" },
-]
-
 [package.metadata]
 requires-dist = [
     { name = "aiofiles", specifier = ">=24.1.0" },
@@ -820,12 +814,6 @@ requires-dist = [
     { name = "webtest", specifier = ">=3.0.2" },
 ]
 provides-extras = ["testing", "dev"]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "bandit", specifier = ">=1.7.0" },
-    { name = "ty", specifier = ">=0.0.55" },
-]
 
 [[package]]
 name = "pre-commit"

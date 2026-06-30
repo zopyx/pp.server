@@ -43,7 +43,7 @@ type-check: ## Run type checking
 quality: lint type-check audit test ## Run all quality checks
 
 sast: ## Run security scans
-	$(UV) run bandit -c pyproject.toml -r pp/server 2>&1
+	$(UV) run --with bandit bandit -c pyproject.toml -r pp/server 2>&1
 
 audit: ## Audit dependencies for known vulnerabilities
 	$(UV) audit
