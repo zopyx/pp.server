@@ -1,256 +1,125 @@
 pp.server - Produce & Publish Server
 ====================================
 
+``pp.server`` is a FastAPI-based REST server for converting HTML/XML to PDF
+using various external PrintCSS converters. It is the server-side component
+of the **Produce & Publish** platform.
 
-.. note:: 
-
-   This new version 3 of the Produce & Publish server is a complete rewrite
-   with an incompatible REST API. Version 3 also requires version 3
-   of the `pp.client-python` bindings.
-
-``pp.server`` is a FastAPI based server implementation and implements the
-server side functionality of the Produce & Publish platform.  It is known as
-the ``Produce & Publish Server``.
-
-The Produce & Publish Server provided web service APIs for converting
-HTML/XML + assets to PDF using one of the following external PDF converters:
+Supported converters
+--------------------
 
 - PrinceXML (www.princexml.com, commercial)
 - PDFreactor (www.realobjects.com, commercial)
-- Speedata Publisher (www.speedata.de, open-source, experimental support)
-- WKHTMLTOPDF (www.wkhtmltopdf.org, open-source, experimental support)
-- Vivliostyle Formatter (www.vivliostyle.com, commercial, experimental support)
-- VersaType Formatter (www.trim-marks.com, commercial, experimental support)
+- Speedata Publisher (www.speedata.de, open-source)
+- WKHTMLTOPDF (www.wkhtmltopdf.org, open-source)
+- Vivliostyle Formatter (www.vivliostyle.com, commercial)
+- VersaType Formatter (www.trim-marks.com, commercial)
 - Antennahouse 7 (www.antennahouse.com, commercial)
-- Weasyprint (free, unsupported)
-- Typeset.sh  (www.typeset.sh, commercial)
-- PagedJS  (www.pagedjs.org, free)
-
-In addition there is experimental support for generating EPUB documents
-using ``Calibre`` (www.calibre.org, open-source).
-
-The web service provides only synchronous operation.
+- Weasyprint (free)
+- Typeset.sh (www.typeset.sh, commercial)
+- PagedJS (www.pagedjs.org, free)
+- Calibre (www.calibre.org, open-source, EPUB only)
 
 Requirements
 ------------
 
-- Python 3.12 or higher, no support for Python 2.x
-
-- the external binaries 
-
-  - PrinceXML: ``prince``, 
-  - PDFreactor: ``pdfreactor.py``,  
-  - Speedata Publisher: ``sp``
-  - Calibre: ``ebook-convert``
-  - WKHTMLTOPDF: ``wkhtmltopdf``    
-  - Vivliostyle: ``vivliostyle-formatter``    
-  - VersaType : ``versatype-converter``    
-  - Weasyprint: ``weasyprint``    
-  - Antennahouse: ``run.sh``    
-  - Typeset.sh: ``typeset.sh.phar``    
-  - PageJS: ``pagedjs-cli``    
-
-  must be in the $PATH. Please refer to the installation documentation
-  of the individual products.
+- Python 3.12 or higher
+- External converter binaries must be in ``$PATH`` (see list above)
 
 Installation
 ------------
 
-This project uses `uv` as package and virtualenv manager.
+This project uses `uv` as package and virtualenv manager::
 
-- create a Python 3  virtual environment using::
+    git clone https://github.com/zopyx/pp.server
+    cd pp.server
+    uv venv --python 3.12
+    uv sync --all-extras
 
-    python3 -m venv .venv
+Running the server
+------------------
 
-- install dependencies using ``uv``::
+::
 
-    .venv/bin/uv pip install -e .
+    pp-server --host 0.0.0.0 --port 8000
 
-- run the Produce & Publish server using the ``pp-server`` script::
+Or using the Makefile::
 
-    .venv/bin/pp-server --host 0.0.0.0 --port 8000
+    make serve
 
-  The ``pp-server`` script provides options for setting the host and port, and for enabling auto-reloading of the server on code changes.
+The server runs on **Hypercorn** (HTTP/2-capable ASGI server).
+For production::
 
-- or under control of `gunicorn`::
+    make serve-prod
 
-    .venv/bin/gunicorn pp.server.server:app -w 2 -k uvicorn.workers.UvicornWorker
+Process management with Circus::
 
+    pp-server-templates   # generates circusd.ini + server.ini
+    circusd circusd.ini   # managed daemon
 
-- For running the Produce & Publisher server under control of the process manager
-  `circus`, generate the `circusd.ini` file using::
+Docker
+------
 
-    .venv/bin/pp-server-templates
+Dockerfiles are provided under ``docker/`` for various converter combinations:
 
-- and start it in background::
+- ``docker/weasyprint/`` — pp.server + WeasyPrint
+- ``docker/speedata/`` — pp.server + Speedata Publisher
+- ``docker/speedata-princexml-weasyprint/`` — all three
 
-    .venv/bin/circusd circusd.ini  --daemon
+Build::
 
-Converter requirements
-----------------------
+    cd docker/weasyprint
+    docker build -t pp-server .
+    docker run -p 8000:8000 pp-server
 
-For the PDF conversion the related converter binaries or scripts
-must be included in the ``$PATH`` of your server.
+REST API
+--------
 
-- ``prince`` for PrinceXML
+All API methods are available via REST endpoints::
 
-- ``pdfreactor-legacy`` for PDFreactor <= 11 
+    POST /convert      Convert ZIP archive to PDF
+    GET  /converters   List available converters
+    GET  /version      Server version info
+    GET  /health       Health check
+    GET  /cleanup      Clean up queue directory
+    GET  /selftest     Run converter self-test
 
-- ``pdfreactor`` for PDFreactor 12 or highter
-
-- ``wkhtmltopdf`` for WKHTMLToPDF
-
-- ``ebook-convert`` for Calibre
-
-- ``sp`` for the Speedata Publisher
-
-- ``vivliostyle`` for the Vivliostyle formatter
-
-- ``versatype`` for the Versatype converter
-
-- ``weasyprint`` for Weasyprint
-
-- ``antennahouse`` for the Antennahouse
-
-- ``pagedjs`` for the PagedJS
-
-- ``typesetsh`` for the Typeset.sh
-
-
-
-API documentation
------------------
-
-All API methods are available through a REST api
-following API URL endpoint::
-
-    http://host:port/<command>
-
-With the default server configuration this translates to::
-
-    http://localhost:8000/convert
-
-REST API Introspection
-----------------------
-
-`pp.server` is implemented based on the FastAPI framework for Python.
-You can access the REST API  documentation directly through
-    
-    http://localhost:8000/docs
+Interactive API documentation is available at http://localhost:8000/docs
+when the server is running.
 
 Environment variables
-+++++++++++++++++++++
+---------------------
 
-`pp.server` uses the `var` folder of the installation directory by default as
-temporary folder for conversion data. Set the environment variable `PP_SPOOL_DIRECTORY` 
-if you need different spool directory instead. 
+- ``PP_SPOOL_DIRECTORY`` — custom spool directory (default: ``var/queue``)
+- ``PP_PDFREACTOR_DOCKER`` — set to ``1`` for PDFreactor under Docker
 
-If you run PDFreactor 10 or higher under Docker then you must set the environment
-variable `PP_PDFREACTOR_DOCKER=1` in order to generated a proper `file:///docs/...`
-URI for `pdfreactor.py`.
+Development
+-----------
 
+See ``DEVELOPMENT.md`` for the full developer guide.
 
-PDF conversion API
-++++++++++++++++++
+Quick start::
 
-Remember that all converters use HTML or XML as input for the conversion. All
-input data (HTML/XML, images, stylesheets, fonts etc.) must be stored in ZIP
-archive. The filename of the content **must** be named ``index.html``.
-
-You have to ``POST`` the data to the 
-
-    http://host:port/convert
-
-with the following parameters:
-
-
-- ``data`` - the ZIP archive (as base64 encoded string)
-
-- ``converter`` - a string that determines the the PDF
-  converter to be used (either ``princexml``, ``pdfreactor``, ``phantomjs``, ``vivliostyle``, ``versatype``, 
-  or ``calibre`` for generating EPUB content)
-
-- ``cmd_options`` - an optional string of command line parameters added 
-  as given to the calls of the externals converters
-
-
-Returns:
-
-The API returns its result as JSON structure with the following key-value
-pairs:
-
-- ``status`` - either ``OK`` or ``ERROR``
-
-- ``data``- the generated PDF file encoded as base64 encoded byte string
-
-- ``output`` - the conversion transcript (output of the converter run)
-
-  
-Introspection API methods
-+++++++++++++++++++++++++
-
-Produce & Publish server version:
-
-    http://host:port/version
-
-returns:
-
-    {"version": "3.0.0", "module": "pp.server"}
-   
-Installed/available converters:
-
-    http://host:port/converters
-
-returns:
-
-    {"pdfreactor": true, "phantomjs": false, "calibre": true, "prince": true}
-
-
-Versions of installed converter:
-
-    http://host:port/converter-versions
-
-returns:
-
-    {'prince': 'Version x.y', 'pdfreactor: 'Version a.b.c', ...}
-
-
-Other API methods
-+++++++++++++++++
-
-Cleanup of the queue directory (removes conversion data older than one day)
-
-    http://host:port/cleanup
-
-returns:
-
-    {"directories_removed": 22}
-
+    make dev-setup     # install dev dependencies
+    make test          # run tests
+    make quality       # lint + type-check + test
+    make coverage      # run tests with HTML coverage report
+    make build         # build distribution packages
 
 Source code
 -----------
 
 https://github.com/zopyx/pp.server
 
-Bug tracker
------------
-
-https://github.com/zopyx/pp.server/issues
-
-Support
--------
-
-Support for Produce & Publish Server is currently only available on a project
-basis.
-
 License
 -------
+
 ``pp.server`` is published under the GNU Public License V2 (GPL 2).
 
 Contact
 -------
 
-| ZOPYX 
+| ZOPYX
 | Hundskapfklinge 33
 | D-72074 Tuebingen, Germany
 | info@zopyx.com
