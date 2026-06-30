@@ -161,7 +161,7 @@ async def selftest(converter: str) -> bytes:
             source_html = work_dir / "index.xml"
             resource_dir = Path(resource_root.origin).parent / "speedata"
 
-        shutil.copytree(str(resource_dir), str(work_dir))
+        shutil.copytree(str(resource_dir), str(work_dir), dirs_exist_ok=True)
 
         converter_config = CONVERTERS[converter]
 

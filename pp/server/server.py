@@ -101,6 +101,12 @@ async def get_version() -> dict[str, str]:
     return dict(version=VERSION, module="pp.server")
 
 
+@app.get("/health")
+async def health() -> dict[str, str]:
+    """Health check for load balancers and orchestrators"""
+    return dict(status="healthy", version=VERSION)
+
+
 @app.get("/cleanup")
 async def cleanup() -> dict[str, Any]:
     """Cleanup up the internal queue"""

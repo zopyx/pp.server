@@ -1,63 +1,173 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Produce &amp; Publish Server</title>
-    <meta name="keywords" content="Python,PDF,Produce and Publish,Converter,PrintCSS,CSS Paged Media,PDF generation" />
-    <meta name="description" content="Produce & Publish Server" />
-    <link href="/static/style.css" rel="stylesheet" type="text/css" />
+    <meta name="description" content="Produce & Publish Server — HTML/XML to PDF conversion API" />
+    <link href="/static/style.css" rel="stylesheet" />
 </head>
 <body>
-  <div id="header">
-      <img src="/static/pp-logo.png" /> 
-      <h1>Produce &amp; Publish Server</h1>
-      <h3>Server version: {{version}} </h3>
-      <h3>Python version: {{python_version}} </h3>
-      <h3>Converters: {{converters}} </h3>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="/static/pp-logo.png" alt="Produce & Publish" />
+                <h1>Produce &amp; Publish Server</h1>
+            </div>
+            <div class="subtitle">PrintCSS to PDF conversion API</div>
+            <div class="server-info">
+                <span>v{{ version }}</span>
+                <span>Python {{ python_version.split()[0] }}</span>
+                <span id="converter-count">{{ converters.split(', ') | length }} converters</span>
+            </div>
 
-      <ul id="actions">
-          <li>
-            <a id="show-openapi" href="/openapi.json">OpenAPI (JSON)</a>
-          </li>
-          <li>
-            <a id="show-docs" href="/docs">Interactive API docs</a>
-          </li>
-          <li>
-            <a id="show-versions" href="?show_versions=1">Converter versions</a>
-          </li>
-      </ul>
+            <nav>
+                <a href="/">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    Home
+                </a>
+                <a href="/docs" target="_blank">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    API Docs
+                </a>
+                <a href="/openapi.json" target="_blank">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    OpenAPI
+                </a>
+                <a href="/converters">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    JSON
+                </a>
+                <a href="?show_versions=1" id="show-versions-btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    {% if show_versions %}Refresh{% else %}Show Versions{% endif %}
+                </a>
+            </nav>
+        </header>
 
-      {% if show_versions %}
-          <table border="1">
-              <thead>
-                  <th>Converter</th>
-                  <th>Version</th>
-                  <th>Self-Test</th>
-              </thead>
-              <tbody>
-                  {% for k in converter_versions %}
-                    <tr>
-                        <td>{{k}}</td>
-                        <td class="pre">{{ converter_versions[k] }}</td>
+        <main>
+            <div class="section-title">Installed Converters</div>
+            <div class="section-subtitle">Available PDF/EPUB conversion engines detected on this server</div>
 
-                        <td>
-                            <a href="selftest?converter={{k}}">[PDF]</a>
-                        </td>
-                    </tr>
-                  {%endfor %}
-              </tbody>
-          </table>
-      {% endif %}
+            {% if show_versions and converter_versions %}
+            <div class="converters-grid">
+                {% for name, version_info in converter_versions.items() %}
+                <div class="converter-card">
+                    <div class="card-header">
+                        <span class="card-name">{{ name }}</span>
+                        <span class="card-status {{ 'available' if version_info != 'n/a' else 'unavailable' }}">
+                            <span class="status-dot">
+                                <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="3"/></svg>
+                            </span>
+                            {% if version_info != 'n/a' %}Available{% else %}Unavailable{% endif %}
+                        </span>
+                    </div>
+                    {% if version_info and version_info != 'n/a' %}
+                    <div class="card-version">{{ version_info }}</div>
+                    {% endif %}
+                    <div class="card-actions">
+                        <a href="/selftest?converter={{ name }}" class="selftest-link" data-converter="{{ name }}">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            Self-Test PDF
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="converters-grid">
+                {% for name in converters.split(', ') %}
+                <div class="converter-card">
+                    <div class="card-header">
+                        <span class="card-name">{{ name }}</span>
+                        <span class="card-status available">
+                            <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="3"/></svg>
+                            Available
+                        </span>
+                    </div>
+                    <div class="card-version" style="color: var(--text-secondary); font-style: italic;">
+                        Click "Show Versions" above for details
+                    </div>
+                    <div class="card-actions">
+                        <a href="/selftest?converter={{ name }}" class="selftest-link" data-converter="{{ name }}">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            Self-Test PDF
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
 
-  </div>
-  <br/>
-  <div id="footer">
-      (C) 2025, ZOPYX | 
-      <a href="http://www.produce-and-publish.com">Produce & Publish</a> | 
-      <a href="http://www.zopyx.com">ZOPYX/Andreas Jung</a> | 
-      <a href="mailto:info@zopyx.com">info@zopyx.com</a> | 
-      Published under the GNU Public License Version 2 (GPL 2)
-  </div>
+            <div class="section-title">API Endpoints</div>
+            <div class="section-subtitle">REST API for programmatic PDF conversion</div>
 
+            <div class="api-endpoints">
+                <a href="/docs" target="_blank" class="api-endpoint">
+                    <div class="method">openapi</div>
+                    <div class="path">/docs</div>
+                    <div class="desc">Interactive API documentation</div>
+                </a>
+                <a href="/converters" target="_blank" class="api-endpoint">
+                    <div class="method">get</div>
+                    <div class="path">/converters</div>
+                    <div class="desc">List available converters</div>
+                </a>
+                <a href="/converter-versions" target="_blank" class="api-endpoint">
+                    <div class="method">get</div>
+                    <div class="path">/converter-versions</div>
+                    <div class="desc">Converter versions</div>
+                </a>
+                <a href="/version" target="_blank" class="api-endpoint">
+                    <div class="method">get</div>
+                    <div class="path">/version</div>
+                    <div class="desc">Server version info</div>
+                </a>
+                <a href="/cleanup" target="_blank" class="api-endpoint">
+                    <div class="method">get</div>
+                    <div class="path">/cleanup</div>
+                    <div class="desc">Clean up queue directory</div>
+                </a>
+                <div class="api-endpoint" style="cursor: default;">
+                    <div class="method" style="color: var(--warning);">post</div>
+                    <div class="path">/convert</div>
+                    <div class="desc">Convert ZIP → PDF (see /docs)</div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>
+                &copy; 2025
+                <a href="https://www.zopyx.com">ZOPYX</a> |
+                <a href="https://www.produce-and-publish.com">Produce &amp; Publish</a> |
+                Published under
+                <a href="https://www.gnu.org/licenses/gpl-2.0.html">GNU GPL v2</a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Self-test links: show spinner while loading
+        document.querySelectorAll('.selftest-link').forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                var original = this.innerHTML;
+                this.innerHTML = '<span class="spinner"></span> Generating...';
+                // Restore after 30s in case of timeout
+                setTimeout(function() {
+                    if (link.innerHTML.indexOf('spinner') !== -1) {
+                        link.innerHTML = original;
+                    }
+                }, 30000);
+            });
+        });
+
+        // Keyboard shortcut: 'v' to toggle versions
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'v' && !e.ctrlKey && !e.metaKey && !e.target.closest('input,textarea')) {
+                document.getElementById('show-versions-btn').click();
+            }
+        });
+    </script>
 </body>
 </html>
