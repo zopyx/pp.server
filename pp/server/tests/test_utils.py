@@ -20,12 +20,12 @@ def test_which_nonexistent_command():
 
 
 def test_check_environment_missing_var():
-    """Test checkEnvironment with missing environment variable."""
-    assert not util.checkEnvironment("THIS_VAR_DOES_NOT_EXIST")
+    """Test check_environment with missing environment variable."""
+    assert not util.check_environment("THIS_VAR_DOES_NOT_EXIST")
 
 
 def test_check_environment_existing_var(tmp_path: Path):
-    """Test checkEnvironment with existing environment variable pointing to existing directory."""
+    """Test check_environment with existing environment variable pointing to existing directory."""
     import os
 
     # Create a temporary directory and set environment variable
@@ -36,7 +36,7 @@ def test_check_environment_existing_var(tmp_path: Path):
     os.environ["TEST_PP_SERVER_DIR"] = str(test_dir)
 
     try:
-        assert util.checkEnvironment("TEST_PP_SERVER_DIR")
+        assert util.check_environment("TEST_PP_SERVER_DIR")
     finally:
         # Clean up
         del os.environ["TEST_PP_SERVER_DIR"]

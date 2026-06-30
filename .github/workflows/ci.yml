@@ -26,4 +26,4 @@ jobs:
     - name: Install dependencies
       run: make dev-install
     - name: Run CI
-      run: make ci
+      run: make quality

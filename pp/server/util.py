@@ -13,7 +13,7 @@ from pp.server.logger import LOG
 win32 = sys.platform == "win32"
 
 
-def checkEnvironment(envname: str) -> bool:
+def check_environment(envname: str) -> bool:
     """Check if the given name of an environment variable exists and
     if it points to an existing directory.
     """

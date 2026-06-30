@@ -1,3 +1,14 @@
 *.pyc
 *.pyo
 *.egg-info
+var/
+__pycache__/
+*.pyc
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/

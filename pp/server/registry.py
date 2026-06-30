@@ -26,9 +26,7 @@ def register_converter(converter_name: str, converter_cmd: str) -> None:
     """
 
     REGISTRY[converter_name] = False
-    if which(converter_cmd):
-        REGISTRY[converter_name] = True
-    elif which(f"bin/{converter_name}"):
+    if which(converter_cmd) or which(f"bin/{converter_name}"):
         REGISTRY[converter_name] = True
     if REGISTRY[converter_name]:
         LOG.info(f"Converter {converter_name} registered")
